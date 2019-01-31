@@ -126,6 +126,7 @@ int test_smtp(void) {
 
     printf("Getting the bearer token...\n");
     char *bearer_token = getbearertoken();
+    printf("token: %s\n", bearer_token);
 
     if (!bearer_token) {
         fprintf(stderr, "Failed to get bearer token.\n");

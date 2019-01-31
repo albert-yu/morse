@@ -44,10 +44,11 @@ unsigned char* hex_to_bytes_with_len(char *hex_string, size_t hex_length) {
     }
 
     size_t ascii_length = hex_length / 2;
+    // printf("%zu\n", ascii_length);
     unsigned char *byte_array = calloc(ascii_length + 1, sizeof(*byte_array));
     size_t i = 0;
     size_t j = 0;
-
+    // printf("foo!\n");
     for (; j < hex_length; ++i, j += 2) {
         int val [1];
         sscanf(hex_string + j, "%2x", val);
@@ -317,6 +318,12 @@ char* crypto_decrypt_from_file() {
     // exclude the length at the beginning
     char *encrypted_hex_only = len_and_encrypted_hex + UNSIGNED_LONG_HEX_LEN;
     int size_of_encrypted_hex = filestruct->size - UNSIGNED_LONG_HEX_LEN;
+
+    if (size_of_encrypted_hex < 0) {
+        printf("Invalid credentials found in file.\n");
+        // invalid credentials!
+        return NULL;
+    }
 
     unsigned char *bytes = hex_to_bytes_with_len(encrypted_hex_only, size_of_encrypted_hex);
     size_t decrypted_len = hex_bytes_to_unsigned_long(len_and_encrypted_hex);
