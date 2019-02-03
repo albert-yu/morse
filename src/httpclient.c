@@ -4,6 +4,10 @@
 #include <curl/curl.h>
 
 
+void http_get_no_auth(char *url, char *content_type, http_callback_func callback, void *writedata) {
+    
+}
+
 /**
  * Uses libcurl 
  * https://curl.haxx.se/libcurl/c/http-post.html

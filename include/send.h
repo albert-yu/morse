@@ -26,11 +26,12 @@ char* generate_messageid();
  * @bcc - blind copied recipient(s)
  * @subject - email subject
  * @body - string of body
- * @mimetype - the MIME type (text/html, text/plain)
+ * @mimetype - the MIME type of the body (text/html, text/plain)
+ * @attachments - the file paths of the attachments
  */
 int sendmail(char *to, char *cc, char *bcc, 
-             char *subject, 
-             char *body, char *mimetype);
+             char *subject, char *body, char *mimetype,
+             char **attachments);
 
 
 int test_smtp(void);

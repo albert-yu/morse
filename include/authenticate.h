@@ -22,6 +22,11 @@ extern "C" {
 char* getbearertoken();
 
 
+/**
+ * Is this token valid?
+ */
+int isvalidtoken(char *token);
+
 #ifdef __cplusplus
 }
 #endif

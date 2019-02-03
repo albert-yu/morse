@@ -7,6 +7,7 @@
 #define GOOGLE_AUTH_URL "https://accounts.google.com/o/oauth2/v2/auth"
 #define GOOGLE_EXCHANGE_URL "https://www.googleapis.com/oauth2/v4/token"
 #define GOOGLE_MAIL_SCOPE "https://mail.google.com"
+#define GOOGLE_TOKEN_CHECK_URL "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token="
 #define INITIAL_BUF_SIZE 64
 
 /**
@@ -438,4 +439,14 @@ char* getbearertoken() {
     free(saved_creds); // saved_creds cannot be NULL
     return bearer_token;
 }
+
+
+int isvalidtoken(char *token) {
+    size_t urlsize = strlen(GOOGLE_TOKEN_CHECK_URL) + strlen(token);
+    char *endpoint = calloc(urlsize + 1, sizeof(*endpoint));
+    
+    free(endpoint);
+    return 0;
+}
+
 

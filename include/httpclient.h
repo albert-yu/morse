@@ -12,6 +12,10 @@ extern "C" {
  */
 typedef size_t http_callback_func(void*, size_t, size_t, void*);
 
+
+void http_get_no_auth(char *url, char *content_type, http_callback_func callback, void *writedata);
+
+
 /**
  * Sends an HTTP POST.
  * The callback function must be of prototype 

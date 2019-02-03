@@ -111,9 +111,9 @@ int isvalidext(char *extension, size_t len) {
 
 
 int sendmail(char *to, char *cc, char *bcc, 
-             char *subject, 
-             char *body, char *mimetype) {
-
+             char *subject, char *body, char *mimetype,
+             char **attachments) {
+    
     
     return 0;
 }
