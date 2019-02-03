@@ -444,6 +444,9 @@ char* getbearertoken() {
 int isvalidtoken(char *token) {
     size_t urlsize = strlen(GOOGLE_TOKEN_CHECK_URL) + strlen(token);
     char *endpoint = calloc(urlsize + 1, sizeof(*endpoint));
+    sprintf(endpoint, "%s%s", GOOGLE_TOKEN_CHECK_URL, token);
+
+    // call HTTP GET
     
     free(endpoint);
     return 0;
