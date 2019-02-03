@@ -16,6 +16,8 @@ extern "C" {
 #endif
 
 
+char* generate_messageid(); 
+
 /**
  * Send an email to the designated recipients.
  * Recipients are semicolon-delimited strings.

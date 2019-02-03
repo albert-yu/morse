@@ -19,7 +19,11 @@ int main(int argc, char *argv[]) {
     //     token = NULL;
     // }
 
-    test_smtp();
-
+    // test_smtp();
+    char *messageid = generate_messageid();
+    if (messageid) {
+        printf("message ID: %s\n", messageid);
+        free(messageid);
+    }
     return 0;
 }
