@@ -171,7 +171,7 @@ int test_smtp(void) {
          * To: and Cc: addressees in the header, but they could be any kind of
          * recipient. */
         recipients = curl_slist_append(recipients, TO);
-        recipients = curl_slist_append(recipients, CC);
+        // recipients = curl_slist_append(recipients, CC);
         curl_easy_setopt(curl, CURLOPT_MAIL_RCPT, recipients);
 
         /* Build and set the message header list. */
