@@ -1,10 +1,11 @@
-// #include <cmark-gfm.h>
 #include <stdio.h>
 #include <curl/curl.h>
+
+#include "authenticate.h"
 #include "file.h"
 #include "mime.h"
 #include "send.h"
-#include "authenticate.h"
+#include "crypto.h"
 
 
 /**
@@ -45,6 +46,33 @@ char* getemptystr() {
     char *buf_empty = getcharbuf(size);
     strcpy(buf_empty, empty_str);
     return buf_empty;
+}
+
+/**
+ * Generates a random message ID
+ */
+char* generate_messageid() {
+    const size_t SIZE = 256;
+    char *suffix = "@mailmorse.com";
+    char *messageid = getcharbuf(SIZE);
+    size_t len_random = (SIZE - strlen(suffix) - 1) / 2;
+
+    // generate random bytes
+    char *temp_buffer = getcharbuf(len_random + 1);
+    populate_strbuffer(temp_buffer, len_random);
+
+    // convert to hex and copy over
+    char *random_hex = bytes_to_hex((unsigned char*)temp_buffer, len_random);
+    strcpy(messageid, random_hex);
+    free(random_hex);
+
+    // add suffix
+    char *msg_ptr = messageid;
+    // hex representation is exactly twice the length
+    msg_ptr += len_random * 2;  
+    strcpy(msg_ptr, suffix);
+    
+    return messageid;
 }
  
 
@@ -96,7 +124,7 @@ static const char *headers_text[] = {
   "To: " TO,
   "From: " FROM " (Example User)",
   // "Cc: " CC " (Another example User)",
-  "Message-ID: <dcd7cb38-11db-487a-9f3a-e652a9458efd@"
+  "Message-ID: <dcd7cb38-11eb-487a-9f3a-e652a9458efd@"
     "rfcpedant.example.org>",
   "Subject: example sending a MIME-formatted message",
   NULL
@@ -193,8 +221,8 @@ int test_smtp(void) {
         curl_mime_type(part, "text/html");
 
         /* Text message. */
-        part = curl_mime_addpart(alt);
-        curl_mime_data(part, inline_text, CURL_ZERO_TERMINATED);
+        // part = curl_mime_addpart(alt);
+        // curl_mime_data(part, inline_text, CURL_ZERO_TERMINATED);
 
         /* Create the inline part. */
         part = curl_mime_addpart(mime);
