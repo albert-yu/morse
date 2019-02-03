@@ -83,9 +83,13 @@ int sendmail(char *to, char *cc, char *bcc,
     return 0;
 }
 
-#define FROM    "GOOGLE_EMAIL_W_BRACKETS"
-#define TO      "GOOGLE_EMAIL_W_BRACKETS"
+#define FROM    GOOGLE_EMAIL_W_BRACKETS
+#define TO      GOOGLE_EMAIL_W_BRACKETS
 #define CC      ""
+
+#define GOOGLE_SMTPS "smtps://smtp.gmail.com:465"
+
+#define GOOGLE_SMTP "smtp://smtp.gmail.com:587"
 
 static const char *headers_text[] = {
   "Date: Wed, 30 Jan 2019 17:02:43 +0100",
@@ -137,7 +141,13 @@ int test_smtp(void) {
     if (curl) {
         printf("curl init OK\n");       
         /* This is the URL for your mailserver */
-        curl_easy_setopt(curl, CURLOPT_URL, "smtps://smtp.gmail.com:465");
+        curl_easy_setopt(curl, CURLOPT_URL, GOOGLE_SMTPS);
+
+        // auth        
+        curl_easy_setopt(curl, CURLOPT_USERNAME, GOOGLE_EMAIL);
+        curl_easy_setopt(curl, CURLOPT_LOGIN_OPTIONS, "AUTH=XOAUTH2");
+        curl_easy_setopt(curl, CURLOPT_XOAUTH2_BEARER, bearer_token);
+        curl_easy_setopt(curl, CURLOPT_SASL_IR, 1L);
 
         /* Note that this option isn't strictly required, omitting it will result
          * in libcurl sending the MAIL FROM command with empty sender data. All
@@ -149,7 +159,7 @@ int test_smtp(void) {
         curl_easy_setopt(curl, CURLOPT_MAIL_FROM, FROM);
 
         // use SSL
-        curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
+        curl_easy_setopt(curl, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL);
 
         // set a timeout
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L);
@@ -168,19 +178,7 @@ int test_smtp(void) {
         for(cpp = headers_text; *cpp; cpp++)
             headers = curl_slist_append(headers, *cpp);
 
-        // Add authorization
-        // size_t token_len = strlen(bearer_token);
-        // size_t buffer_size_auth_header = 50 + token_len;
-        // char auth_header [buffer_size_auth_header];
-        // sprintf(auth_header, "Authorization: Bearer %s", bearer_token);
-        // printf("%s\n", auth_header);
-        // headers = curl_slist_append(headers, auth_header);
-
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-
-        curl_easy_setopt(curl, CURLOPT_XOAUTH2_BEARER, bearer_token);
-        curl_easy_setopt(curl, CURLOPT_SASL_IR, 1L);
-        curl_easy_setopt(curl, CURLOPT_USERNAME, GOOGLE_EMAIL);
 
         /* Build the mime message. */
         mime = curl_mime_init(curl);

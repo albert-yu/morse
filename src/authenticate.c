@@ -6,6 +6,7 @@
 
 #define GOOGLE_AUTH_URL "https://accounts.google.com/o/oauth2/v2/auth"
 #define GOOGLE_EXCHANGE_URL "https://www.googleapis.com/oauth2/v4/token"
+#define GOOGLE_MAIL_SCOPE "https://mail.google.com"
 #define INITIAL_BUF_SIZE 64
 
 /**
@@ -116,7 +117,8 @@ char* build_auth_url(char *state) {
     char **auth_url_params = calloc(array_size, sizeof(*auth_url_params));
 
     strarray_setstring(auth_url_params, "scope", 0);
-    strarray_setstring(auth_url_params, "email%20profile", 1);
+    // strarray_setstring(auth_url_params, "email%20profile", 1);
+    strarray_setstring(auth_url_params, GOOGLE_MAIL_SCOPE, 1);
 
     strarray_setstring(auth_url_params, "response_type", 2);
     strarray_setstring(auth_url_params, "code", 3);
