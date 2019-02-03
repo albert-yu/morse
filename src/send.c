@@ -53,9 +53,14 @@ char* getemptystr() {
  */
 char* generate_messageid() {
     const size_t SIZE = 64;
-    char *suffix = "@mailmorse.com";
+    char *suffix = "@mailmorse.com>";
     char *messageid = getcharbuf(SIZE);
     size_t len_random = (SIZE - strlen(suffix) - 1) / 2;
+    char *msg_ptr = messageid;
+
+    // first copy over the left angle bracket
+    strcpy(msg_ptr, "<");
+    msg_ptr++;
 
     // generate random bytes
     char *temp_buffer = getcharbuf(len_random + 1);
@@ -63,10 +68,9 @@ char* generate_messageid() {
 
     // convert to hex and copy over
     char *random_hex = bytes_to_hex((unsigned char*)temp_buffer, len_random);
-    strcpy(messageid, random_hex);
+    strcpy(msg_ptr, random_hex);
 
-    // add suffix
-    char *msg_ptr = messageid;
+    // add suffix    
     // hex representation is exactly twice the length
     msg_ptr += len_random * 2;  
     strcpy(msg_ptr, suffix);
