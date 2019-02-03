@@ -50,11 +50,24 @@ struct hashtable* create_mime_lookup() {
     return ht;
 }
 
+
 /**
  * Return a MIME type for a given filename. Caller must free returned buffer.
  */
 char* mime_type_get(char *filename) {
+    // get the character's extension
     char *ext = strrchr(filename, '.');
+    char *last_period;
+
+    // keep searching for the last period.
+    while (ext) {
+        last_period = ext;
+        ext = strrchr(ext, '.');
+    }
+
+    // last_period should contain the last dot
+    ext = last_period;
+
     // printf("%s\n", ext);
     if (ext == NULL) {
         return DEFAULT_MIME_TYPE;
