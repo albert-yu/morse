@@ -414,6 +414,30 @@ char* json_get(const char *json_string, char *key) {
 }
 
 
+int isvalidtoken(char *token) {
+    size_t urlsize = strlen(GOOGLE_TOKEN_CHECK_URL) + strlen(token);
+    char *endpoint = calloc(urlsize + 1, sizeof(*endpoint));
+    if (!endpoint) {
+        fprintf(stderr, "Failed to allocate memory.\n");
+        return 0;
+    }
+    sprintf(endpoint, "%s%s", GOOGLE_TOKEN_CHECK_URL, token);
+
+    MemoryStruct mem;
+    memory_struct_init(&mem);
+    
+    // call HTTP GET
+    // http_get(endpoint, NULL, NULL, NULL);
+    // http_get(endpoint, NULL, &code_exchange_callback, (void*)&mem);
+    // http_post_no_auth(exchange_url, content_type, post_data, &code_exchange_callback, );
+
+    printf("%lu bytes retrieved.\n", (unsigned long)mem.size);
+
+    free(endpoint);
+    return 0;
+}
+
+
 /**
  * Tries to read bearer token from encrypted file. If failed, then
  * gets it from the server.
@@ -447,23 +471,6 @@ char* getbearertoken() {
 
     free(saved_creds); // saved_creds cannot be NULL
     return bearer_token;
-}
-
-
-int isvalidtoken(char *token) {
-    size_t urlsize = strlen(GOOGLE_TOKEN_CHECK_URL) + strlen(token);
-    char *endpoint = calloc(urlsize + 1, sizeof(*endpoint));
-    if (!endpoint) {
-        fprintf(stderr, "Failed to allocate memory.\n");
-        return 0;
-    }
-    sprintf(endpoint, "%s%s", GOOGLE_TOKEN_CHECK_URL, token);
-
-    // call HTTP GET
-    http_get(endpoint, NULL, NULL, NULL);
-
-    free(endpoint);
-    return 0;
 }
 
 

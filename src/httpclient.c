@@ -3,7 +3,7 @@
 #include <string.h>
 #include <curl/curl.h>
 
-#define MORSE_USERAGENT "morse-cli/1.0";
+#define MORSE_USERAGENT "morse-cli/1.0"
 
 
 void http_get(char *url, char *auth, http_callback_func callback, void *writedata) {
@@ -53,8 +53,6 @@ void http_get(char *url, char *auth, http_callback_func callback, void *writedat
             fprintf(stderr, "curl_easy_perform() failed: %s\n",
                   curl_easy_strerror(res));
             fprintf(stderr, "URL: %s\n", url);
-            fprintf(stderr, "Content-Type: %s\n", content_type);
-            fprintf(stderr, "Body: %s\n", body);
         }
 
         curl_easy_cleanup(curl);

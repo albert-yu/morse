@@ -4,10 +4,6 @@
 
 #include "authenticate.h"
 #include "send.h"
-// #include "server.h"
-// #include "httpclient.h"
-// #include "crypto.h"
-// #include "file.h"
 
 
 int main(int argc, char *argv[]) {  
@@ -15,7 +11,7 @@ int main(int argc, char *argv[]) {
     char *token = getbearertoken();
     if (token) {
         printf("token: %s\n", token);
-        
+        isvalidtoken(token);
         free(token);
         token = NULL;
     }
