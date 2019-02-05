@@ -13,7 +13,7 @@ extern "C" {
 typedef size_t http_callback_func(void*, size_t, size_t, void*);
 
 
-void http_get_no_auth(char *url, char *content_type, http_callback_func callback, void *writedata);
+void http_get(char *url, char *auth, http_callback_func callback, void *writedata);
 
 
 /**

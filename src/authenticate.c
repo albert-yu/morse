@@ -264,6 +264,8 @@ char* getfreshcredentials(size_t *tokenlength) {
     char **parsed_strarray; /* query string tokenized */
     Hashtable *ht; /* query string parsed key-value pairs */
     char *auth_code = NULL;  /* pointer to authorization cde */  
+
+    int has_parse_error = 0;  /* did we get an error parsing the query string? */
     if (querystring) {
         // first get the string array
         parsed_strarray = parse_query_str(querystring, &elem_count);
@@ -273,24 +275,31 @@ char* getfreshcredentials(size_t *tokenlength) {
 
         char *recv_state = hashtable_get(ht, "state");
         if (recv_state == NULL) {
-            fprintf(stderr, "Error: received state was NULL. Quitting...\n");
-            exit(1);
+            fprintf(stderr, "Error: received state was NULL.\n");
+            has_parse_error = 1;
+            goto gc_querystring;
         }
         if (strcmp(recv_state, state) != 0) {
             fprintf(stderr, "Error: received state [%s] does not match initial state [%s].\n", recv_state, state);
-            exit(1);
+            has_parse_error = 1;
+            goto gc_querystring;
         }
         printf("Received state [%s] OK.\n", recv_state);
 
         auth_code = hashtable_get(ht, "code");  // should return NULL if not exists
         if (!auth_code) {
             fprintf(stderr, "Error parsing query string.\n");
-            exit(1);
+            has_parse_error = 1;
+            goto gc_querystring;
         }
         printf("Received authorization code [%s].\n", auth_code);
 
-        // gc
-        free(querystring);
+        gc_querystring:
+            free(querystring);
+            if (has_parse_error) {
+                fprintf(stderr, "Exiting...\n");
+                exit(1);
+            }
     }
     else {
         fprintf(stderr, "Error occured getting query string.\n");
@@ -444,10 +453,15 @@ char* getbearertoken() {
 int isvalidtoken(char *token) {
     size_t urlsize = strlen(GOOGLE_TOKEN_CHECK_URL) + strlen(token);
     char *endpoint = calloc(urlsize + 1, sizeof(*endpoint));
+    if (!endpoint) {
+        fprintf(stderr, "Failed to allocate memory.\n");
+        return 0;
+    }
     sprintf(endpoint, "%s%s", GOOGLE_TOKEN_CHECK_URL, token);
 
     // call HTTP GET
-    
+    http_get(endpoint, NULL, NULL, NULL);
+
     free(endpoint);
     return 0;
 }

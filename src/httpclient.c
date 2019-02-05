@@ -3,9 +3,63 @@
 #include <string.h>
 #include <curl/curl.h>
 
+#define MORSE_USERAGENT "morse-cli/1.0";
 
-void http_get_no_auth(char *url, char *content_type, http_callback_func callback, void *writedata) {
-    
+
+void http_get(char *url, char *auth, http_callback_func callback, void *writedata) {
+    CURL *curl;
+    CURLcode res;
+
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    // set headers
+    struct curl_slist *headers = NULL;
+
+    // // set content type
+    // char header_contenttype [64];
+    // sprintf(header_contenttype, "Content-Type: %s", content_type);
+    // headers = curl_slist_append(headers, header_contenttype);
+
+    // set authorization if applicable
+    if (auth) {
+        size_t auth_header_buf_size = strlen(auth) + 32;
+        char header_auth [auth_header_buf_size];
+        sprintf(header_auth, "Authorization: %s", header_auth);
+        headers = curl_slist_append(headers, header_auth);
+    }
+
+    // get curl handle
+    curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+
+        // set callback if specified
+        if (callback && writedata) {
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, writedata);
+        }
+
+        // pass our list of custom made headers 
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+        // set a user agent string
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, MORSE_USERAGENT);
+
+        // perform the request, res will get the return code
+        res = curl_easy_perform(curl);
+
+        // check for errors 
+        if(res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                  curl_easy_strerror(res));
+            fprintf(stderr, "URL: %s\n", url);
+            fprintf(stderr, "Content-Type: %s\n", content_type);
+            fprintf(stderr, "Body: %s\n", body);
+        }
+
+        curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
 }
 
 /**
@@ -60,7 +114,7 @@ void http_post(char *url, char *content_type, char *body, char *auth,
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
         // set a user agent string
-        curl_easy_setopt(curl, CURLOPT_USERAGENT, "morse-cli/1.0");
+        curl_easy_setopt(curl, CURLOPT_USERAGENT, MORSE_USERAGENT);
 
         // perform the request, res will get the return code
         res = curl_easy_perform(curl);

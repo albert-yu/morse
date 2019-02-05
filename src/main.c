@@ -12,18 +12,21 @@
 
 int main(int argc, char *argv[]) {  
     // size_t n = 0;
-    // char *token = getbearertoken();
-    // if (token) {
-    //     printf("token: %s\n", token);
-    //     free(token);
-    //     token = NULL;
-    // }
+    char *token = getbearertoken();
+    if (token) {
+        printf("token: %s\n", token);
+        
+        free(token);
+        token = NULL;
+    }
 
     // test_smtp();
-    char *messageid = generate_messageid();
-    if (messageid) {
-        printf("message ID: %s\n", messageid);
-        free(messageid);
-    }
+    // char *messageid = generate_messageid();
+    // if (messageid) {
+    //     printf("message ID: %s\n", messageid);
+    //     free(messageid);
+    // }
+
+
     return 0;
 }
