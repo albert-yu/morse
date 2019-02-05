@@ -11,7 +11,8 @@ int main(int argc, char *argv[]) {
     char *token = getbearertoken();
     if (token) {
         printf("token: %s\n", token);
-        isvalidtoken(token);
+        int isvalid = isvalidtoken(token);
+        fputs(isvalid ? "true\n" : "false\n", stdout);
         free(token);
         token = NULL;
     }

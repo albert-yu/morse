@@ -415,6 +415,9 @@ char* json_get(const char *json_string, char *key) {
 
 
 int isvalidtoken(char *token) {
+    if (!token) {
+        return 0;
+    }
     size_t urlsize = strlen(GOOGLE_TOKEN_CHECK_URL) + strlen(token);
     char *endpoint = calloc(urlsize + 1, sizeof(*endpoint));
     if (!endpoint) {
@@ -427,14 +430,27 @@ int isvalidtoken(char *token) {
     memory_struct_init(&mem);
     
     // call HTTP GET
-    // http_get(endpoint, NULL, NULL, NULL);
-    // http_get(endpoint, NULL, &code_exchange_callback, (void*)&mem);
-    // http_post_no_auth(exchange_url, content_type, post_data, &code_exchange_callback, );
+    http_get(endpoint, NULL, &code_exchange_callback, (void*)&mem);
+    free(endpoint);
 
     printf("%lu bytes retrieved.\n", (unsigned long)mem.size);
+    printf("%s\n", mem.memory);
+    // parse the JSON
+    int isvalid = 0;
+    char *error = json_get(mem.memory, "error");
+    if (error) {
+        // isvalid is false, so leave alone
+        free(error);
+    }
 
-    free(endpoint);
-    return 0;
+    // a valid response should have a "issued_to"
+    char *issued_to = json_get(mem.memory, "issued_to");
+    if (issued_to) {
+        isvalid = 1;
+        free(issued_to);
+    }
+    free(mem.memory);
+    return isvalid;
 }
 
 
