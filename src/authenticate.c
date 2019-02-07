@@ -414,6 +414,9 @@ char* json_get(const char *json_string, char *key) {
 }
 
 
+/**
+ * Calls the token validation endpoint for Google
+ */
 int isvalidtoken(char *token) {
     if (!token) {
         return 0;
@@ -478,8 +481,10 @@ char* getbearertoken() {
     // get the bearer token
     char *bearer_token = json_get(saved_creds, "access_token");
 
-    // probably bad data
-    if (bearer_token == NULL) {
+    int token_is_valid = isvalidtoken(bearer_token);
+
+    // probably expired or just bad data
+    if (!token_is_valid) {
         saved_creds = getfreshcredentials(&creds_len);
     }
 
