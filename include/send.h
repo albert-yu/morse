@@ -20,8 +20,6 @@ extern "C" {
 #define GOOGLE_SMTP "smtp://smtp.gmail.com:587"
 
 
-char* generate_messageid(); 
-
 /**
  * Send an email to the designated recipients.
  * Recipients are comma-delimited strings.
@@ -38,8 +36,6 @@ int sendmail(char *from, char *to, char *cc, char *bcc,
              char *subject, char *body, char *mimetype,
              char **attachments);
 
-
-int test_smtp(void);
 
 #ifdef __cplusplus
 }

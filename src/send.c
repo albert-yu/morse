@@ -217,8 +217,6 @@ int sendmail(char *from, char *to, char *cc, char *bcc,
         // add all the recipients
         curl_easy_setopt(curl, CURLOPT_MAIL_RCPT, recipients);
 
-        printf("foo\n");
-
         // add the subject header
         if (subject) {
             size_t subject_len = strlen(subject);
