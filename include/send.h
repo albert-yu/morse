@@ -16,20 +16,25 @@ extern "C" {
 #endif
 
 
+#define GOOGLE_SMTPS "smtps://smtp.gmail.com:465"
+#define GOOGLE_SMTP "smtp://smtp.gmail.com:587"
+
+
 char* generate_messageid(); 
 
 /**
  * Send an email to the designated recipients.
- * Recipients are semicolon-delimited strings.
+ * Recipients are comma-delimited strings.
+ * @from - the sender's email
  * @to - the main recipient(s)
  * @cc - copied recipient(s)
  * @bcc - blind copied recipient(s)
  * @subject - email subject
  * @body - string of body
  * @mimetype - the MIME type of the body (text/html, text/plain)
- * @attachments - the file paths of the attachments
+ * @attachments - the file paths of the attachments, NULL-terminated
  */
-int sendmail(char *to, char *cc, char *bcc, 
+int sendmail(char *from, char *to, char *cc, char *bcc, 
              char *subject, char *body, char *mimetype,
              char **attachments);
 

@@ -8,6 +8,9 @@
 #include "crypto.h"
 
 
+#define MESSAGE_ID_SIZE 64
+
+
 /**
  * Check if file exists on disk
  * https://stackoverflow.com/a/230068/9555588
@@ -31,7 +34,7 @@ char* getcharbuf(size_t buf_size) {
         return buf;
     } else {
         fprintf(stderr, "Unable to allocate buffer for string.\n");
-        exit(EXIT_FAILURE);
+        return NULL;
     }
 
 }
@@ -44,7 +47,9 @@ char* getemptystr() {
     char *empty_str = "\0";
     size_t size = 2;
     char *buf_empty = getcharbuf(size);
-    strcpy(buf_empty, empty_str);
+    if (buf_empty) {
+        strcpy(buf_empty, empty_str);
+    }    
     return buf_empty;
 }
 
@@ -52,10 +57,13 @@ char* getemptystr() {
  * Generates a random message ID
  */
 char* generate_messageid() {
-    const size_t SIZE = 64;
+    // const size_t SIZE = 64;
     char *suffix = "@mailmorse.com>";
-    char *messageid = getcharbuf(SIZE);
-    size_t len_random = (SIZE - strlen(suffix) - 1) / 2;
+    char *messageid = getcharbuf(MESSAGE_ID_SIZE);
+    if (!messageid) {
+        return NULL;
+    }
+    size_t len_random = (MESSAGE_ID_SIZE - strlen(suffix) - 1) / 2;
     char *msg_ptr = messageid;
 
     // first copy over the left angle bracket
@@ -64,6 +72,10 @@ char* generate_messageid() {
 
     // generate random bytes
     char *temp_buffer = getcharbuf(len_random + 1);
+    if (!temp_buffer) {
+        free(messageid);
+        return NULL;
+    }
     populate_strbuffer(temp_buffer, len_random);
 
     // convert to hex and copy over
@@ -110,21 +122,202 @@ int isvalidext(char *extension, size_t len) {
 }
 
 
-int sendmail(char *to, char *cc, char *bcc, 
+/**
+ * MAIN implementation of send.h.
+ * TODO: do not require FROM
+ */
+int sendmail(char *from, char *to, char *cc, char *bcc, 
              char *subject, char *body, char *mimetype,
              char **attachments) {
+    // validate inputs
+    // add TO (required)
+    if (!to) {
+        fprintf(stderr, "Recipient must be supplied.\n");
+        return -1;
+    }
+    if (strlen(to) == 0) {
+        fprintf(stderr, "Cannot provide empty recipient.\n");
+        return -1;
+    }
+
+    // will point to curl handle
+    CURL *curl;
+
+    // default return result
+    CURLcode res = CURLE_OK;
+
+    // curl_slist is a linked list
+    struct curl_slist *headers = NULL;
+    struct curl_slist *recipients = NULL;
+    struct curl_slist *slist = NULL;
+    curl_mime *mime;
+    curl_mime *alt;
+    curl_mimepart *part;
+    // const char **cpp;
+
+    printf("Getting the bearer token...\n");
+    char *bearer_token = getgooglebearertoken();
+
+    if (!bearer_token) {
+        fprintf(stderr, "Failed to get bearer token.\n");
+        exit(1);
+    }
+    printf("Got token.\n");
+    // printf("token: %s\n", bearer_token);
     
-    
-    return 0;
+    curl = curl_easy_init();
+    if (curl) {
+        printf("curl init OK\n");       
+        curl_easy_setopt(curl, CURLOPT_URL, GOOGLE_SMTPS);
+
+        // auth        
+        curl_easy_setopt(curl, CURLOPT_USERNAME, from);
+        curl_easy_setopt(curl, CURLOPT_LOGIN_OPTIONS, "AUTH=XOAUTH2");
+        curl_easy_setopt(curl, CURLOPT_XOAUTH2_BEARER, bearer_token);
+        curl_easy_setopt(curl, CURLOPT_SASL_IR, 1L);
+
+        // use SSL
+        curl_easy_setopt(curl, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL);
+
+        // set a timeout
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L);
+
+        // verbose output
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+        // provides space for adding label (e.g. "From: ")
+        size_t header_label_size = 32;
+
+        // add FROM (not strictly required)
+        if (from) {
+            size_t from_len = strlen(from);
+            if (from_len > 0) {
+                char from_header [from_len + header_label_size];
+                sprintf(from_header, "From: <%s>", from);
+                headers = curl_slist_append(headers, from_header);
+                curl_easy_setopt(curl, CURLOPT_MAIL_FROM, from);               
+            }          
+        }      
+
+        size_t to_len = strlen(to);
+        char to_header [to_len + header_label_size];
+        sprintf(to_header, "To: <%s>", to);
+        headers = curl_slist_append(headers, to_header);
+        recipients = curl_slist_append(recipients, to);
+
+        // add CC
+        if (cc) {
+            size_t cc_len = strlen(cc);
+            char cc_header [cc_len + header_label_size];
+            sprintf(cc_header, "Cc: <%s>", cc);
+            headers = curl_slist_append(headers, cc_header);
+            recipients = curl_slist_append(recipients, cc);
+        }
+        
+        // add all the recipients
+        curl_easy_setopt(curl, CURLOPT_MAIL_RCPT, recipients);
+
+        printf("foo\n");
+
+        // add the subject header
+        if (subject) {
+            size_t subject_len = strlen(subject);
+            char subject_header [subject_len + header_label_size];
+            sprintf(subject_header, "Subject: %s", subject);
+            headers = curl_slist_append(headers, subject_header);
+        } // else, handle empty subject?
+
+        // add the message ID
+        char *message_id = generate_messageid();
+        if (message_id) {
+            char message_id_header [MESSAGE_ID_SIZE + header_label_size];
+            sprintf(message_id_header, "Message-ID: %s", message_id);
+            headers = curl_slist_append(headers, message_id_header);
+        }
+
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+        if (body && mimetype) {
+            mime = curl_mime_init(curl);
+            alt = curl_mime_init(curl);
+            if (strcmp(mimetype, MIME_TYPE_HTML) == 0) {
+                // MIME_x constants defined in mime.h
+                
+                // HTML
+                part = curl_mime_addpart(alt);
+                curl_mime_data(part, body, CURL_ZERO_TERMINATED);
+                curl_mime_type(part, MIME_TYPE_HTML);
+            }
+            else {
+                // plain text
+                part = curl_mime_addpart(alt);
+                curl_mime_data(part, body, CURL_ZERO_TERMINATED);
+            }
+        }       
+
+        /* Create the inline part. */
+        part = curl_mime_addpart(mime);
+        curl_mime_subparts(part, alt);
+        curl_mime_type(part, "multipart/alternative");
+        slist = curl_slist_append(NULL, "Content-Disposition: inline");
+        curl_mime_headers(part, slist, 1);
+
+        if (attachments) {
+            char *attachment = *attachments;
+            while (attachment) {
+                if (fileexists(attachment)) {
+                    part = curl_mime_addpart(mime);
+                    curl_mime_filedata(part, attachment);                   
+                }
+                ++attachment;
+            }         
+        }
+
+        // set mime
+        curl_easy_setopt(curl, CURLOPT_MIMEPOST, mime);
+
+        printf("Sending message....\n");
+        /* Send the message */
+        res = curl_easy_perform(curl);
+
+        /* Check for errors */
+        if(res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                  curl_easy_strerror(res));
+        }
+          
+        curl_cleanup:  
+            printf("Cleaning...\n");
+            /* Free lists. */
+            curl_slist_free_all(recipients);
+            curl_slist_free_all(headers);
+
+            /* curl won't send the QUIT command until you call cleanup, so you should
+             * be able to re-use this connection for additional messages (setting
+             * CURLOPT_MAIL_FROM and CURLOPT_MAIL_RCPT as required, and calling
+             * curl_easy_perform() again. It may not be a good idea to keep the
+             * connection open for a very long time though (more than a few minutes
+             * may result in the server timing out the connection), and you do want to
+             * clean up in the end.
+             */
+            curl_easy_cleanup(curl);
+
+            /* Free multipart message. */
+            curl_mime_free(mime);
+    }
+    free(bearer_token);
+    printf("Done.\n");
+
+    return (int)res;
 }
+
+//------------------------------------------------------------
+// Below is modified sample code from curl
 
 #define FROM    GOOGLE_EMAIL_W_BRACKETS
 #define TO      GOOGLE_EMAIL_W_BRACKETS
 #define CC      ""
 
-#define GOOGLE_SMTPS "smtps://smtp.gmail.com:465"
-
-#define GOOGLE_SMTP "smtp://smtp.gmail.com:587"
 
 static const char *headers_text[] = {
   "Date: Wed, 30 Jan 2019 17:02:43 +0100",
