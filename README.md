@@ -41,3 +41,10 @@ make
 ## Usage
 
 TODO
+
+## To-do list
+* Get user email from token
+* Support multiple recipients
+* Auto-download dependencies with build script
+* Compile to static library
+* Add separate `morse.h` header for API
