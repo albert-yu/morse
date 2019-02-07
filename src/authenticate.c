@@ -326,7 +326,7 @@ char* getfreshcredentials(size_t *tokenlength) {
     crypto_encrypt_to_file(mem.memory, mem.size);
 
     // copy to buffer to return
-    char *ret_buffer = calloc(mem.size, sizeof(*ret_buffer));
+    char *ret_buffer = calloc(mem.size + 1, sizeof(*ret_buffer));
     memcpy(ret_buffer, mem.memory, mem.size);
 
     if (tokenlength) {
@@ -437,22 +437,27 @@ int isvalidtoken(char *token) {
     free(endpoint);
 
     printf("%lu bytes retrieved.\n", (unsigned long)mem.size);
-    printf("%s\n", mem.memory);
+
+    char *zero_terminated_buffer = malloc(mem.size + 1 * sizeof(*zero_terminated_buffer));
+    memcpy(zero_terminated_buffer, mem.memory, mem.size);
+    zero_terminated_buffer[mem.size] = '\0';
+    printf("%s\n", zero_terminated_buffer);
     // parse the JSON
     int isvalid = 0;
-    char *error = json_get(mem.memory, "error");
+    char *error = json_get(zero_terminated_buffer, "error");
     if (error) {
         // isvalid is false, so leave alone
         free(error);
     }
 
     // a valid response should have a "issued_to"
-    char *issued_to = json_get(mem.memory, "issued_to");
+    char *issued_to = json_get(zero_terminated_buffer, "issued_to");
     if (issued_to) {
         isvalid = 1;
         free(issued_to);
     }
     free(mem.memory);
+    free(zero_terminated_buffer);
     return isvalid;
 }
 

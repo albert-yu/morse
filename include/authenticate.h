@@ -17,7 +17,9 @@ extern "C" {
 
 
 /**
- * Gets authentication token. Caller must free returned buffer.
+ * Gets authentication token and calls the appropriate validation
+ * endpoint. 
+ * Caller must free returned buffer.
  */
 char* getbearertoken();
 
