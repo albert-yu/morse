@@ -12,7 +12,7 @@ OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 FRAMEWORKS = -framework CoreFoundation -framework ApplicationServices
 
 LDFLAGS += -L/usr/local/opt/curl/lib
-LDFLAGS += -L/usr/local/Cellar/libsodium/1.0.16/lib
+LDFLAGS += -L/usr/local/Cellar/libsodium/1.0.17/lib
 LDFLAGS += -L/usr/local/Cellar/cmark-gfm/0.28.3.gfm.16/lib
 
 LDLIBS += -lpthread
