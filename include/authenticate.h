@@ -21,7 +21,7 @@ extern "C" {
  * endpoint. 
  * Caller must free returned buffer.
  */
-char* getbearertoken();
+char* getgooglebearertoken();
 
 
 /**

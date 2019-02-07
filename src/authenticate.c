@@ -466,7 +466,7 @@ int isvalidtoken(char *token) {
  * Tries to read bearer token from encrypted file. If failed, then
  * gets it from the server.
  */
-char* getbearertoken() {
+char* getgooglebearertoken() {
     size_t creds_len = 0;
 
     // first attempt to get it from the file

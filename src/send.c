@@ -164,7 +164,7 @@ int test_smtp(void) {
     const char **cpp;
 
     printf("Getting the bearer token...\n");
-    char *bearer_token = getbearertoken();
+    char *bearer_token = getgooglebearertoken();
     printf("token: %s\n", bearer_token);
 
     if (!bearer_token) {

@@ -8,7 +8,7 @@
 
 int main(int argc, char *argv[]) {  
     // size_t n = 0;
-    char *token = getbearertoken();
+    char *token = getgooglebearertoken();
     if (token) {
         printf("token: %s\n", token);
         int isvalid = isvalidtoken(token);
