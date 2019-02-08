@@ -4,10 +4,14 @@
 #include "crypto.h"
 #include "jsmn.h"
 
+
+// https://developers.google.com/identity/protocols/googlescopes#gmailv1
 #define GOOGLE_AUTH_URL "https://accounts.google.com/o/oauth2/v2/auth"
 #define GOOGLE_EXCHANGE_URL "https://www.googleapis.com/oauth2/v4/token"
-#define GOOGLE_MAIL_SCOPE "https://mail.google.com"
+#define GOOGLE_MAIL_SCOPE "https://mail.google.com%20email"
+// #define GOOGLE_MAIL_SCOPE "openid%20email%20profile"
 #define GOOGLE_TOKEN_CHECK_URL "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token="
+
 #define INITIAL_BUF_SIZE 64
 
 /**
@@ -416,16 +420,18 @@ char* json_get(const char *json_string, char *key) {
 
 /**
  * Calls the token validation endpoint for Google
+ * and returns the response.
  */
-int isvalidtoken(char *token) {
+char* validate_google_token(char *token) {
     if (!token) {
-        return 0;
+        return NULL;
     }
+
     size_t urlsize = strlen(GOOGLE_TOKEN_CHECK_URL) + strlen(token);
     char *endpoint = calloc(urlsize + 1, sizeof(*endpoint));
     if (!endpoint) {
         fprintf(stderr, "Failed to allocate memory.\n");
-        return 0;
+        return NULL;
     }
     sprintf(endpoint, "%s%s", GOOGLE_TOKEN_CHECK_URL, token);
 
@@ -436,37 +442,51 @@ int isvalidtoken(char *token) {
     http_get(endpoint, NULL, &code_exchange_callback, (void*)&mem);
     free(endpoint);
 
-    printf("%lu bytes retrieved.\n", (unsigned long)mem.size);
+    // printf("%lu bytes retrieved.\n", (unsigned long)mem.size);
 
     char *zero_terminated_buffer = malloc(mem.size + 1 * sizeof(*zero_terminated_buffer));
     memcpy(zero_terminated_buffer, mem.memory, mem.size);
     zero_terminated_buffer[mem.size] = '\0';
-    printf("%s\n", zero_terminated_buffer);
+    // printf("Token validation response: \n%s\n", zero_terminated_buffer);
+    free(mem.memory);
+    return zero_terminated_buffer;
+}
+
+
+/**
+ * Calls the token validation endpoint for Google.
+ */
+int isvalidtoken(char *token) {
+    if (!token) {
+        return 0;
+    }
+    
+    char *json = validate_google_token(token);
+
     // parse the JSON
     int isvalid = 0;
-    char *error = json_get(zero_terminated_buffer, "error");
+    char *error = json_get(json, "error");
     if (error) {
         // isvalid is false, so leave alone
         free(error);
     }
 
     // a valid response should have a "issued_to"
-    char *issued_to = json_get(zero_terminated_buffer, "issued_to");
+    char *issued_to = json_get(json, "issued_to");
     if (issued_to) {
         isvalid = 1;
         free(issued_to);
     }
-    free(mem.memory);
-    free(zero_terminated_buffer);
+    free(json);
     return isvalid;
 }
 
 
 /**
- * Tries to read bearer token from encrypted file. If failed, then
- * gets it from the server.
+ * Gets the JSON with credentials. If failed or invalid, then makes a 
+ * request for fresh ones. Caller must free returned buffer.
  */
-char* getgooglebearertoken() {
+char* getcredentials() {
     size_t creds_len = 0;
 
     // first attempt to get it from the file
@@ -492,11 +512,54 @@ char* getgooglebearertoken() {
     if (!token_is_valid) {
         saved_creds = getfreshcredentials(&creds_len);
     }
+    free(bearer_token);
+    return saved_creds;
+}
 
-    bearer_token = json_get(saved_creds, "access_token");
+
+/**
+ * Looks up the specified key in the JSON file
+ */
+char* lookup_credential(char *key) {
+    char *saved_creds = getcredentials();
+
+    if (!saved_creds) {
+        return NULL;
+    }
+
+    char *value = json_get(saved_creds, key);
 
     free(saved_creds); // saved_creds cannot be NULL
+    return value;
+}
+
+
+/**
+ * Tries to read bearer token from encrypted file. If failed, then
+ * gets it from the server. Caller must free if returned value
+ * is not NULL.
+ */
+char* getgooglebearertoken() {
+    char *bearer_token = lookup_credential("access_token");
     return bearer_token;
 }
 
+
+/**
+ * Gets a token and returns the user's email address 
+ * from validating that token.
+ */
+char* getgmailaddress() {
+    char *retval = NULL;
+    char *token = getgooglebearertoken();
+    if (token) {
+        char *validation_resp = validate_google_token(token);
+        if (validation_resp) {
+            retval = json_get(validation_resp, "email");
+            printf("Sending as %s...\n", retval);
+        }
+    }
+
+    return retval;
+}
 

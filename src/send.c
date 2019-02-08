@@ -123,10 +123,9 @@ int isvalidext(char *extension, size_t len) {
 
 
 /**
- * MAIN implementation of send.h.
- * TODO: do not require FROM
+ * MAIN implementation of sendmail
  */
-int sendmail(char *from, char *to, char *cc, char *bcc, 
+int sendmail_inner(char *from, char *to, char *cc, char *bcc, 
              char *subject, char *body, char *mimetype,
              char **attachments) {
     // validate inputs
@@ -308,6 +307,17 @@ int sendmail(char *from, char *to, char *cc, char *bcc,
 
     return (int)res;
 }
+
+
+int sendmail(char *to, char *cc, char *bcc, 
+             char *subject, char *body, char *mimetype,
+             char **attachments) {
+    char *user_email = getgmailaddress();
+    int result = sendmail_inner(user_email, to, cc, bcc, subject, body, mimetype, attachments);
+    free(user_email);
+    return result;
+}
+
 
 //------------------------------------------------------------
 // Below is modified sample code from curl

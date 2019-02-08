@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
           "e-mail viewers able to handle HTML.</p>"
           "</body></html>\r\n";
 
-    int res = sendmail(from, to, NULL, NULL, 
+    int res = sendmail(to, NULL, NULL, 
              subject, body, "text/html",
              NULL);
 

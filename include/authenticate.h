@@ -25,6 +25,12 @@ char* getgooglebearertoken();
 
 
 /**
+ * Gets user's email address. Caller must free returned buffer.
+ */
+char* getgmailaddress();
+
+
+/**
  * Is this token valid?
  */
 int isvalidtoken(char *token);
