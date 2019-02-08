@@ -43,7 +43,7 @@ make
 TODO
 
 ## To-do list
-* Get user email from token
+* ~Get user email from token~
 * Support multiple recipients
 * Auto-download dependencies with build script
 * Compile to static library
