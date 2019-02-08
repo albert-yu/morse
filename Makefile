@@ -28,7 +28,7 @@ CPPFLAGS += -I/usr/local/opt/curl/include
 all: $(EXE)
 
 $(EXE): $(OBJ)
-	$(CC) $(LDFLAGS) $^ $(CMARK) $(SODIUM) $(FRAMEWORKS) $(LDLIBS) -o $@
+	$(CC) $(LDFLAGS) $^ $(FRAMEWORKS) $(LDLIBS) -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
