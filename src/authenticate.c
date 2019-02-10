@@ -4,14 +4,6 @@
 #include "crypto.h"
 #include "jsmn.h"
 
-
-// https://developers.google.com/identity/protocols/googlescopes#gmailv1
-#define GOOGLE_AUTH_URL "https://accounts.google.com/o/oauth2/v2/auth"
-#define GOOGLE_EXCHANGE_URL "https://www.googleapis.com/oauth2/v4/token"
-#define GOOGLE_MAIL_SCOPE "https://mail.google.com%20email"
-// #define GOOGLE_MAIL_SCOPE "openid%20email%20profile"
-#define GOOGLE_TOKEN_CHECK_URL "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token="
-
 #define INITIAL_BUF_SIZE 64
 
 /**

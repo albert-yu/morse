@@ -6,6 +6,8 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "endpoints.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -13,10 +15,6 @@ extern "C" {
 #ifndef MAX_FILE_EXT_CHAR_COUNT
 #define MAX_FILE_EXT_CHAR_COUNT 4
 #endif
-
-
-#define GOOGLE_SMTPS "smtps://smtp.gmail.com:465"
-#define GOOGLE_SMTP "smtp://smtp.gmail.com:587"
 
 
 /**

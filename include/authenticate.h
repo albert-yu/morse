@@ -9,6 +9,7 @@
 #include "server.h"
 #include "strarray.h"
 #include "hashtable.h"
+#include "endpoints.h"
 
 #ifdef __cplusplus
 extern "C" {
