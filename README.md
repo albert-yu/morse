@@ -9,14 +9,11 @@ Command line utility to send emails
 
 * [`libsodium`](https://github.com/jedisct1/libsodium) for cryptography
 
-* [`cmark-gfm`](https://github.com/github/cmark-gfm) for Markdown compilation
-
 Drop these in the `lib/` folder or update their locations in the Makefile.
 
 ```Makefile
 LDFLAGS += -L/usr/local/opt/curl/lib
 LDFLAGS += -L/usr/local/Cellar/libsodium/1.0.16/lib
-LDFLAGS += -L/usr/local/Cellar/cmark-gfm/0.28.3.gfm.16/lib
 ```
 
 ### Compile

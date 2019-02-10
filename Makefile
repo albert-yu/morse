@@ -13,11 +13,9 @@ FRAMEWORKS = -framework CoreFoundation -framework ApplicationServices
 
 LDFLAGS += -L/usr/local/opt/curl/lib
 LDFLAGS += -L/usr/local/Cellar/libsodium/1.0.17/lib
-LDFLAGS += -L/usr/local/Cellar/cmark-gfm/0.28.3.gfm.16/lib
 
 LDLIBS += -lpthread
 LDLIBS += -lcurl
-LDLIBS += -lcmark-gfm
 LDLIBS += -lsodium
 
 CPPFLAGS += -Iinclude  # default "include" directory
