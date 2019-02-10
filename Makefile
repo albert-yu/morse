@@ -14,7 +14,6 @@ FRAMEWORKS = -framework CoreFoundation -framework ApplicationServices
 LDFLAGS += -L/usr/local/opt/curl/lib
 LDFLAGS += -L/usr/local/Cellar/libsodium/1.0.17/lib
 
-LDLIBS += -lpthread
 LDLIBS += -lcurl
 LDLIBS += -lsodium
 
