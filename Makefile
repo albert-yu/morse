@@ -3,6 +3,7 @@
 # CC = clang
 
 EXE = morse
+LIBOUT = libmorse.a
 SRC_DIR = src
 OBJ_DIR = obj
 
@@ -22,7 +23,10 @@ CPPFLAGS += -I/usr/local/opt/curl/include
 
 .PHONY: all clean
 
-all: $(EXE)
+all: $(EXE) $(LIBOUT)
+
+$(LIBOUT): $(OBJ)
+	ar rcs $(LIBOUT) $(OBJ)
 
 $(EXE): $(OBJ)
 	$(CC) $(LDFLAGS) $^ $(FRAMEWORKS) $(LDLIBS) -o $@
