@@ -45,4 +45,4 @@ TODO
 * Support multiple recipients
 * Auto-download dependencies with build script
 * Compile to static library
-* Add separate `morse.h` header for API
+* ~Add separate `morse.h` header for API~
