@@ -9,6 +9,7 @@ extern "C" {
 // <GOOGLE> ---------------------------------------------------------------------------------
 #define GOOGLE_SMTPS "smtps://smtp.gmail.com:465"
 #define GOOGLE_SMTP "smtp://smtp.gmail.com:587"
+#define GOOGLE_IMAPS "imaps://imap.gmail.com"
 
 // https://developers.google.com/identity/protocols/googlescopes#gmailv1
 #define GOOGLE_AUTH_URL "https://accounts.google.com/o/oauth2/v2/auth"

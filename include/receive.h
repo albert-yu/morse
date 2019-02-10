@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 
+int simple_fetch();
 
 
 

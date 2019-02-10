@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <curl/curl.h>
 
-#include "authenticate.h"
+#include "authenticate.h"  // curl is in httpclient.h
 #include "file.h"
 #include "mime.h"
 #include "send.h"
