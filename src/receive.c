@@ -3,6 +3,7 @@
 
 #include "authenticate.h"
 #include "receive.h"
+#include "memstruct.h"
 
 
 /**
@@ -57,17 +58,29 @@ int simple_fetch() {
     if (!bearertoken) {
         // this should not happen if getgmailaddress() is successful
         fprintf(stderr, "Could not get bearer token.\n");
+        free(username);
         return -1;
     }
 
-
-    // char *mailbox = "INBOX";
-    char *mailbox = NULL;
+    // char *mailbox = "INBOX/;uid=10/;section=HEADER.FIELDS%20(To)";
+    char *mailbox = "INBOX";
     char *base_url = GOOGLE_IMAPS;
 
     char *imap_url = construct_url(base_url, mailbox);
     if (!imap_url) {
         fprintf(stderr, "Failed to get IMAP URL.\n");
+        free(bearertoken);
+        free(username);
+        return -1;
+    }
+
+    MemoryStruct mem;
+    memory_struct_init(&mem);
+    if (!mem.memory) {
+        fprintf(stderr, "Failed to allocate for callback.\n");
+        free(bearertoken);
+        free(username);
+        free(imap_url);
         return -1;
     }
 
@@ -91,7 +104,12 @@ int simple_fetch() {
         // verbose output
         curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
-        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "EXAMINE INBOX");
+        // curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "EXAMINE INBOX");
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "UID FETCH 67633 BODY[TEXT]");
+
+        // set callback
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_mem_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)&mem);
 
         /* Perform the fetch */
         res = curl_easy_perform(curl);
@@ -104,6 +122,8 @@ int simple_fetch() {
         /* Always cleanup */
         curl_easy_cleanup(curl);
     }
+
+    printf("Received:\n%s\n", mem.memory);
 
     free(username);
     free(bearertoken);

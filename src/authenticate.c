@@ -3,6 +3,7 @@
 #include "httpclient.h"
 #include "crypto.h"
 #include "jsmn.h"
+#include "memstruct.h"
 
 #define INITIAL_BUF_SIZE 64
 
@@ -186,47 +187,6 @@ char *build_code_exchange_data(char *code) {
 }
 
 
-/**
- * Struct to hold the entire JSON
- */
-typedef struct memory_struct_t {
-    char *memory;
-    size_t size;
-} MemoryStruct;
-
-
-void memory_struct_init(MemoryStruct *chunk) {
-    chunk->memory = malloc(1);  /* will be grown as needed by the realloc*/ 
-    chunk->size = 0;    /* no data at this point */ 
-}
-
-
-/**
- * Callback function for handling code exchange response
- * signature: size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
- */
-size_t code_exchange_callback(void *buffer, size_t size, size_t nmemb, void *userp)
-{
-    size_t realsize = size * nmemb;
-
-    MemoryStruct *mem = (MemoryStruct *)userp;
-
-    char *ptr = realloc(mem->memory, mem->size + realsize + 1);
-    if (ptr == NULL) {
-        /* out of memory! */ 
-        fprintf(stderr, "Not enough memory (realloc returned NULL).\n");
-        exit(1);
-    }
-
-    mem->memory = ptr;
-    memcpy(&(mem->memory[mem->size]), buffer, realsize);
-    mem->size += realsize;
-    mem->memory[mem->size] = 0;
-
-    return realsize;
-}
-
-
 /*
  * Gets a fresh set of credentials from the server
  * and writes it to the file system (encrypted).
@@ -314,7 +274,7 @@ char* getfreshcredentials(size_t *tokenlength) {
     MemoryStruct mem;
     memory_struct_init(&mem);
 
-    http_post_no_auth(exchange_url, content_type, post_data, &code_exchange_callback, (void*)&mem);
+    http_post_no_auth(exchange_url, content_type, post_data, &curl_mem_callback, (void*)&mem);
 
     printf("%lu bytes retrieved.\n", (unsigned long)mem.size);
 
@@ -431,7 +391,7 @@ char* validate_google_token(char *token) {
     memory_struct_init(&mem);
     
     // call HTTP GET
-    http_get(endpoint, NULL, &code_exchange_callback, (void*)&mem);
+    http_get(endpoint, NULL, &curl_mem_callback, (void*)&mem);
     free(endpoint);
 
     // printf("%lu bytes retrieved.\n", (unsigned long)mem.size);
