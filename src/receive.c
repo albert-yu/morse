@@ -19,10 +19,13 @@ char* construct_url(char *base_url, char *path) {
     }
 
     size_t total_len;
-    if (path_is_nonempty)
+    
+    if (path_is_nonempty) {
         total_len = strlen(path) + strlen(base_url);
-    else
-        total_len = strlen(path);
+    }
+    else {
+        total_len = strlen(base_url);
+    }
     // total_len + 2 to account for forward slash
     char *buffer = calloc(total_len + 2, sizeof(*buffer));
     if (!buffer) {
@@ -30,10 +33,12 @@ char* construct_url(char *base_url, char *path) {
         return NULL;
     }
 
-    if (path_is_nonempty)
+    if (path_is_nonempty) {
         sprintf(buffer, "%s/%s", base_url, path);
-    else
+    }
+    else {
         strcpy(buffer, base_url);
+    }
     return buffer;
 }
 
@@ -55,7 +60,9 @@ int simple_fetch() {
         return -1;
     }
 
-    char *mailbox = "INBOX";
+
+    // char *mailbox = "INBOX";
+    char *mailbox = NULL;
     char *base_url = GOOGLE_IMAPS;
 
     char *imap_url = construct_url(base_url, mailbox);
@@ -83,6 +90,8 @@ int simple_fetch() {
 
         // verbose output
         curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "EXAMINE INBOX");
 
         /* Perform the fetch */
         res = curl_easy_perform(curl);

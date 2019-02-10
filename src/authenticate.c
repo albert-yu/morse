@@ -548,7 +548,7 @@ char* getgmailaddress() {
         char *validation_resp = validate_google_token(token);
         if (validation_resp) {
             retval = json_get(validation_resp, "email");
-            printf("Sending as %s...\n", retval);
+            printf("User email: %s...\n", retval);
         }
     }
 
