@@ -44,6 +44,7 @@ TODO
 
 ## To-do list
 * ~Get user email from token~
+* Receive emails
 * Support multiple recipients
 * Auto-download dependencies with build script
 * Compile to static library
