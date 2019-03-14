@@ -7,8 +7,9 @@
 
 int main(int argc, char *argv[]) {  
 
-    char *to = GOOGLE_EMAIL;
-    char *from = GOOGLE_EMAIL;
+    char *to = TEST_RECIPIENTS;  // inside secrets.h
+
+    // char *from = GOOGLE_EMAIL;
     char *subject = "Test (ignore this)";
     char *body = "<html><body>\r\n"
           "<h1>Heading</h1>"

@@ -227,6 +227,11 @@ int sendmail_inner(char *from, char *to, char *cc, char *bcc,
         size_t rcpt_buffer_size = to_len + header_label_size;
         char to_header [rcpt_buffer_size];
         memset(to_header, 0, rcpt_buffer_size);
+        sprintf(to_header, "To: %s", to);            
+        headers = curl_slist_append(headers, to_header);
+        // curl_slist_append copies the string,
+        // so we can reuse this buffer
+        memset(to_header, 0, rcpt_buffer_size);
 
         // copy recipients to alloc'd buffer
         char all_recips [rcpt_buffer_size];
@@ -240,17 +245,11 @@ int sendmail_inner(char *from, char *to, char *cc, char *bcc,
 
         individual_addr = strtok_r(to_addr_ptr, delimiter, &saveptr);        
         while (individual_addr) {
-            sprintf(to_header, "To: <%s>", individual_addr);            
-            headers = curl_slist_append(headers, to_header);
-            recipients = curl_slist_append(recipients, individual_addr);
-
-            // curl_slist_append copies the string,
-            // so we can reuse this buffer
-            memset(to_header, 0, rcpt_buffer_size);
+            recipients = curl_slist_append(recipients, individual_addr);            
             individual_addr = strtok_r(NULL, delimiter, &saveptr);
         }
         printf("foo\n");
-        
+
         // sprintf(to_header, "To: <%s>", to);
         // headers = curl_slist_append(headers, to_header);
         // recipients = curl_slist_append(recipients, to);
