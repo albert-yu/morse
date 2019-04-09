@@ -122,29 +122,29 @@ int isvalidext(char *extension, size_t len) {
 }
 
 
-// /*
-//  * Add comma-delimited recipients to curl
-//  */
-// void add_recipients(CURL *curl, char *recipients, char *header_label) {
-//     size_t to_len = strlen(to);
-//     size_t rcpt_buffer_size = to_len + header_label_size;
-//     char to_header [rcpt_buffer_size];
-//     memset(to_header, 0, rcpt_buffer_size);
+/*
+ * Add comma-delimited recipients to recipients (linked list)
+ */
+void add_recipients(struct curl_slist *recipients, char *recips_str) {
+    size_t rcpt_buffer_size = strlen(recips_str) + 1;
+    char all_recips [rcpt_buffer_size];
+    memset(all_recips, 0, rcpt_buffer_size);
 
-//     char *individual_addr;  // each individual address
-//     char *saveptr;  // used by strtok_r
-//     char *to_addr_ptr = to;
-//     char *delimiter = ",";
+    // copy recipients to alloc'd buffer  
+    sprintf(all_recips, "%s", recips_str);
 
-//     individual_addr = strtok_r(to_addr_ptr, delimiter, &saveptr);
-//     while (individual_addr) {
-//         sprintf(to_header, "To: <%s>", individual_addr);
-//         headers = curl_slist_append(headers, to_header);
-//         recipients = curl_slist_append(recipients, individual_addr);
-//         memset(to_header, 0, rcpt_buffer_size);
-//         individual_addr = strtok_r(NULL, delimiter, &saveptr);
-//     }
-// }
+    char *individual_addr;  // each individual address
+    char *saveptr;  // used by strtok_r
+    char *to_addr_ptr = all_recips;
+    char *delimiter = ",";
+
+    individual_addr = strtok_r(to_addr_ptr, delimiter, &saveptr);        
+    while (individual_addr) {
+        // printf("indiv: (%s)\n", individual_addr);
+        recipients = curl_slist_append(recipients, individual_addr);         
+        individual_addr = strtok_r(NULL, delimiter, &saveptr);
+    }
+}
 
 
 /**
@@ -217,7 +217,7 @@ int sendmail_inner(char *from, char *to, char *cc, char *bcc,
             size_t from_len = strlen(from);
             if (from_len > 0) {
                 char from_header [from_len + header_label_size];
-                sprintf(from_header, "From: <%s>", from);
+                sprintf(from_header, "From: %s", from);
                 headers = curl_slist_append(headers, from_header);
                 curl_easy_setopt(curl, CURLOPT_MAIL_FROM, from);               
             }          
@@ -232,6 +232,7 @@ int sendmail_inner(char *from, char *to, char *cc, char *bcc,
         // curl_slist_append copies the string,
         // so we can reuse this buffer
         memset(to_header, 0, rcpt_buffer_size);
+        // add_recipients(recipients, to);
 
         // copy recipients to alloc'd buffer
         char all_recips [rcpt_buffer_size];
@@ -248,20 +249,19 @@ int sendmail_inner(char *from, char *to, char *cc, char *bcc,
             recipients = curl_slist_append(recipients, individual_addr);            
             individual_addr = strtok_r(NULL, delimiter, &saveptr);
         }
-        printf("foo\n");
-
-        // sprintf(to_header, "To: <%s>", to);
-        // headers = curl_slist_append(headers, to_header);
-        // recipients = curl_slist_append(recipients, to);
-
+        
+        saveptr = NULL;
         // add CC
-        // if (cc) {
-        //     size_t cc_len = strlen(cc);
-        //     char cc_header [cc_len + header_label_size];
-        //     sprintf(cc_header, "Cc: <%s>", cc);
-        //     headers = curl_slist_append(headers, cc_header);
-        //     recipients = curl_slist_append(recipients, cc);
-        // }
+        if (cc) {
+            memset(all_recips, 0, rcpt_buffer_size);
+            sprintf(all_recips, "%s", cc);
+            size_t cc_len = strlen(cc);
+            char cc_header [cc_len + header_label_size];
+            sprintf(cc_header, "Cc: %s", cc);
+            headers = curl_slist_append(headers, cc_header);
+            char *cc_addr_ptr = all_recips;
+            individual_addr = strtok_r(cc_addr_ptr, delimiter, &saveptr);
+        }
         
         // add all the recipients
         curl_easy_setopt(curl, CURLOPT_MAIL_RCPT, recipients);
