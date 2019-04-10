@@ -124,8 +124,14 @@ int isvalidext(char *extension, size_t len) {
 
 /*
  * Add comma-delimited recipients to recipients (linked list)
+ * FOR SOME REASON this doesn't work---need to figure out why
  */
-void add_recipients(struct curl_slist *recipients, char *recips_str) {
+void add_recipients(struct curl_slist **recipients_ptr, char *recips_str) {
+    if (!recipients_ptr) {
+        return;
+    }
+
+    struct curl_slist *recipients = *recipients_ptr;
     size_t rcpt_buffer_size = strlen(recips_str) + 1;
     char all_recips [rcpt_buffer_size];
     memset(all_recips, 0, rcpt_buffer_size);
@@ -144,6 +150,24 @@ void add_recipients(struct curl_slist *recipients, char *recips_str) {
         recipients = curl_slist_append(recipients, individual_addr);         
         individual_addr = strtok_r(NULL, delimiter, &saveptr);
     }
+
+    saveptr = NULL;
+}
+
+
+void print_list(struct curl_slist *list) {
+    struct curl_slist     *next;
+    struct curl_slist     *item;
+
+    if(!list)
+        return;
+
+    item = list;
+    do {
+        next = item->next;
+        printf("item: %s\n", item->data);
+        item = next;
+    } while(next);
 }
 
 
@@ -232,8 +256,10 @@ int sendmail_inner(char *from, char *to, char *cc, char *bcc,
         // curl_slist_append copies the string,
         // so we can reuse this buffer
         memset(to_header, 0, rcpt_buffer_size);
-        // add_recipients(recipients, to);
 
+        // add_recipients(&recipients, to);
+
+        
         // copy recipients to alloc'd buffer
         char all_recips [rcpt_buffer_size];
         memset(all_recips, 0, rcpt_buffer_size);
@@ -251,8 +277,14 @@ int sendmail_inner(char *from, char *to, char *cc, char *bcc,
         }
         
         saveptr = NULL;
+
+        print_list(recipients);
+
         // add CC
         if (cc) {
+
+            // copying code because the 
+            // "add_recipients" subroutine doesn't work
             memset(all_recips, 0, rcpt_buffer_size);
             sprintf(all_recips, "%s", cc);
             size_t cc_len = strlen(cc);
@@ -261,6 +293,12 @@ int sendmail_inner(char *from, char *to, char *cc, char *bcc,
             headers = curl_slist_append(headers, cc_header);
             char *cc_addr_ptr = all_recips;
             individual_addr = strtok_r(cc_addr_ptr, delimiter, &saveptr);
+            while (individual_addr) {
+                recipients = curl_slist_append(recipients, individual_addr);            
+                individual_addr = strtok_r(NULL, delimiter, &saveptr);
+            }
+            
+            saveptr = NULL;
         }
         
         // add all the recipients
