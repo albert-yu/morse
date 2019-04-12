@@ -6,6 +6,10 @@ Command line utility to send emails
 ### Dependencies
 
 * [`libcurl` 7.56.0 or above](https://curl.haxx.se/libcurl/c/libcurl.html) for HTTP requests
+  * The default version of `curl` on macOS may be too old--install the newer one with Homebrew: 
+  ```bash
+  brew install curl
+  ```
 
 * [`libsodium`](https://github.com/jedisct1/libsodium) for cryptography
 
