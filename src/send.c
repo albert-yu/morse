@@ -124,14 +124,10 @@ int isvalidext(char *extension, size_t len) {
 
 /*
  * Add comma-delimited recipients to recipients (linked list)
- * FOR SOME REASON this doesn't work---need to figure out why
+ * Returns pointer to first item in list
  */
-void add_recipients(struct curl_slist **recipients_ptr, char *recips_str) {
-    if (!recipients_ptr) {
-        return;
-    }
-
-    struct curl_slist *recipients = *recipients_ptr;
+struct curl_slist* add_recipients(struct curl_slist *recipients, char *recips_str) {
+    // if *recipients is NULL, that means list is empty, which is okay
     size_t rcpt_buffer_size = strlen(recips_str) + 1;
     char all_recips [rcpt_buffer_size];
     memset(all_recips, 0, rcpt_buffer_size);
@@ -152,6 +148,7 @@ void add_recipients(struct curl_slist **recipients_ptr, char *recips_str) {
     }
 
     saveptr = NULL;
+    return recipients;
 }
 
 
@@ -253,52 +250,38 @@ int sendmail_inner(char *from, char *to, char *cc, char *bcc,
         memset(to_header, 0, rcpt_buffer_size);
         sprintf(to_header, "To: %s", to);            
         headers = curl_slist_append(headers, to_header);
+
         // curl_slist_append copies the string,
         // so we can reuse this buffer
         memset(to_header, 0, rcpt_buffer_size);
 
-        // add_recipients(&recipients, to);
-
         
-        // copy recipients to alloc'd buffer
+        // copy recipients to alloc'd buffer, because
+        // add_recipients modifies the input string (second argument)
         char all_recips [rcpt_buffer_size];
         memset(all_recips, 0, rcpt_buffer_size);
         sprintf(all_recips, "%s", to);
-
-        char *individual_addr;  // each individual address
-        char *saveptr;  // used by strtok_r
-        char *to_addr_ptr = all_recips;
-        char *delimiter = ",";
-
-        individual_addr = strtok_r(to_addr_ptr, delimiter, &saveptr);        
-        while (individual_addr) {
-            recipients = curl_slist_append(recipients, individual_addr);            
-            individual_addr = strtok_r(NULL, delimiter, &saveptr);
-        }
-        
-        saveptr = NULL;
+        recipients = add_recipients(recipients, all_recips);
 
         print_list(recipients);
 
         // add CC
         if (cc) {
-
-            // copying code because the 
-            // "add_recipients" subroutine doesn't work
-            memset(all_recips, 0, rcpt_buffer_size);
-            sprintf(all_recips, "%s", cc);
+            // add CC header
             size_t cc_len = strlen(cc);
             char cc_header [cc_len + header_label_size];
             sprintf(cc_header, "Cc: %s", cc);
             headers = curl_slist_append(headers, cc_header);
-            char *cc_addr_ptr = all_recips;
-            individual_addr = strtok_r(cc_addr_ptr, delimiter, &saveptr);
-            while (individual_addr) {
-                recipients = curl_slist_append(recipients, individual_addr);            
-                individual_addr = strtok_r(NULL, delimiter, &saveptr);
-            }
+
+            // re-use all_recips buffer
+            memset(all_recips, 0, rcpt_buffer_size);
+            sprintf(all_recips, "%s", cc);
             
-            saveptr = NULL;
+            recipients = add_recipients(recipients, all_recips);
+        }
+
+        if (bcc) {
+            // TODO
         }
         
         // add all the recipients
