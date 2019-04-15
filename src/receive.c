@@ -44,21 +44,13 @@ char* construct_url(char *base_url, char *path) {
 }
 
 
-int simple_fetch() {
+int morse_retrieve_last_n(char *bearertoken, size_t n) {
     CURL *curl;
     CURLcode res = CURLE_OK;
-
-    char *bearertoken = getgooglebearertoken();
-    if (!bearertoken) {
-        // this should not happen if getgmailaddress() is successful
-        fprintf(stderr, "Could not get bearer token.\n");
-        return -1;
-    }
 
     char *username = getgmailaddress(bearertoken);
     if (!username) {
         fprintf(stderr, "Could not get username.\n");
-        free(bearertoken);
         return -1;
     }
 
@@ -69,7 +61,6 @@ int simple_fetch() {
     char *imap_url = construct_url(base_url, mailbox);
     if (!imap_url) {
         fprintf(stderr, "Failed to get IMAP URL.\n");
-        free(bearertoken);
         free(username);
         return -1;
     }
@@ -78,7 +69,6 @@ int simple_fetch() {
     memory_struct_init(&mem);
     if (!mem.memory) {
         fprintf(stderr, "Failed to allocate for callback.\n");
-        free(bearertoken);
         free(username);
         free(imap_url);
         return -1;
@@ -126,8 +116,95 @@ int simple_fetch() {
     printf("Received:\n%s\n", mem.memory);
 
     free(username);
-    free(bearertoken);
     free(imap_url);
+
+    return (int)res;
+}
+
+
+int simple_fetch() {
+    CURL *curl;
+    CURLcode res = CURLE_OK;
+
+    char *bearertoken = getgooglebearertoken();
+    if (!bearertoken) {
+        fprintf(stderr, "Could not get bearer token.\n");
+        return -1;
+    }
+
+    char *username = getgmailaddress(bearertoken);
+    if (!username) {
+        fprintf(stderr, "Could not get username.\n");
+        free(bearertoken);
+        return -1;
+    }
+
+    // char *mailbox = "INBOX/;uid=10/;section=HEADER.FIELDS%20(To)";
+    char *mailbox = "INBOX";
+    char *base_url = GOOGLE_IMAPS;
+
+    char *imap_url = construct_url(base_url, mailbox);
+    if (!imap_url) {
+        fprintf(stderr, "Failed to get IMAP URL.\n");
+        free(username);
+        free(bearertoken);
+        return -1;
+    }
+
+    MemoryStruct mem;
+    memory_struct_init(&mem);
+    if (!mem.memory) {
+        fprintf(stderr, "Failed to allocate for callback.\n");
+        free(username);
+        free(imap_url);
+        free(bearertoken);
+        return -1;
+    }
+
+    curl = curl_easy_init();
+    if (curl) {
+        printf("curl init OK [IMAP]\n");
+        /* Set username and password */
+        curl_easy_setopt(curl, CURLOPT_USERNAME, username);
+        // curl_easy_setopt(curl, CURLOPT_PASSWORD, "secret");
+        curl_easy_setopt(curl, CURLOPT_URL, imap_url);
+        curl_easy_setopt(curl, CURLOPT_LOGIN_OPTIONS, "AUTH=XOAUTH2");
+        curl_easy_setopt(curl, CURLOPT_XOAUTH2_BEARER, bearertoken);
+        curl_easy_setopt(curl, CURLOPT_SASL_IR, 1L);
+
+        // use SSL
+        curl_easy_setopt(curl, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL);
+
+        // set a timeout
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L);
+
+        // verbose output
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+        // curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "EXAMINE INBOX");
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "UID FETCH 67633 BODY[TEXT]");
+
+        // set callback
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_mem_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)&mem);
+
+        /* Perform the fetch */
+        res = curl_easy_perform(curl);
+
+        /* Check for errors */
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                curl_easy_strerror(res));
+
+        /* Always cleanup */
+        curl_easy_cleanup(curl);
+    }
+
+    printf("Received:\n%s\n", mem.memory);
+
+    free(username);
+    free(imap_url);
+    free(bearertoken);
 
     return (int)res;
 }

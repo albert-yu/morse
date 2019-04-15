@@ -21,11 +21,17 @@ int main(int argc, char *argv[]) {
 
     char *bearertoken = getgooglebearertoken();
 
-    int res = morse_sendmail(bearertoken, to, NULL, TEST_CC_RECIPIENTS, 
-             subject, body, "text/html",
-             NULL);
+    // int res = morse_sendmail(bearertoken, to, NULL, TEST_CC_RECIPIENTS, 
+    //          subject, body, "text/html",
+    //          NULL);
 
-    printf("Status: %d\n", res);
+    // printf("Status: %d\n", res);
+
+    
+    if (bearertoken) {
+        free(bearertoken);  
+    }
+    
 
     // int res = simple_fetch();
     // printf("Status: %d\n", res);
