@@ -193,9 +193,9 @@ struct curl_slist* add_recipients(struct curl_slist *recipients, char *recips_st
 
 
 /**
- * MAIN implementation of sendmail
+ * MAIN implementation of morse_sendmail
  */
-int sendmail_inner(char *from, char *to, char *cc, char *bcc, 
+int morse_sendmail_inner(char *from, char *to, char *cc, char *bcc, 
              char *subject, char *body, char *mimetype,
              char **attachments) {
     // validate inputs
@@ -382,11 +382,11 @@ int sendmail_inner(char *from, char *to, char *cc, char *bcc,
 }
 
 
-int sendmail(char *to, char *cc, char *bcc, 
+int morse_sendmail(char *to, char *cc, char *bcc, 
              char *subject, char *body, char *mimetype,
              char **attachments) {
     char *user_email = getgmailaddress();
-    int result = sendmail_inner(user_email, to, cc, bcc, subject, body, mimetype, attachments);
+    int result = morse_sendmail_inner(user_email, to, cc, bcc, subject, body, mimetype, attachments);
     free(user_email);
     return result;
 }

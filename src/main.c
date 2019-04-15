@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
           "e-mail viewers able to handle HTML.</p>"
           "</body></html>\r\n";
 
-    int res = sendmail(to, TEST_CC_RECIPIENTS, NULL, 
+    int res = morse_sendmail(to, TEST_CC_RECIPIENTS, NULL, 
              subject, body, "text/html",
              NULL);
 
