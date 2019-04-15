@@ -27,14 +27,13 @@ int main(int argc, char *argv[]) {
 
     // printf("Status: %d\n", res);
 
-    
+
+    int res = morse_retrieve_last_n(bearertoken, 10);
+    printf("Status: %d\n", res);
+
     if (bearertoken) {
         free(bearertoken);  
     }
     
-
-    // int res = simple_fetch();
-    // printf("Status: %d\n", res);
-
     return 0;
 }

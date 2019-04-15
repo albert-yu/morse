@@ -44,7 +44,7 @@ char* construct_url(char *base_url, char *path) {
 }
 
 
-int morse_retrieve_last_n(char *bearertoken, size_t n) {
+int morse_exec_imap(char *bearertoken, const char *command) {
     CURL *curl;
     CURLcode res = CURLE_OK;
 
@@ -92,10 +92,10 @@ int morse_retrieve_last_n(char *bearertoken, size_t n) {
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L);
 
         // verbose output
-        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+        // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
-        // curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "EXAMINE INBOX");
-        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "UID FETCH 67633 BODY[TEXT]");
+        // COMMAND GOES HERE
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
 
         // set callback
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_mem_callback);
@@ -119,6 +119,11 @@ int morse_retrieve_last_n(char *bearertoken, size_t n) {
     free(imap_url);
 
     return (int)res;
+}
+
+
+int morse_retrieve_last_n(char *bearertoken, size_t n) {
+    return morse_exec_imap(bearertoken, "SELECT INBOX");
 }
 
 
