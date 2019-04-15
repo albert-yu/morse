@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,7 +22,7 @@ typedef struct memory_struct_t {
  * Initializes a memory struct. 
  * To free, call free(memstruct.memory)
  */
-void memory_struct_init(MemoryStruct *chunk);
+int memory_struct_init(MemoryStruct *chunk);
 
 /**
  * Callback function for handling server response.

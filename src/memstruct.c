@@ -2,9 +2,18 @@
 #include "memstruct.h"
 
 
-void memory_struct_init(MemoryStruct *chunk) {
+int memory_struct_init(MemoryStruct *chunk) {
+    if (chunk) {
+        fprintf(stderr, "MemoryStruct passed must be NULL.\n");
+        return EINVAL;
+    }
     chunk->memory = malloc(1);  /* will be grown as needed by the realloc*/ 
+    if (chunk->memory == NULL) {
+        fprintf(stderr, "Cannot allocate memory for MemoryStruct.\n");
+        return ENOMEM;
+    }
     chunk->size = 0;    /* no data at this point */ 
+    return 0;
 }
 
 
@@ -22,7 +31,7 @@ size_t curl_mem_callback(void *buffer, size_t size, size_t nmemb, void *userp)
     if (ptr == NULL) {
         /* out of memory! */ 
         fprintf(stderr, "Not enough memory (realloc returned NULL).\n");
-        exit(1);
+        return 0;
     }
 
     mem->memory = ptr;
