@@ -145,8 +145,25 @@ void print_list(struct curl_slist *list) {
 }
 
 
+// provides space for adding label (e.g. "From: ")
+#define HEADER_LABEL_SIZE 32
+
 /*
- * Add comma-delimited recipients to recipients (linked list)
+ * Adds a To, From, Cc, or Bcc header to the linked list of headers
+ */
+struct curl_slist* add_mail_header(struct curl_slist *headers, 
+                                                char *header_name, 
+                                                char *header_value) {
+    size_t len = strlen(header_value);
+    char header [len + HEADER_LABEL_SIZE];
+    sprintf(header, "%s: %s", header_name, header_value);
+    headers = curl_slist_append(headers, header);
+    return headers;
+} 
+
+
+/*
+ * Adds comma-delimited recipients to recipients (linked list)
  * Returns pointer to first item in list
  */
 struct curl_slist* add_recipients(struct curl_slist *recipients, char *recips_str) {
@@ -242,49 +259,55 @@ int sendmail_inner(char *from, char *to, char *cc, char *bcc,
 
         // add FROM (not strictly required)
         if (from) {
-            size_t from_len = strlen(from);
-            if (from_len > 0) {
-                char from_header [from_len + header_label_size];
-                sprintf(from_header, "From: %s", from);
-                headers = curl_slist_append(headers, from_header);
-                curl_easy_setopt(curl, CURLOPT_MAIL_FROM, from);               
-            }          
+            // size_t from_len = strlen(from);
+            // if (from_len > 0) {
+            //     // char from_header [from_len + header_label_size];
+            //     // sprintf(from_header, "From: %s", from);
+            //     // headers = curl_slist_append(headers, from_header);
+
+            // }  
+            headers = add_mail_header(headers, "From", from);
+            curl_easy_setopt(curl, CURLOPT_MAIL_FROM, from);          
         }      
 
-        size_t to_len = strlen(to);
-        size_t rcpt_buffer_size = to_len + header_label_size;
-        char to_header [rcpt_buffer_size];
-        memset(to_header, 0, rcpt_buffer_size);
-        sprintf(to_header, "To: %s", to);            
-        headers = curl_slist_append(headers, to_header);
+        // size_t to_len = strlen(to);
+        // size_t rcpt_buffer_size = to_len + header_label_size;
+        // char to_header [rcpt_buffer_size];
+        // memset(to_header, 0, rcpt_buffer_size);
+        // sprintf(to_header, "To: %s", to);            
+        // headers = curl_slist_append(headers, to_header);
 
-        // curl_slist_append copies the string,
-        // so we can reuse this buffer
-        memset(to_header, 0, rcpt_buffer_size);
+        // // curl_slist_append copies the string,
+        // // so we can reuse this buffer
+        // memset(to_header, 0, rcpt_buffer_size);
 
+        // the existence of "to" is already checked
+        headers = add_mail_header(headers, "To", to);
         
         // copy recipients to alloc'd buffer, because
         // add_recipients modifies the input string (second argument)
-        char all_recips [rcpt_buffer_size];
-        memset(all_recips, 0, rcpt_buffer_size);
-        sprintf(all_recips, "%s", to);
-        recipients = add_recipients(recipients, all_recips);
+        // char all_recips [rcpt_buffer_size];
+        // memset(all_recips, 0, rcpt_buffer_size);
+        // sprintf(all_recips, "%s", to);
+
+        recipients = add_recipients(recipients, to);
 
         print_list(recipients);
 
         // add CC
         if (cc) {
             // add CC header
-            size_t cc_len = strlen(cc);
-            char cc_header [cc_len + header_label_size];
-            sprintf(cc_header, "Cc: %s", cc);
-            headers = curl_slist_append(headers, cc_header);
+            // size_t cc_len = strlen(cc);
+            // char cc_header [cc_len + header_label_size];
+            // sprintf(cc_header, "Cc: %s", cc);
+            // headers = curl_slist_append(headers, cc_header);
+            headers = add_mail_header(headers, "Cc", cc);
 
-            // re-use all_recips buffer
-            memset(all_recips, 0, rcpt_buffer_size);
-            sprintf(all_recips, "%s", cc);
+            // // re-use all_recips buffer
+            // memset(all_recips, 0, rcpt_buffer_size);
+            // sprintf(all_recips, "%s", cc);
             
-            recipients = add_recipients(recipients, all_recips);
+            recipients = add_recipients(recipients, cc);
         }
 
         if (bcc) {
