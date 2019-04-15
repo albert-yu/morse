@@ -282,7 +282,7 @@ int morse_sendmail_inner(char *from, char *to, char *cc, char *bcc,
 
         // add BCC
         if (bcc) {
-            headers = add_mail_header(headers, "Bcc", cc);
+            headers = add_mail_header(headers, "Bcc", bcc);
             recipients = add_recipients(recipients, bcc);
         }
         
