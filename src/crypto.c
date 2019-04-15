@@ -117,15 +117,36 @@ uint32_t gen_random_int() {
 
 
 /*
- * Get the temporary file location
+ * Gets the temporary file location for the nonce.
  */
 void get_nonce_fileloc(char *buffer) {
     sprintf(buffer, "%s/%s", CRYPTO_FILEPATH, CRYPTO_NONCE_FILENAME);
 }
 
 
+/*
+ * Gets the temporary file location for the encrypted secret
+ */
 void get_secret_fileloc(char *buffer) {
     sprintf(buffer, "%s/%s", CRYPTO_FILEPATH, CRYPTO_SECRET_FILENAME);
+}
+
+
+/*
+ * Removes the temporary files from the disk
+ */
+void rm_temp_files() {
+    char buf [CRYPTO_FILEPATH_SIZE];
+    memset(buf, 0, CRYPTO_FILEPATH_SIZE);
+
+    // remove file with JSON
+    get_secret_fileloc(buf);
+    remove(buf);
+
+    // remove file with nonce
+    memset(buf, 0, CRYPTO_FILEPATH_SIZE);
+    get_nonce_fileloc(buf);
+    remove(buf);
 }
 
 

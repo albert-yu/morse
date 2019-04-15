@@ -195,7 +195,7 @@ struct curl_slist* add_recipients(struct curl_slist *recipients, char *recips_st
 /**
  * MAIN implementation of morse_sendmail
  */
-int morse_sendmail_inner(char *from, char *to, char *cc, char *bcc, 
+int morse_sendmail_inner(char *bearer_token, char *from, char *to, char *cc, char *bcc, 
              char *subject, char *body, char *mimetype,
              char **attachments) {
     // validate inputs
@@ -223,9 +223,6 @@ int morse_sendmail_inner(char *from, char *to, char *cc, char *bcc,
     curl_mime *alt;
     curl_mimepart *part;
     // const char **cpp;
-
-    printf("Getting the bearer token...\n");
-    char *bearer_token = getgooglebearertoken();
 
     if (!bearer_token) {
         fprintf(stderr, "Failed to get bearer token.\n");
@@ -382,11 +379,11 @@ int morse_sendmail_inner(char *from, char *to, char *cc, char *bcc,
 }
 
 
-int morse_sendmail(char *to, char *cc, char *bcc, 
+int morse_sendmail(char *bearertoken, char *to, char *cc, char *bcc, 
              char *subject, char *body, char *mimetype,
              char **attachments) {
-    char *user_email = getgmailaddress();
-    int result = morse_sendmail_inner(user_email, to, cc, bcc, subject, body, mimetype, attachments);
+    char *user_email = getgmailaddress(bearertoken);
+    int result = morse_sendmail_inner(bearertoken, user_email, to, cc, bcc, subject, body, mimetype, attachments);
     free(user_email);
     return result;
 }

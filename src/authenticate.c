@@ -501,9 +501,8 @@ char* getgooglebearertoken() {
  * Gets a token and returns the user's email address 
  * from validating that token.
  */
-char* getgmailaddress() {
+char* getgmailaddress(char *token) {
     char *retval = NULL;
-    char *token = getgooglebearertoken();
     if (token) {
         char *validation_resp = validate_google_token(token);
         if (validation_resp) {

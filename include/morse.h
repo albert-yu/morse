@@ -5,6 +5,7 @@
 
 #include "send.h"
 #include "receive.h"
+#include "authenticate.h"
 
 #ifdef __cplusplus
 extern "C" {

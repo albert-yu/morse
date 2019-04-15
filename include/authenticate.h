@@ -26,9 +26,9 @@ char* getgooglebearertoken();
 
 
 /**
- * Gets user's email address. Caller must free returned buffer.
+ * Gets user's gmail address. Caller must free returned buffer.
  */
-char* getgmailaddress();
+char* getgmailaddress(char *token);
 
 
 /**

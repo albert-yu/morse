@@ -48,17 +48,17 @@ int simple_fetch() {
     CURL *curl;
     CURLcode res = CURLE_OK;
 
-    char *username = getgmailaddress();
-    if (!username) {
-        fprintf(stderr, "Could not get username.\n");
-        return -1;
-    }
-
     char *bearertoken = getgooglebearertoken();
     if (!bearertoken) {
         // this should not happen if getgmailaddress() is successful
         fprintf(stderr, "Could not get bearer token.\n");
-        free(username);
+        return -1;
+    }
+
+    char *username = getgmailaddress(bearertoken);
+    if (!username) {
+        fprintf(stderr, "Could not get username.\n");
+        free(bearertoken);
         return -1;
     }
 

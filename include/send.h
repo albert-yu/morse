@@ -20,6 +20,7 @@ extern "C" {
 /**
  * Send an email to the designated recipients.
  * Recipients are comma-delimited strings.
+ * @bearertoken - the token used for authentication
  * @to - the main recipient(s)
  * @cc - copied recipient(s)
  * @bcc - blind copied recipient(s)
@@ -28,7 +29,7 @@ extern "C" {
  * @mimetype - the MIME type of the body (text/html, text/plain)
  * @attachments - the file paths of the attachments, NULL-terminated
  */
-int morse_sendmail(char *to, char *cc, char *bcc, 
+int morse_sendmail(char *bearertoken, char *to, char *cc, char *bcc, 
              char *subject, char *body, char *mimetype,
              char **attachments);
 
