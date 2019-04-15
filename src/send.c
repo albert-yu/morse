@@ -123,6 +123,29 @@ int isvalidext(char *extension, size_t len) {
 
 
 /*
+ * Prints out a curl linked list
+ */
+void print_list(struct curl_slist *list) {
+    struct curl_slist     *next;
+    struct curl_slist     *item;
+
+    if(!list) {
+        printf("empty list\n");
+        return;
+    }
+
+    item = list;
+    size_t cnt = 0;
+    do {
+        next = item->next;
+        printf("item %zu: %s\n", cnt, item->data);
+        item = next;
+        cnt++;
+    } while(next);
+}
+
+
+/*
  * Add comma-delimited recipients to recipients (linked list)
  * Returns pointer to first item in list
  */
@@ -149,22 +172,6 @@ struct curl_slist* add_recipients(struct curl_slist *recipients, char *recips_st
 
     saveptr = NULL;
     return recipients;
-}
-
-
-void print_list(struct curl_slist *list) {
-    struct curl_slist     *next;
-    struct curl_slist     *item;
-
-    if(!list)
-        return;
-
-    item = list;
-    do {
-        next = item->next;
-        printf("item: %s\n", item->data);
-        item = next;
-    } while(next);
 }
 
 
@@ -212,7 +219,7 @@ int sendmail_inner(char *from, char *to, char *cc, char *bcc,
     
     curl = curl_easy_init();
     if (curl) {
-        printf("curl init OK\n");       
+        printf("curl init OK [SMTP]\n");       
         curl_easy_setopt(curl, CURLOPT_URL, GOOGLE_SMTPS);
 
         // auth        
