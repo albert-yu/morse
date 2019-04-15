@@ -47,6 +47,10 @@ TODO
 * ~Get user email from token~
 * Receive emails
 * ~Support multiple recipients~
-* Auto-download dependencies with build script
 * Compile to static library
 * ~Add separate `morse.h` header for API~
+* Cross-platform compile
+  * macOS
+  * Linux
+  * Windows
+* Do not depend on environment for availability of dependencies
