@@ -130,7 +130,7 @@ void print_list(struct curl_slist *list) {
     struct curl_slist     *item;
 
     if(!list) {
-        printf("empty list\n");
+        printf("(empty list)\n");
         return;
     }
 
@@ -138,7 +138,7 @@ void print_list(struct curl_slist *list) {
     size_t cnt = 0;
     do {
         next = item->next;
-        printf("item %zu: %s\n", cnt, item->data);
+        printf("[%zu]: %s\n", cnt, item->data);
         item = next;
         cnt++;
     } while(next);
