@@ -268,50 +268,22 @@ int sendmail_inner(char *from, char *to, char *cc, char *bcc,
             // }  
             headers = add_mail_header(headers, "From", from);
             curl_easy_setopt(curl, CURLOPT_MAIL_FROM, from);          
-        }      
+        }
 
-        // size_t to_len = strlen(to);
-        // size_t rcpt_buffer_size = to_len + header_label_size;
-        // char to_header [rcpt_buffer_size];
-        // memset(to_header, 0, rcpt_buffer_size);
-        // sprintf(to_header, "To: %s", to);            
-        // headers = curl_slist_append(headers, to_header);
-
-        // // curl_slist_append copies the string,
-        // // so we can reuse this buffer
-        // memset(to_header, 0, rcpt_buffer_size);
-
-        // the existence of "to" is already checked
+        // the existence and non-emptiness of "to" is already checked
         headers = add_mail_header(headers, "To", to);
-        
-        // copy recipients to alloc'd buffer, because
-        // add_recipients modifies the input string (second argument)
-        // char all_recips [rcpt_buffer_size];
-        // memset(all_recips, 0, rcpt_buffer_size);
-        // sprintf(all_recips, "%s", to);
-
         recipients = add_recipients(recipients, to);
-
-        print_list(recipients);
 
         // add CC
         if (cc) {
-            // add CC header
-            // size_t cc_len = strlen(cc);
-            // char cc_header [cc_len + header_label_size];
-            // sprintf(cc_header, "Cc: %s", cc);
-            // headers = curl_slist_append(headers, cc_header);
-            headers = add_mail_header(headers, "Cc", cc);
-
-            // // re-use all_recips buffer
-            // memset(all_recips, 0, rcpt_buffer_size);
-            // sprintf(all_recips, "%s", cc);
-            
+            headers = add_mail_header(headers, "Cc", cc);           
             recipients = add_recipients(recipients, cc);
         }
 
+        // add BCC
         if (bcc) {
-            // TODO
+            headers = add_mail_header(headers, "Bcc", cc);
+            recipients = add_recipients(recipients, bcc);
         }
         
         // add all the recipients
