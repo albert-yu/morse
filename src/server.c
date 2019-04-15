@@ -92,7 +92,7 @@ void get_d20(int fd) {
     int num = rand() % 20 + 1;
     int length = (num < 10) ? 1 : 2;
     // Use send_response() to send it back as text/plain data
-    char *mime_type = "text/plain";
+    char *mime_type = MIME_TYPE_PLAIN;
     char *response_header = HTTP_200;
     char result[4];
     sprintf(result, "%d", num);
@@ -105,9 +105,9 @@ void get_d20(int fd) {
  * Respond with a generic success operation
  */
 void resp_success(int fd) {
-    char *message = "Success.";
+    char *message = "Success. Return to the app.";
     int length = strlen(message);
-    char *mime_type = "text/plain";
+    char *mime_type = MIME_TYPE_PLAIN;
     char *response_header = HTTP_200;
     send_response(fd, response_header, mime_type, message, length);
 }
