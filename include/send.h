@@ -7,6 +7,8 @@
 #include <ctype.h>
 
 #include "endpoints.h"
+#include "statuscodes.h"
+
 
 #ifdef __cplusplus
 extern "C" {

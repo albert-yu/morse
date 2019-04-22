@@ -44,7 +44,75 @@ char* construct_url(char *base_url, char *path) {
 }
 
 
-int morse_exec_imap(char *bearertoken, const char *command) {
+int morse_exec_imap(const char *bearertoken, 
+		    const char *imap_url,
+		    const char *username,
+		    const char *command,
+		    MemoryStruct *mem  
+		    ) {
+    MorseStatusCode result = MorseStatus_OK; 
+    CURL *curl;
+    CURLcode res = CURLE_OK;
+    char *mailbox = "INBOX";
+    char *base_url = GOOGLE_IMAPS;
+
+
+    if (!mem) {
+	fprintf(stderr, "Passed in memory struct cannot be null.\n");
+	return (int)MorseStatus_InvalidArg;
+    }
+
+    if (!mem->memory) {
+        fprintf(stderr, "Failed to allocate for callback.\n");
+        return (int)MorseStatus_MemoryError;
+    }
+
+    curl = curl_easy_init();
+    if (curl) {
+        printf("curl init OK [IMAP]\n");
+        /* Set username and password */
+        curl_easy_setopt(curl, CURLOPT_USERNAME, username);
+        // curl_easy_setopt(curl, CURLOPT_PASSWORD, "secret");
+        curl_easy_setopt(curl, CURLOPT_URL, imap_url);
+        curl_easy_setopt(curl, CURLOPT_LOGIN_OPTIONS, "AUTH=XOAUTH2");
+        curl_easy_setopt(curl, CURLOPT_XOAUTH2_BEARER, bearertoken);
+        curl_easy_setopt(curl, CURLOPT_SASL_IR, 1L);
+
+        // use SSL
+        curl_easy_setopt(curl, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL);
+
+        // set a timeout
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L);
+
+        // verbose output
+        // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+        // COMMAND GOES HERE
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
+
+        // set callback
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_mem_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)mem);
+
+        /* Perform the fetch */
+        res = curl_easy_perform(curl);
+
+        /* Check for errors */
+        if(res != CURLE_OK) {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                curl_easy_strerror(res));
+	    result = MorseStatus_CurlError;
+	}
+
+        /* Always cleanup */
+        curl_easy_cleanup(curl);
+    }
+
+    return (int)result;
+}
+
+
+int morse_exec_imap_stdout(char *bearertoken, const char *command) {
     CURL *curl;
     CURLcode res = CURLE_OK;
 
@@ -123,7 +191,7 @@ int morse_exec_imap(char *bearertoken, const char *command) {
 
 
 int morse_retrieve_last_n(char *bearertoken, size_t n) {
-    return morse_exec_imap(bearertoken, "SELECT INBOX");
+    return morse_exec_imap_stdout(bearertoken, "SELECT INBOX");
 }
 
 

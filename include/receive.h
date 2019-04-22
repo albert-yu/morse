@@ -2,6 +2,8 @@
 #define RECEIVE_H
 
 #include "endpoints.h"
+#include "statuscodes.h"
+
 
 #ifdef __cplusplus
 extern "C" {
