@@ -191,7 +191,21 @@ int morse_exec_imap_stdout(char *bearertoken, const char *command) {
 
 
 int morse_retrieve_last_n(char *bearertoken, size_t n) {
-    return morse_exec_imap_stdout(bearertoken, "SELECT INBOX");
+    char *base_url = GOOGLE_IMAPS;
+    char *gmail_imap_url = construct_url(base_url, "INBOX");
+    char *username = getgmailaddress(bearertoken);
+   
+    MemoryStruct imap_result;
+    memory_struct_init(&imap_result);
+    int res = morse_exec_imap(bearertoken, gmail_imap_url, username, "SELECT INBOX", &imap_result); 
+    if (imap_result.memory) {
+        printf("Result:\n");
+        printf("%s", imap_result.memory);
+    }
+    free(imap_result.memory);    
+    free(gmail_imap_url);
+    free(username);
+    return res; 
 }
 
 

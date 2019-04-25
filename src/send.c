@@ -387,3 +387,4 @@ int morse_sendmail(char *bearertoken, char *to, char *cc, char *bcc,
     free(user_email);
     return result;
 }
+

@@ -48,6 +48,7 @@ TODO
 * Receive emails
 * ~Support multiple recipients~
 * Compile to static library
+* Compile to debug
 * ~Add separate `morse.h` header for API~
 * Cross-platform compile
   * macOS
