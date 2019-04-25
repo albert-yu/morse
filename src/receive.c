@@ -63,7 +63,7 @@ int morse_exec_imap(const char *bearertoken,
     }
 
     if (!mem->memory) {
-        fprintf(stderr, "Failed to allocate for callback.\n");
+        fprintf(stderr, "Passed in memory struct doesn't have memory.\n");
         return (int)MorseStatus_MemoryError;
     }
 
