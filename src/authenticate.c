@@ -244,8 +244,7 @@ char* getfreshcredentials(size_t *tokenlength) {
 
         auth_code = hashtable_get(ht, "code");  // should return NULL if not exists
         if (!auth_code) {
-            fprintf(stderr, "Error parsing query string.\n");
-            has_parse_error = 1;
+            fprintf(stderr, "Error parsing query string.\n"); has_parse_error = 1;
             goto gc_querystring;
         }
         printf("Received authorization code [%s].\n", auth_code);
@@ -272,8 +271,15 @@ char* getfreshcredentials(size_t *tokenlength) {
     // printf("post data %s\n", post_data);
 
     MemoryStruct mem;
-    memory_struct_init(&mem);
+    int status_code = memory_struct_init(&mem);
 
+    if (status_code != 0) {
+        free(post_data);
+	strarray_free(parsed_strarray, elem_count);
+	if (ht != NULL) {
+	    hashtable_destroy(ht); 
+	}
+    }
     http_post_no_auth(exchange_url, content_type, post_data, &curl_mem_callback, (void*)&mem);
 
     printf("%lu bytes retrieved.\n", (unsigned long)mem.size);

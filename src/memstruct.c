@@ -3,10 +3,10 @@
 
 
 int memory_struct_init(MemoryStruct *chunk) {
-    if (chunk) {
-        fprintf(stderr, "MemoryStruct passed must be NULL.\n");
-        return EINVAL;
-    }
+    //if (chunk->memory) {
+    //    fprintf(stderr, "MemoryStruct's memory must be NULL.\n");
+    //    return EINVAL;
+    //}
     chunk->memory = malloc(1);  /* will be grown as needed by the realloc*/ 
     if (chunk->memory == NULL) {
         fprintf(stderr, "Cannot allocate memory for MemoryStruct.\n");
