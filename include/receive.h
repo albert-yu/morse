@@ -9,9 +9,6 @@
 extern "C" {
 #endif
 
-
-int simple_fetch();
-
 int morse_retrieve_last_n(char *bearertoken, size_t n);
 
 #ifdef __cplusplus
