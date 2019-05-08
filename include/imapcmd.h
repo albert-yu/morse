@@ -13,7 +13,7 @@ extern "C" {
 /*
  * Prepends "SELECT " to a given box name  
  */
-char* cmd_select_box(char *box_name);
+char* imapcmd_select_box(char *box_name);
 
 
 #ifdef __cplusplus
