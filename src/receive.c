@@ -160,7 +160,7 @@ int morse_exec_imap_stdout(char *bearertoken, const char *command) {
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L);
 
         // verbose output
-        // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
         // COMMAND GOES HERE
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
@@ -187,17 +187,6 @@ int morse_exec_imap_stdout(char *bearertoken, const char *command) {
     free(imap_url);
 
     return (int)res;
-}
-
-
-/*
- * Prepends "SELECT " to a given box name  
- */
-char* cmd_select_box(char *box_name) {
-    const char *template = "SELECT %s";
-    char *buffer = calloc(64, sizeof(*buffer));
-    sprintf(buffer, template, box_name);
-    return buffer;
 }
 
 
@@ -232,7 +221,7 @@ int morse_retrieve_last_n(char *bearertoken, size_t n) {
    
     MemoryStruct imap_result;
     memory_struct_init(&imap_result);
-    int res = morse_exec_imap(bearertoken, gmail_imap_url, username, "UID FETCH 68684 BODY[TEXT]", &imap_result); 
+    int res = morse_exec_imap(bearertoken, gmail_imap_url, username, "UID FETCH 68676 BODY[TEXT]", &imap_result); 
     if (imap_result.memory) {
         printf("Result:\n");
         printf("%s", imap_result.memory);
