@@ -45,11 +45,11 @@ char* construct_url(char *base_url, char *path) {
 
 
 int morse_exec_imap(const char *bearertoken, 
-		    const char *imap_url,
-		    const char *username,
-		    const char *command,
-		    MemoryStruct *mem  
-		    ) {
+            const char *imap_url,
+            const char *username,
+            const char *command,
+            MemoryStruct *mem  
+            ) {
     MorseStatusCode result = MorseStatus_OK; 
     CURL *curl;
     CURLcode res = CURLE_OK;
@@ -58,8 +58,8 @@ int morse_exec_imap(const char *bearertoken,
 
 
     if (!mem) {
-	fprintf(stderr, "Passed in memory struct cannot be null.\n");
-	return (int)MorseStatus_InvalidArg;
+        fprintf(stderr, "Passed in memory struct cannot be null.\n");
+        return (int)MorseStatus_InvalidArg;
     }
 
     if (!mem->memory) {
@@ -101,8 +101,8 @@ int morse_exec_imap(const char *bearertoken,
         if(res != CURLE_OK) {
             fprintf(stderr, "curl_easy_perform() failed: %s\n",
                 curl_easy_strerror(res));
-	    result = MorseStatus_CurlError;
-	}
+            result = MorseStatus_CurlError;
+        }
 
         /* Always cleanup */
         curl_easy_cleanup(curl);
@@ -147,7 +147,6 @@ int morse_exec_imap_stdout(char *bearertoken, const char *command) {
         printf("curl init OK [IMAP]\n");
         /* Set username and password */
         curl_easy_setopt(curl, CURLOPT_USERNAME, username);
-        // curl_easy_setopt(curl, CURLOPT_PASSWORD, "secret");
         curl_easy_setopt(curl, CURLOPT_URL, imap_url);
         curl_easy_setopt(curl, CURLOPT_LOGIN_OPTIONS, "AUTH=XOAUTH2");
         curl_easy_setopt(curl, CURLOPT_XOAUTH2_BEARER, bearertoken);
@@ -225,7 +224,7 @@ int morse_retrieve_last_n(char *bearertoken, size_t n) {
     if (imap_result.memory) {
         printf("Result:\n");
         printf("%s", imap_result.memory);
-	printf("%zu bytes\n", imap_result.size);
+        printf("%zu bytes\n", imap_result.size);
     }
     free(imap_result.memory);    
     free(gmail_imap_url);
