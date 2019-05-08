@@ -16,6 +16,12 @@ extern "C" {
 char* imapcmd_select_box(char *box_name);
 
 
+/*
+ * Fetches the text of the message with the given UID
+ */
+char* imapcmd_uid_fetch_body_text(char *uid);
+
+
 #ifdef __cplusplus
 }
 #endif
