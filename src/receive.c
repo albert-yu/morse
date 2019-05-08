@@ -190,6 +190,41 @@ int morse_exec_imap_stdout(char *bearertoken, const char *command) {
 }
 
 
+/*
+ * Prepends "SELECT " to a given box name  
+ */
+char* cmd_select_box(char *box_name) {
+    const char *template = "SELECT %s";
+    char *buffer = calloc(64, sizeof(*buffer));
+    sprintf(buffer, template, box_name);
+    return buffer;
+}
+
+
+/*
+ * Gets each line of an IMAP response and gets rid of the
+ * asterisk and space at the beginning of each line. Caller
+ * must free the returned buffer.
+ */
+struct curl_slist* get_response_lines(char *imap_output) {
+    // using curl's built-in linked list
+    struct curl_slist* lines = NULL;
+
+     
+    return lines;
+}
+
+/*
+ * Gets the maximum (last) ID available
+ */
+unsigned long get_last_id_from(char *output) {
+    unsigned long result = 0L; 
+
+
+    return result;
+}
+
+
 int morse_retrieve_last_n(char *bearertoken, size_t n) {
     char *base_url = GOOGLE_IMAPS;
     char *gmail_imap_url = construct_url(base_url, "INBOX");
@@ -197,10 +232,11 @@ int morse_retrieve_last_n(char *bearertoken, size_t n) {
    
     MemoryStruct imap_result;
     memory_struct_init(&imap_result);
-    int res = morse_exec_imap(bearertoken, gmail_imap_url, username, "SELECT INBOX", &imap_result); 
+    int res = morse_exec_imap(bearertoken, gmail_imap_url, username, "UID FETCH 68684 BODY[TEXT]", &imap_result); 
     if (imap_result.memory) {
         printf("Result:\n");
         printf("%s", imap_result.memory);
+	printf("%zu bytes\n", imap_result.size);
     }
     free(imap_result.memory);    
     free(gmail_imap_url);
@@ -295,3 +331,4 @@ int simple_fetch() {
 
     return (int)res;
 }
+
