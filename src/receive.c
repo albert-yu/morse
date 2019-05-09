@@ -57,7 +57,6 @@ int morse_exec_imap(const char *bearertoken,
     char *mailbox = "INBOX";
     char *base_url = GOOGLE_IMAPS;
 
-
     if (!mem) {
         fprintf(stderr, "Passed in memory struct cannot be null.\n");
         return (int)MorseStatus_InvalidArg;
@@ -99,7 +98,7 @@ int morse_exec_imap(const char *bearertoken,
         res = curl_easy_perform(curl);
 
         /* Check for errors */
-        if(res != CURLE_OK) {
+        if (res != CURLE_OK) {
             fprintf(stderr, "curl_easy_perform() failed: %s\n",
                 curl_easy_strerror(res));
             result = MorseStatus_CurlError;
@@ -113,18 +112,90 @@ int morse_exec_imap(const char *bearertoken,
 }
 
 
+typedef enum retchar_t {
+    /* this string contains no newline chars */
+    RET_NONE,
+
+    /* this string uses \n */
+    RET_NEWLINE,
+
+    /* this string uses \r\n */
+    RET_CARRIAGE
+} ReturnChar;
+
+
+ReturnChar get_return_type(char *string) {
+    ReturnChar retchar = RET_NONE;
+
+    if (!string) {
+        // this is technically true
+        // in the event of a NULL ptr
+        return retchar;
+    }
+
+    // check if we have a newline char
+    char *ptr = strchr(string, '\n');
+    if (!ptr) {
+        return retchar; // NO return characters
+    }
+   
+    retchar = RET_NEWLINE;
+    char *r_ptr = strchr(string, '\r');
+
+    if (r_ptr && (r_ptr[1] == '\n')) {
+        retchar = RET_CARRIAGE;  
+    }
+    return retchar;
+}
+
+
 /*
- * Gets each line of an IMAP response and gets rid of the
- * asterisk and space at the beginning of each line. Caller
- * must free the returned list.
+ * Gets each line of an IMAP response.
+ * Caller must free the returned list.
  */
 struct curl_slist* get_response_lines(char *imap_output) {
     // using curl's built-in linked list
     struct curl_slist* lines = NULL;
+    
+    // determine type of return (\r\n or \n)
+    ReturnChar newline_char = get_return_type(imap_output);
+        
+    if (newline_char == RET_NONE) {
+        // just return the input as the first element
+        // of the linked list
+        lines = curl_slist_append(lines, imap_output);
+        return lines;
+    }
 
-     
+    // do not modify original string
+    char *copy_of_imap_output = strdup(imap_output);
+    if (!copy_of_imap_output) {
+        fprintf(stderr, "Not enough memory for IMAP output\n");
+        return NULL;
+    }
+
+    // save ptr
+    char *ptr = NULL;
+
+    // is this carriage return or newline feed?
+    char *line_sep; 
+    if (newline_char == RET_NEWLINE) {
+        line_sep = "\n";
+    } else {
+        line_sep = "\r\n";
+    }
+
+    ptr = strtok(copy_of_imap_output, line_sep);
+    while (ptr != NULL) {
+        lines = curl_slist_append(lines, ptr);
+        ptr = strtok(NULL, line_sep);
+    }
+
+    free(copy_of_imap_output);
+        
     return lines;
 }
+
 
 /*
  * Gets the maximum (last) ID available
