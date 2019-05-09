@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "imapcmd.h"
 
@@ -25,7 +26,7 @@ char *imapcmd_create_folder(char *foldername) {
     const char *template = "CREATE %s";
     char *buf = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*buf));
     sprintf(buf, template, foldername);
-    return buffer;
+    return buf;
 }
 
 

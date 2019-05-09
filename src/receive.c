@@ -198,42 +198,50 @@ struct curl_slist* get_response_lines(char *imap_output) {
 
 
 /*
- * Gets the maximum (last) ID available
+ * Execute an arbitrary IMAP command for Gmail
  */
-unsigned long get_last_id_from(char *output) {
-    unsigned long result = 0L; 
+int morse_exec_gmail_imap(char *bearertoken, char *imap_cmd) {
+    char *base_url = GOOGLE_IMAPS;
+    char *gmail_imap_url = construct_url(base_url, "INBOX");
+    char *username = getgmailaddress(bearertoken);
+    
+    MemoryStruct imap_result;
+    memory_struct_init(&imap_result);
+    
+    int res = morse_exec_imap(bearertoken, 
+        gmail_imap_url,
+        username, 
+        imap_cmd, 
+        &imap_result); 
 
+    if (imap_result.memory) {
+        printf("Result:\n");
+        struct curl_slist *result_lines = get_response_lines(imap_result.memory);
+        print_list(result_lines);
+        curl_slist_free_all(result_lines);    
+        printf("%zu bytes\n", imap_result.size);
+        free(imap_result.memory);  
+    }
+      
+    // always clean up
+    free(gmail_imap_url);
+    free(username);
+    return res; 
+}
+
+
+/*
+ * Gets the maximum (last) UID available
+ */
+unsigned long get_last_uid_from(char *output) {
+    unsigned long result = 0L; 
 
     return result;
 }
 
 
 int morse_retrieve_last_n(char *bearertoken, size_t n) {
-    char *base_url = GOOGLE_IMAPS;
-    char *gmail_imap_url = construct_url(base_url, "INBOX");
-    char *username = getgmailaddress(bearertoken);
-   
-    MemoryStruct imap_result;
-    memory_struct_init(&imap_result);
-    //int res = morse_exec_imap(bearertoken, gmail_imap_url, username, "UID FETCH 68676 BODY[TEXT]", &imap_result); 
-    
-    int res = morse_exec_imap(bearertoken, 
-        gmail_imap_url,
-        username, 
-        "LIST \"\" *", 
-        &imap_result); 
-    
-    if (imap_result.memory) {
-        printf("Result:\n");
-        struct curl_slist *result_lines = get_response_lines(imap_result.memory);
-        print_list(result_lines);
-        curl_slist_free_all(result_lines);    
-        //printf("%s", imap_result.memory);
-        printf("%zu bytes\n", imap_result.size);
-    }
-    free(imap_result.memory);    
-    free(gmail_imap_url);
-    free(username);
+    int res = morse_exec_gmail_imap(bearertoken, "LIST \"\" *");
     return res; 
 }
 
