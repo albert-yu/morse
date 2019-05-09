@@ -45,7 +45,7 @@ char* construct_url(char *base_url, char *path) {
 }
 
 
-int morse_exec_imap(const char *bearertoken, 
+int morse_exec_imap_xoauth2(const char *bearertoken, 
                     const char *imap_url,
                     const char *username,
                     const char *command,
@@ -54,8 +54,6 @@ int morse_exec_imap(const char *bearertoken,
     MorseStatusCode result = MorseStatus_OK; 
     CURL *curl;
     CURLcode res = CURLE_OK;
-    char *mailbox = "INBOX";
-    char *base_url = GOOGLE_IMAPS;
 
     if (!mem) {
         fprintf(stderr, "Passed in memory struct cannot be null.\n");
@@ -208,7 +206,7 @@ int morse_exec_gmail_imap(char *bearertoken, char *imap_cmd) {
     MemoryStruct imap_result;
     memory_struct_init(&imap_result);
     
-    int res = morse_exec_imap(bearertoken, 
+    int res = morse_exec_imap_xoauth2(bearertoken, 
         gmail_imap_url,
         username, 
         imap_cmd, 
