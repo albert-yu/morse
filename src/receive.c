@@ -46,11 +46,11 @@ char* construct_url(char *base_url, char *path) {
 
 
 int morse_exec_imap_xoauth2(const char *bearertoken, 
-                    const char *imap_url,
-                    const char *username,
-                    const char *command,
-                    MemoryStruct *mem  
-                    ) {
+                            const char *imap_url,
+                            const char *username,
+                            const char *command,
+                            MemoryStruct *mem  
+                            ) {
     MorseStatusCode result = MorseStatus_OK; 
     CURL *curl;
     CURLcode res = CURLE_OK;
