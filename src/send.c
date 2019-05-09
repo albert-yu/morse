@@ -2,6 +2,7 @@
 #include <curl/curl.h>
 
 #include "authenticate.h"  // curl is in httpclient.h
+#include "curlyfries.h"
 #include "file.h"
 #include "mime.h"
 #include "send.h"
@@ -119,29 +120,6 @@ int isvalidext(char *extension, size_t len) {
     }
 
     return 1; // true
-}
-
-
-/*
- * Prints out a curl linked list
- */
-void print_list(struct curl_slist *list) {
-    struct curl_slist     *next;
-    struct curl_slist     *item;
-
-    if(!list) {
-        printf("(empty list)\n");
-        return;
-    }
-
-    item = list;
-    size_t cnt = 0;
-    do {
-        next = item->next;
-        printf("[%zu]: %s\n", cnt, item->data);
-        item = next;
-        cnt++;
-    } while(next);
 }
 
 
