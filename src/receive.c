@@ -1,7 +1,7 @@
-#include <curl/curl.h>
 #include <stdio.h>
 
 #include "authenticate.h"
+#include "curlyfries.h"
 #include "imapcmd.h"
 #include "memstruct.h"
 #include "receive.h"
@@ -219,7 +219,8 @@ int morse_retrieve_last_n(char *bearertoken, size_t n) {
     if (imap_result.memory) {
         printf("Result:\n");
         struct curl_slist *result_lines = get_response_lines(imap_result.memory);
-
+        print_list(result_lines);
+        curl_slist_free_all(result_lines);    
         //printf("%s", imap_result.memory);
         printf("%zu bytes\n", imap_result.size);
     }
