@@ -5,6 +5,7 @@
 
 #define DEFAULT_IMAP_CMD_LENGTH 64
 
+
 /*
  * Prepends "SELECT " to a given box name.
  * Is this better with strncat?   
@@ -13,6 +14,17 @@ char* imapcmd_select_box(char *box_name) {
     const char *template = "SELECT %s";
     char *buffer = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*buffer));
     sprintf(buffer, template, box_name);
+    return buffer;
+}
+
+
+/*
+ * Creates a folder
+ */
+char *imapcmd_create_folder(char *foldername) {
+    const char *template = "CREATE %s";
+    char *buf = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*buf));
+    sprintf(buf, template, foldername);
     return buffer;
 }
 
