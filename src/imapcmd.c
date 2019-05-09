@@ -3,7 +3,7 @@
 
 #include "imapcmd.h"
 
-
+#define DEFAULT_IMAP_CMD_LENGTH 64
 
 /*
  * Prepends "SELECT " to a given box name.
@@ -11,7 +11,7 @@
  */
 char* imapcmd_select_box(char *box_name) {
     const char *template = "SELECT %s";
-    char *buffer = calloc(64, sizeof(*buffer));
+    char *buffer = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*buffer));
     sprintf(buffer, template, box_name);
     return buffer;
 }
@@ -22,7 +22,7 @@ char* imapcmd_select_box(char *box_name) {
  */
 char* imapcmd_uid_fetch_body_text(char *uid) {
     const char *template = "UID FETCH %s BODY[TEXT]";
-    char *buffer = calloc(64, sizeof(*buffer));
+    char *buffer = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*buffer));
     sprintf(buffer, template, uid);
     return buffer;
 }
@@ -34,8 +34,17 @@ char* imapcmd_uid_fetch_body_text(char *uid) {
  */
 char* imapcmd_uid_get_subject(char *uid) {
     const char *template = "UID FETCH %s BODY.PEEK[HEADER.FIELDS (SUBJECT)]";
-    char *retval = calloc(64, sizeof(*retval));
+    char *retval = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*retval));
     sprintf(retval, template, uid);
     return retval;
 }
+
+
+char* imapcmd_list_boxes() {
+    const char *list_cmd = "LIST \"\" *";
+    char *retval = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*retval));
+    strcpy(retval, list_cmd);
+    return retval;
+}
+
 

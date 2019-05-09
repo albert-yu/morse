@@ -217,7 +217,7 @@ int morse_retrieve_last_n(char *bearertoken, size_t n) {
     memory_struct_init(&imap_result);
     //int res = morse_exec_imap(bearertoken, gmail_imap_url, username, "UID FETCH 68676 BODY[TEXT]", &imap_result); 
     
-    int res = morse_exec_imap(bearertoken, gmail_imap_url, username, "SELECT INBOX", &imap_result); 
+    int res = morse_exec_imap(bearertoken, gmail_imap_url, username, "LIST \"\" *", &imap_result); 
     if (imap_result.memory) {
         printf("Result:\n");
         struct curl_slist *result_lines = get_response_lines(imap_result.memory);
