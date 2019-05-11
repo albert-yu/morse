@@ -47,6 +47,35 @@ char* construct_url(char *base_url, char *path) {
 }
 
 
+ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command) {
+    ImapResponse *response = imap_response_new();
+
+    // set a timeout
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L);
+
+    // verbose output
+    // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+    // COMMAND GOES HERE
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
+
+    // set callback
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_mem_callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)response->data);
+
+    /* Perform the fetch */
+    CURLcode res = curl_easy_perform(curl);
+
+    /* Check for errors */
+    if (res != CURLE_OK) {
+        fprintf(stderr, "curl_easy_perform() failed: %s\n",
+            curl_easy_strerror(res));
+        response->status = (int)MorseStatus_CurlError;
+    }
+
+    return response;
+}
+
 
 int morse_exec_imap_xoauth2(const char *bearertoken, 
                             const char *imap_url,
@@ -68,19 +97,19 @@ int morse_exec_imap_xoauth2(const char *bearertoken,
         return (int)MorseStatus_MemoryError;
     }
 
-    curl = curl_easy_init();
+    curl = get_curl_xoauth2(bearertoken, imap_url, username);
     if (curl) {
         printf("curl init OK [IMAP]\n");
-        /* Set username and password */
-        curl_easy_setopt(curl, CURLOPT_USERNAME, username);
-        // curl_easy_setopt(curl, CURLOPT_PASSWORD, "secret");
-        curl_easy_setopt(curl, CURLOPT_URL, imap_url);
-        curl_easy_setopt(curl, CURLOPT_LOGIN_OPTIONS, "AUTH=XOAUTH2");
-        curl_easy_setopt(curl, CURLOPT_XOAUTH2_BEARER, bearertoken);
-        curl_easy_setopt(curl, CURLOPT_SASL_IR, 1L);
+        // /* Set username and password */
+        // curl_easy_setopt(curl, CURLOPT_USERNAME, username);
+        // // curl_easy_setopt(curl, CURLOPT_PASSWORD, "secret");
+        // curl_easy_setopt(curl, CURLOPT_URL, imap_url);
+        // curl_easy_setopt(curl, CURLOPT_LOGIN_OPTIONS, "AUTH=XOAUTH2");
+        // curl_easy_setopt(curl, CURLOPT_XOAUTH2_BEARER, bearertoken);
+        // curl_easy_setopt(curl, CURLOPT_SASL_IR, 1L);
 
-        // use SSL
-        curl_easy_setopt(curl, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL);
+        // // use SSL
+        // curl_easy_setopt(curl, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL);
 
         // set a timeout
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L);
@@ -203,24 +232,29 @@ ImapResponse* morse_exec_imap_google(char *imap_cmd) {
     char *gmail_imap_url = construct_url(base_url, "INBOX");
     char *bearertoken = getgooglebearertoken(); 
     char *username = getgmailaddress(bearertoken);
-    ImapResponse *response = imap_response_new();
+    // ImapResponse *response = imap_response_new();
 
     // execute the command and get the response
-    int res = morse_exec_imap_xoauth2(
-        bearertoken,
-        gmail_imap_url,
-        username,
-        imap_cmd,
-        response->data
-        );
+    // int res = morse_exec_imap_xoauth2(
+    //     bearertoken,
+    //     gmail_imap_url,
+    //     username,
+    //     imap_cmd,
+    //     response->data
+    //     );
+
+    ImapResponse *response;
+    CURL *curl = get_curl_xoauth2(bearertoken, gmail_imap_url, username);
+    if (curl) {
+        response = morse_exec_imap_stateful(curl, imap_cmd);
+        curl_easy_cleanup(curl);
+    }
 
     // clean up
     free(gmail_imap_url);
     free(username);
     free(bearertoken);
 
-    // indicate status
-    response->status = res;
     return response;
 }
 

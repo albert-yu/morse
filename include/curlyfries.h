@@ -22,6 +22,14 @@ void iter_list(struct curl_slist *list,
  */
 void print_list(struct curl_slist *list);
 
+
+/*
+ * Gets a CURL handle with XOAuth2 set up
+ */
+CURL* get_curl_xoauth2(const char *bearertoken,
+                       const char *url,
+                       const char *username);
+
 #ifdef __cplusplus
 }
 #endif

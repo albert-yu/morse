@@ -17,7 +17,7 @@ void iter_list(struct curl_slist *list,
         str_func(cnt, item->data);
         item = next;
         cnt++;
-    } while(next);
+    } while (next);
 }
 
 
@@ -60,7 +60,7 @@ CURL* get_curl_xoauth2(const char *bearertoken,
         curl_easy_setopt(curl, CURLOPT_SASL_IR, 1L);
 
         // use SSL
-        curl_easy_setopt(curl, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL)
+        curl_easy_setopt(curl, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL);
     }
     return curl;
 }
