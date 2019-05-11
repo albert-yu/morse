@@ -14,7 +14,7 @@ extern "C" {
  * with the current index and item.
  */
 void iter_list(struct curl_slist *list, 
-               void (*str_func)(size_t, char*)) {
+               void (*str_func)(size_t, char*));
 
 
 /*

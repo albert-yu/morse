@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-int morse_retrieve_last_n(char *bearertoken, size_t n);
+int morse_list_folders();
 
 #ifdef __cplusplus
 }

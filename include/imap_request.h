@@ -1,6 +1,7 @@
 #ifndef IMAP_REQUEST_H
 #define IMAP_REQUEST_H
 
+#include "imap_response.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,10 +13,10 @@ typedef struct imap_request_t {
     char *command;
     
     /* function that executes the command
-     * and returns a status code. 
+     * and returns an ImapResponse. 
      * the arg is the IMAP command
      */
-    int (*send_func)(char*);
+    ImapResponse* (*send_func)(char*);
 } ImapRequest;
 
 

@@ -197,37 +197,64 @@ struct curl_slist* get_response_lines(char *imap_output) {
 }
 
 
-/*
- * Execute an arbitrary IMAP command for Gmail
- */
-int morse_exec_gmail_imap(char *bearertoken, char *imap_cmd) {
+ImapResponse* morse_exec_imap_google(char *imap_cmd) {
     char *base_url = GOOGLE_IMAPS;
     char *gmail_imap_url = construct_url(base_url, "INBOX");
+    char *bearertoken = getgooglebearertoken(); 
     char *username = getgmailaddress(bearertoken);
-    
-    MemoryStruct imap_result;
-    memstruct_init(&imap_result);
-    
-    int res = morse_exec_imap_xoauth2(bearertoken, 
-        gmail_imap_url,
-        username, 
-        imap_cmd, 
-        &imap_result); 
+    ImapResponse *response = imap_response_new();
 
-    if (imap_result.memory) {
-        printf("Result:\n");
-        struct curl_slist *result_lines = get_response_lines(imap_result.memory);
-        print_list(result_lines);
-        curl_slist_free_all(result_lines);    
-        printf("%zu bytes\n", imap_result.size);
-        free(imap_result.memory);  
-    }
-      
-    // always clean up
+    // execute the command and get the response
+    int res = morse_exec_imap_xoauth2(
+        bearertoken,
+        gmail_imap_url,
+        username,
+        imap_cmd,
+        response->data
+        );
+
+    // clean up
     free(gmail_imap_url);
     free(username);
-    return res; 
+    free(bearertoken);
+
+    // indicate status
+    response->status = res;
+    return response;
 }
+
+
+// /*
+//  * Execute an arbitrary IMAP command for Gmail
+//  */
+// int morse_exec_gmail_imap(char *bearertoken, char *imap_cmd) {
+//     char *base_url = GOOGLE_IMAPS;
+//     char *gmail_imap_url = construct_url(base_url, "INBOX");
+//     char *username = getgmailaddress(bearertoken);
+    
+//     MemoryStruct imap_result;
+//     memstruct_init(&imap_result);
+    
+//     int res = morse_exec_imap_xoauth2(bearertoken, 
+//         gmail_imap_url,
+//         username, 
+//         imap_cmd, 
+//         &imap_result); 
+
+//     if (imap_result.memory) {
+//         printf("Result:\n");
+//         struct curl_slist *result_lines = get_response_lines(imap_result.memory);
+//         print_list(result_lines);
+//         curl_slist_free_all(result_lines);    
+//         printf("%zu bytes\n", imap_result.size);
+//         free(imap_result.memory);  
+//     }
+      
+//     // always clean up
+//     free(gmail_imap_url);
+//     free(username);
+//     return res; 
+// }
 
 
 /*
@@ -240,8 +267,16 @@ unsigned long get_last_uid_from(char *output) {
 }
 
 
-int morse_retrieve_last_n(char *bearertoken, size_t n) {
-    int res = morse_exec_gmail_imap(bearertoken, "LIST \"\" *");
+int morse_list_folders() {
+    char *command = "LIST \"\" *";
+    ImapResponse *resp = morse_exec_imap_google(command);
+    printf("Result:\n");
+    struct curl_slist *result_lines = get_response_lines(resp->data->memory);
+    print_list(result_lines);
+    curl_slist_free_all(result_lines);    
+    printf("%zu bytes\n", resp->data->size);
+    imap_response_free(resp);  
+    int res = resp->status;
     return res; 
 }
 
