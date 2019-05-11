@@ -45,7 +45,7 @@ char* imapcmd_id_fetch_body_text(char *id) {
  * Fetches the subject of the message WITHOUT opening it (marking
  * as read)
  */
-char* imapcmd_uid_get_subject(char *id) {
+char* imapcmd_id_get_subject(char *id) {
     const char *template = "FETCH %s BODY.PEEK[HEADER.FIELDS (SUBJECT)]";
     char *retval = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*retval));
     sprintf(retval, template, id);

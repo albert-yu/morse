@@ -26,13 +26,13 @@ char *imapcmd_create_folder(char *foldername);
  * Fetches the subject of the message WITHOUT opening it (marking
  * as read)
  */
-char* imapcmd_uid_get_subject(char *uid);
+char* imapcmd_id_get_subject(char *uid);
 
 
 /*
  * Fetches the text of the message with the given UID
  */
-char* imapcmd_uid_fetch_body_text(char *uid);
+char* imapcmd_id_fetch_body_text(char *uid);
 
 
 /*

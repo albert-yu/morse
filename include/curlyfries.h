@@ -1,3 +1,8 @@
+/*
+ * This file contains methods that help with CURL data structures.
+ */ 
+
+
 #ifndef CURLYFRIES_H
 #define CURLYFRIES_H
 

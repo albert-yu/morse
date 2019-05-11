@@ -19,11 +19,8 @@ int main(int argc, char *argv[]) {
           "e-mail viewers able to handle HTML.</p><code>foo();</code>"
           "</body></html>\r\n";
 
-    // char *bearertoken = getgooglebearertoken();
-
-
-    int res = morse_list_folders();
-    printf("Status: %d\n", res);
+    list_last_n("[Gmail]/All Mail", 100);
+    // morse_list_folders();
     
     return 0;
 }

@@ -2,6 +2,7 @@
 
 #include "authenticate.h"
 #include "curlyfries.h"
+#include "dataconv.h"
 #include "imapcmd.h"
 #include "imap_request.h"
 #include "imap_response.h"
@@ -180,12 +181,37 @@ ReturnChar get_return_type(char *string) {
 
 
 /*
+ * Tokenizes a string into a list of strings.
+ */
+struct curl_slist* tokenize_into_list(char *string, char *token) {
+    struct curl_slist *parts = NULL;
+
+    char *copy_of_str = strdup(string);
+    if (!copy_of_str) {
+        fprintf(stderr, "Not enough memory!\n");
+        return NULL;
+    }
+
+    // save ptr
+    char *ptr = NULL;
+    ptr = strtok(copy_of_str, token);
+    while (ptr != NULL) {
+        parts = curl_slist_append(parts, ptr);
+        ptr = strtok(NULL, token);
+    }
+
+    free(copy_of_str);
+    return parts;
+}
+
+
+/*
  * Gets each line of an IMAP response.
  * Caller must free the returned list.
  */
 struct curl_slist* get_response_lines(char *imap_output) {
     // using curl's built-in linked list
-    struct curl_slist* lines = NULL;
+    struct curl_slist *lines = NULL;
     
     // determine type of return (\r\n or \n)
     ReturnChar newline_char = get_return_type(imap_output);
@@ -232,6 +258,76 @@ CURL* get_imap_curl_google() {
     char *gmail_imap_url = construct_url(base_url, "INBOX");
     CURL *curl = get_google_curl(gmail_imap_url);
     return curl;
+}
+
+
+void list_last_n(char *box_name, size_t n) {
+    char *command1 = imapcmd_select_box(box_name);
+    CURL *curl;
+    curl = get_imap_curl_google();
+    ImapResponse *response1 = morse_exec_imap_stateful(curl, command1);
+    if (response1) {
+        if (response1->status == 0) {
+            printf("%s\n", response1->data->memory);
+            // get each line
+            struct curl_slist *lines = get_response_lines(response1->data->memory);
+
+            // iterate through to find how many exist in the
+            // given box
+            struct curl_slist *next;
+            struct curl_slist *item;
+            item = lines;
+            char *total_msg_count_as_str = NULL;
+            int found = 0;
+            do {
+                next = item->next;
+                char *content = item->data;
+                struct curl_slist *words = tokenize_into_list(content, " ");
+                struct curl_slist *inner_next; 
+                struct curl_slist *inner_item; 
+                inner_item = words; 
+
+                do {
+                    inner_next = inner_item->next;
+                    if (inner_next) {
+                        // get the next word
+                        char *word = inner_next->data;
+                        // printf("%s\n", word);
+                        if (strcmp(word, "EXISTS") == 0) {
+                            // number should be in the current node 
+                            total_msg_count_as_str = strdup(inner_item->data);
+                            found = 1;
+                            break;
+                        }
+                    }
+                    inner_item = inner_next;
+                } while (inner_next);
+                                
+                if (found) {
+                    break;
+                }              
+                item = next;
+            } while (next);
+            size_t total_count = 0;
+            if (total_msg_count_as_str) {
+                size_t total_count = decimal_to_size_t(total_msg_count_as_str);
+                printf("total: %zu\n", total_count);
+                free(total_msg_count_as_str);
+                char *command2 = imapcmd_list_messages(total_count, n);
+                printf("%s\n", command2);
+                ImapResponse *second_resp = morse_exec_imap_stateful(curl, command2);
+                if (second_resp) {
+                    printf("%s\n", second_resp->data->memory);
+                    imap_response_free(second_resp);
+                }
+                free(command2);
+            }
+        }
+        imap_response_free(response1);
+    }
+
+    free(command1);
+    curl_easy_cleanup(curl);
 }
 
 
