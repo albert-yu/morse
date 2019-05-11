@@ -1,4 +1,4 @@
-Í#include <stdio.h>
+#include <stdio.h>
 
 #include "authenticate.h"
 #include "curlyfries.h"
