@@ -25,6 +25,7 @@ MemoryStruct* memstruct_new() {
         free(new_mem);
         return NULL;
     }
+    new_mem->size = 0;
     return new_mem;
 }
 

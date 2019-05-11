@@ -10,7 +10,6 @@ ImapResponse* imap_response_new() {
     if (inner_data) {
         new_resp = malloc(sizeof(ImapResponse));
         if (new_resp) {
-            printf("foo\n");
             new_resp->data = inner_data;
             new_resp->status = 0;
         }

@@ -224,39 +224,6 @@ ImapResponse* morse_exec_imap_google(char *imap_cmd) {
 }
 
 
-// /*
-//  * Execute an arbitrary IMAP command for Gmail
-//  */
-// int morse_exec_gmail_imap(char *bearertoken, char *imap_cmd) {
-//     char *base_url = GOOGLE_IMAPS;
-//     char *gmail_imap_url = construct_url(base_url, "INBOX");
-//     char *username = getgmailaddress(bearertoken);
-    
-//     MemoryStruct imap_result;
-//     memstruct_init(&imap_result);
-    
-//     int res = morse_exec_imap_xoauth2(bearertoken, 
-//         gmail_imap_url,
-//         username, 
-//         imap_cmd, 
-//         &imap_result); 
-
-//     if (imap_result.memory) {
-//         printf("Result:\n");
-//         struct curl_slist *result_lines = get_response_lines(imap_result.memory);
-//         print_list(result_lines);
-//         curl_slist_free_all(result_lines);    
-//         printf("%zu bytes\n", imap_result.size);
-//         free(imap_result.memory);  
-//     }
-      
-//     // always clean up
-//     free(gmail_imap_url);
-//     free(username);
-//     return res; 
-// }
-
-
 /*
  * Gets the maximum (last) UID available
  */
