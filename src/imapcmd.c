@@ -31,12 +31,12 @@ char *imapcmd_create_folder(char *foldername) {
 
 
 /*
- * Fetches the text of the message with the given UID
+ * Fetches the text of the message with the given ID
  */
-char* imapcmd_uid_fetch_body_text(char *uid) {
-    const char *template = "UID FETCH %s BODY[TEXT]";
+char* imapcmd_id_fetch_body_text(char *id) {
+    const char *template = "FETCH %s BODY[TEXT]";
     char *buffer = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*buffer));
-    sprintf(buffer, template, uid);
+    sprintf(buffer, template, id);
     return buffer;
 }
 
@@ -45,10 +45,10 @@ char* imapcmd_uid_fetch_body_text(char *uid) {
  * Fetches the subject of the message WITHOUT opening it (marking
  * as read)
  */
-char* imapcmd_uid_get_subject(char *uid) {
-    const char *template = "UID FETCH %s BODY.PEEK[HEADER.FIELDS (SUBJECT)]";
+char* imapcmd_uid_get_subject(char *id) {
+    const char *template = "FETCH %s BODY.PEEK[HEADER.FIELDS (SUBJECT)]";
     char *retval = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*retval));
-    sprintf(retval, template, uid);
+    sprintf(retval, template, id);
     return retval;
 }
 
@@ -61,9 +61,15 @@ char* imapcmd_list_boxes() {
 }
 
 
-char *imapcmd_list_messages() {
-    const char *list_messages_cmd = "UID FETCH 1:* (FLAGS)";
+char *imapcmd_list_messages(size_t total_msg_count, size_t length) {
+    if (length > total_msg_count) {
+        fprintf(stderr, "Cannot have length (%zu) greater than total_msg_count (%zu).\n",
+            length, total_msg_count);
+    }
+
+    const char *list_messages_cmd_template = "FETCH %zu:%zu (FLAGS)";
     char *retval = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*retval));
-    strcpy(retval, list_messages_cmd);
+    sprintf(retval, list_messages_cmd_template, 
+        total_msg_count - length, total_msg_count);
     return retval;
 }

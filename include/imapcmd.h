@@ -42,9 +42,9 @@ char* imapcmd_list_boxes();
 
 
 /* 
- * lists messages
+ * Lists most recent messages.
  */
-char *imapcmd_list_messages();
+char *imapcmd_list_messages(size_t total_msg_count, size_t length);
 
 #ifdef __cplusplus
 }

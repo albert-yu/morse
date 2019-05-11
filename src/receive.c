@@ -234,42 +234,10 @@ CURL* get_imap_curl_google() {
     return curl;
 }
 
-// ImapResponse* morse_exec_imap_google(char *imap_cmd) {
-//     char *base_url = GOOGLE_IMAPS;
-//     char *gmail_imap_url = construct_url(base_url, "INBOX");
-//     char *bearertoken = getgooglebearertoken(); 
-//     char *username = getgmailaddress(bearertoken);
-//     // ImapResponse *response = imap_response_new();
-
-//     // execute the command and get the response
-//     // int res = morse_exec_imap_xoauth2(
-//     //     bearertoken,
-//     //     gmail_imap_url,
-//     //     username,
-//     //     imap_cmd,
-//     //     response->data
-//     //     );
-
-//     ImapResponse *response;
-//     CURL *curl = get_curl_xoauth2(bearertoken, gmail_imap_url, username);
-//     if (curl) {
-//         response = morse_exec_imap_stateful(curl, imap_cmd);
-//         curl_easy_cleanup(curl);
-//     }
-
-//     // clean up
-//     free(gmail_imap_url);
-//     free(username);
-//     free(bearertoken);
-
-//     return response;
-// }
-
 
 int morse_list_folders() {
     char *command1 = imapcmd_select_box("[Gmail]/All Mail");
-    char *command2 = imapcmd_list_messages();
-
+    char *command2 = imapcmd_list_messages(41916, 100);
     CURL *curl;
     curl = get_imap_curl_google();
     ImapResponse *response1 = morse_exec_imap_stateful(curl, command1);
