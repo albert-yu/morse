@@ -2,6 +2,7 @@
 #define CURLYFRIES_H
 
 #include <curl/curl.h>
+#include "authenticate.h"
 
 
 #ifdef __cplusplus
@@ -29,6 +30,14 @@ void print_list(struct curl_slist *list);
 CURL* get_curl_xoauth2(const char *bearertoken,
                        const char *url,
                        const char *username);
+
+
+/*
+ * Get a CURL handle configured for Google.
+ * The URL can be either the SMTP or IMAP one
+ */
+CURL* get_google_curl(const char *url); 
+
 
 #ifdef __cplusplus
 }

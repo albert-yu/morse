@@ -64,3 +64,18 @@ CURL* get_curl_xoauth2(const char *bearertoken,
     }
     return curl;
 }
+
+
+/*
+ * Get a CURL handle configured for Google.
+ * The URL can be either the SMTP or IMAP one
+ */
+CURL* get_google_curl(const char *url) {
+    CURL *curl;
+    char *bearertoken = getgooglebearertoken(); 
+    char *username = getgmailaddress(bearertoken);
+    curl = get_curl_xoauth2(bearertoken, url, username);
+
+    return curl;
+}
+

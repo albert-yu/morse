@@ -227,68 +227,68 @@ struct curl_slist* get_response_lines(char *imap_output) {
 }
 
 
-ImapResponse* morse_exec_imap_google(char *imap_cmd) {
+CURL* get_imap_curl_google() {
     char *base_url = GOOGLE_IMAPS;
     char *gmail_imap_url = construct_url(base_url, "INBOX");
-    char *bearertoken = getgooglebearertoken(); 
-    char *username = getgmailaddress(bearertoken);
-    // ImapResponse *response = imap_response_new();
-
-    // execute the command and get the response
-    // int res = morse_exec_imap_xoauth2(
-    //     bearertoken,
-    //     gmail_imap_url,
-    //     username,
-    //     imap_cmd,
-    //     response->data
-    //     );
-
-    ImapResponse *response;
-    CURL *curl = get_curl_xoauth2(bearertoken, gmail_imap_url, username);
-    if (curl) {
-        response = morse_exec_imap_stateful(curl, imap_cmd);
-        curl_easy_cleanup(curl);
-    }
-
-    // clean up
-    free(gmail_imap_url);
-    free(username);
-    free(bearertoken);
-
-    return response;
+    CURL *curl = get_google_curl(gmail_imap_url);
+    return curl;
 }
 
+// ImapResponse* morse_exec_imap_google(char *imap_cmd) {
+//     char *base_url = GOOGLE_IMAPS;
+//     char *gmail_imap_url = construct_url(base_url, "INBOX");
+//     char *bearertoken = getgooglebearertoken(); 
+//     char *username = getgmailaddress(bearertoken);
+//     // ImapResponse *response = imap_response_new();
 
-/*
- * Gets the maximum (last) UID available
- */
-unsigned long get_last_uid_from(char *output) {
-    unsigned long result = 0L; 
+//     // execute the command and get the response
+//     // int res = morse_exec_imap_xoauth2(
+//     //     bearertoken,
+//     //     gmail_imap_url,
+//     //     username,
+//     //     imap_cmd,
+//     //     response->data
+//     //     );
 
-    return result;
-}
+//     ImapResponse *response;
+//     CURL *curl = get_curl_xoauth2(bearertoken, gmail_imap_url, username);
+//     if (curl) {
+//         response = morse_exec_imap_stateful(curl, imap_cmd);
+//         curl_easy_cleanup(curl);
+//     }
+
+//     // clean up
+//     free(gmail_imap_url);
+//     free(username);
+//     free(bearertoken);
+
+//     return response;
+// }
 
 
 int morse_list_folders() {
     char *command1 = imapcmd_select_box("[Gmail]/All Mail");
     char *command2 = imapcmd_list_messages();
-    ImapResponse *resp = morse_exec_imap_google(command1);
+
+    CURL *curl;
+    curl = get_imap_curl_google();
+    ImapResponse *response1 = morse_exec_imap_stateful(curl, command1);
+    if (response1) {
+        if (response1->status == 0) {
+            printf("%s\n", response1->data->memory);
+            printf("\n");
+            ImapResponse *second_resp = morse_exec_imap_stateful(curl, command2);
+            if (second_resp) {
+                printf("%s\n", second_resp->data->memory);
+                imap_response_free(second_resp);
+            }
+        }
+        imap_response_free(response1);
+    }
+
     free(command1);
-
-    printf("Result:\n");
-    struct curl_slist *result_lines = get_response_lines(resp->data->memory);
-    print_list(result_lines);
-    curl_slist_free_all(result_lines);    
-    printf("%zu bytes\n", resp->data->size);
-    imap_response_free(resp);  
-    ImapResponse *resp2 = morse_exec_imap_google(command2);
     free(command2);
-
-    struct curl_slist *result_lines2 = get_response_lines(resp2->data->memory);
-    print_list(result_lines2);
-    curl_slist_free_all(result_lines2);
-    int res = resp2->status;
-    imap_response_free(resp2);
-    return res; 
+    curl_easy_cleanup(curl);
+    return 0;
 }
 
