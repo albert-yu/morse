@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <curl/curl.h>
 
 #include "authenticate.h"  // curl is in httpclient.h
 #include "curlyfries.h"
@@ -175,7 +174,7 @@ struct curl_slist* add_recipients(struct curl_slist *recipients, char *recips_st
  */
 int morse_sendmail_inner(char *bearer_token, char *from, char *to, char *cc, char *bcc, 
              char *subject, char *body, char *mimetype,
-             char **attachments) {
+             struct curl_slist *attachments) {
     // validate inputs
     // add TO (required)
     if (!to) {
@@ -308,14 +307,29 @@ int morse_sendmail_inner(char *bearer_token, char *from, char *to, char *cc, cha
         curl_mime_headers(part, slist, 1);
 
         if (attachments) {
-            char *attachment = *attachments;
-            while (attachment) {
+            // char *attachment = *attachments;
+            // while (attachment) {
+            //     if (fileexists(attachment)) {
+            //         part = curl_mime_addpart(mime);
+            //         curl_mime_filedata(part, attachment);                   
+            //     }
+            //     ++attachment;
+            // }         
+
+            // iterate through the linked list
+            struct curl_slist *next;
+            struct curl_slist *item;
+
+            item = attachments;
+            do {
+                next = item->next;
+                char *attachment = item->data;
                 if (fileexists(attachment)) {
                     part = curl_mime_addpart(mime);
-                    curl_mime_filedata(part, attachment);                   
+                    curl_mime_filedata(part, attachment);
                 }
-                ++attachment;
-            }         
+                item = next;
+            } while(next);
         }
 
         // set mime
@@ -357,11 +371,17 @@ int morse_sendmail_inner(char *bearer_token, char *from, char *to, char *cc, cha
 }
 
 
-int morse_sendmail(char *bearertoken, char *to, char *cc, char *bcc, 
-             char *subject, char *body, char *mimetype,
-             char **attachments) {
+int morse_sendmail(char *bearertoken, SmtpRequest *request) {
     char *user_email = getgmailaddress(bearertoken);
-    int result = morse_sendmail_inner(bearertoken, user_email, to, cc, bcc, subject, body, mimetype, attachments);
+    int result = morse_sendmail_inner(
+        bearertoken, user_email, 
+        request->to, 
+        request->cc, 
+        request->bcc, 
+        request->subject, 
+        request->body, 
+        request->mimetype, 
+        request->attachments);
     free(user_email);
     return result;
 }
