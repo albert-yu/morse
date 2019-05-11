@@ -40,6 +40,12 @@ char* imapcmd_uid_fetch_body_text(char *uid);
  */
 char* imapcmd_list_boxes();
 
+
+/* 
+ * lists messages
+ */
+char *imapcmd_list_messages();
+
 #ifdef __cplusplus
 }
 #endif

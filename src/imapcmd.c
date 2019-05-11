@@ -23,7 +23,7 @@ char* imapcmd_select_box(char *box_name) {
  * Creates a folder
  */
 char *imapcmd_create_folder(char *foldername) {
-    const char *template = "CREATE %s";
+    const char *template = "CREATE \"%s\"";
     char *buf = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*buf));
     sprintf(buf, template, foldername);
     return buf;
@@ -61,3 +61,9 @@ char* imapcmd_list_boxes() {
 }
 
 
+char *imapcmd_list_messages() {
+    const char *list_messages_cmd = "UID FETCH 1:* (FLAGS)";
+    char *retval = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*retval));
+    strcpy(retval, list_messages_cmd);
+    return retval;
+}

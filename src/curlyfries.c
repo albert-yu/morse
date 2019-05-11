@@ -39,3 +39,28 @@ void print_list(struct curl_slist *list) {
     }
     iter_list(list, &print_item);
 }
+
+
+/*
+ * Gets a CURL handle with XOAuth2 set up
+ */
+CURL* get_curl_xoauth2(const char *bearertoken,
+                       const char *url,
+                       const char *username) {
+    CURL *curl;
+    curl = curl_easy_init();
+    if (curl) {
+        printf("curl init OK\n");
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+
+        // auth        
+        curl_easy_setopt(curl, CURLOPT_USERNAME, username);
+        curl_easy_setopt(curl, CURLOPT_LOGIN_OPTIONS, "AUTH=XOAUTH2");
+        curl_easy_setopt(curl, CURLOPT_XOAUTH2_BEARER, bearertoken);
+        curl_easy_setopt(curl, CURLOPT_SASL_IR, 1L);
+
+        // use SSL
+        curl_easy_setopt(curl, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL)
+    }
+    return curl;
+}

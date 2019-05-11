@@ -47,6 +47,7 @@ char* construct_url(char *base_url, char *path) {
 }
 
 
+
 int morse_exec_imap_xoauth2(const char *bearertoken, 
                             const char *imap_url,
                             const char *username,
@@ -235,17 +236,25 @@ unsigned long get_last_uid_from(char *output) {
 
 
 int morse_list_folders() {
-    // char *command = "LIST \"\" *";
-    char *command = imapcmd_select_box("Receipts/Venmo");
-    ImapResponse *resp = morse_exec_imap_google(command);
-    free(command);
+    char *command1 = imapcmd_select_box("[Gmail]/All Mail");
+    char *command2 = imapcmd_list_messages();
+    ImapResponse *resp = morse_exec_imap_google(command1);
+    free(command1);
+
     printf("Result:\n");
     struct curl_slist *result_lines = get_response_lines(resp->data->memory);
     print_list(result_lines);
     curl_slist_free_all(result_lines);    
     printf("%zu bytes\n", resp->data->size);
     imap_response_free(resp);  
-    int res = resp->status;
+    ImapResponse *resp2 = morse_exec_imap_google(command2);
+    free(command2);
+
+    struct curl_slist *result_lines2 = get_response_lines(resp2->data->memory);
+    print_list(result_lines2);
+    curl_slist_free_all(result_lines2);
+    int res = resp2->status;
+    imap_response_free(resp2);
     return res; 
 }
 
