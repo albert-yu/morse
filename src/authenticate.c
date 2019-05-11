@@ -286,11 +286,13 @@ char* getfreshcredentials(size_t *tokenlength) {
 
     // write to file encrypted
     crypto_encrypt_to_file(mem.memory, mem.size);
+    printf("Successfully encrypted to file.\n");
 
     // copy to buffer to return
     char *ret_buffer = calloc(mem.size + 1, sizeof(*ret_buffer));
     memcpy(ret_buffer, mem.memory, mem.size);
 
+    printf("Copied memory to buffer.\n");
     if (tokenlength) {
         *tokenlength = mem.size;
     }
@@ -303,6 +305,7 @@ char* getfreshcredentials(size_t *tokenlength) {
         hashtable_destroy(ht);
     }    
 
+    printf("Garbage collected.\n");
     return ret_buffer;
 }
 
