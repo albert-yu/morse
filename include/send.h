@@ -54,10 +54,10 @@ typedef struct smtp_request_t {
  * @mimetype - the MIME type of the body (text/html, text/plain)
  * @attachments - the file paths of the attachments, NULL-terminated
  */
-// int morse_sendmail(char *bearertoken, char *to, char *cc, char *bcc, 
+// int morse_sendmail_google(char *bearertoken, char *to, char *cc, char *bcc, 
 //              char *subject, char *body, char *mimetype,
 //              char **attachments);
-int morse_sendmail(char *bearertoken, SmtpRequest *smtp_req);
+int morse_sendmail_google(char *bearertoken, SmtpRequest *smtp_req);
 
 #ifdef __cplusplus
 }
