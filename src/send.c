@@ -374,7 +374,8 @@ int morse_sendmail_inner(char *bearer_token, char *from, char *to, char *cc, cha
 int morse_sendmail_google(char *bearertoken, SmtpRequest *request) {
     char *user_email = getgmailaddress(bearertoken);
     int result = morse_sendmail_inner(
-        bearertoken, user_email, 
+        bearertoken, 
+        user_email, 
         request->to, 
         request->cc, 
         request->bcc, 
