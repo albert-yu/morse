@@ -44,14 +44,15 @@ make
 TODO
 
 ## To-do list
-* ~Get user email from token~
-* Receive emails
-* ~Support multiple recipients~
-* Compile to static library
-* Compile to debug
-* ~Add separate `morse.h` header for API~
-* Cross-platform compile
-  * macOS
-  * Linux
-  * Windows
-* Do not depend on environment for availability of dependencies
+- [ ] Replace strarray usages with curl linked list
+- [x] Get user email from token
+- [ ] Receive emails
+- [x] Support multiple recipients
+- [x] Compile to static library
+- [ ] Compile to debug
+- [x] Add separate `morse.h` header for API
+- [ ] Cross-platform compile
+  * [ ] macOS
+  * [ ] Linux
+  * [ ] Windows
+- [ ] Do not depend on environment for availability of dependencies
