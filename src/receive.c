@@ -1,8 +1,10 @@
-#include <stdio.h>
+Í#include <stdio.h>
 
 #include "authenticate.h"
 #include "curlyfries.h"
 #include "imapcmd.h"
+#include "imap_request.h"
+#include "imap_response.h"
 #include "memstruct.h"
 #include "receive.h"
 
@@ -204,7 +206,7 @@ int morse_exec_gmail_imap(char *bearertoken, char *imap_cmd) {
     char *username = getgmailaddress(bearertoken);
     
     MemoryStruct imap_result;
-    memory_struct_init(&imap_result);
+    memstruct_init(&imap_result);
     
     int res = morse_exec_imap_xoauth2(bearertoken, 
         gmail_imap_url,

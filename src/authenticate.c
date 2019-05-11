@@ -271,7 +271,7 @@ char* getfreshcredentials(size_t *tokenlength) {
     // printf("post data %s\n", post_data);
 
     MemoryStruct mem;
-    int status_code = memory_struct_init(&mem);
+    int status_code = memstruct_init(&mem);
 
     if (status_code != 0) {
         free(post_data);
@@ -394,7 +394,7 @@ char* validate_google_token(char *token) {
     sprintf(endpoint, "%s%s", GOOGLE_TOKEN_CHECK_URL, token);
 
     MemoryStruct mem;
-    memory_struct_init(&mem);
+    memstruct_init(&mem);
     
     // call HTTP GET
     http_get(endpoint, NULL, &curl_mem_callback, (void*)&mem);

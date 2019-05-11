@@ -22,7 +22,20 @@ typedef struct memory_struct_t {
  * Initializes a memory struct. 
  * To free, call free(memstruct.memory)
  */
-int memory_struct_init(MemoryStruct *chunk);
+int memstruct_init(MemoryStruct *chunk);
+
+
+/*
+ * Creates a new MemoryStruct on the heap.
+ */
+MemoryStruct* memstruct_new(); 
+
+
+/*
+ * Frees a MemoryStruct
+ */
+void memstruct_free(MemoryStruct* mem_struct);
+
 
 /**
  * Callback function for handling server response.

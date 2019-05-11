@@ -2,11 +2,7 @@
 #include "memstruct.h"
 
 
-int memory_struct_init(MemoryStruct *chunk) {
-    //if (chunk->memory) {
-    //    fprintf(stderr, "MemoryStruct's memory must be NULL.\n");
-    //    return EINVAL;
-    //}
+int memstruct_init(MemoryStruct *chunk) {
     chunk->memory = malloc(1);  /* will be grown as needed by the realloc*/ 
     if (chunk->memory == NULL) {
         fprintf(stderr, "Cannot allocate memory for MemoryStruct.\n");
@@ -14,6 +10,31 @@ int memory_struct_init(MemoryStruct *chunk) {
     }
     chunk->size = 0;    /* no data at this point */ 
     return 0;
+}
+
+
+MemoryStruct* memstruct_new() {
+    MemoryStruct* new_mem = malloc(sizeof(*new_mem));
+    if (!new_mem) {
+        fprintf(stderr, "Cannot allocate memory for new MemoryStruct.\n");
+        return NULL;
+    }
+    new_mem->memory = malloc(1);
+    if (!new_mem->memory) {
+        fprintf(stderr, "Cannot allocate MemoryStruct->memory.\n");
+        free(new_mem);
+        return NULL;
+    }
+    return new_mem;
+}
+
+
+/*
+ * Frees the char array, then frees the struct.
+ */
+void memstruct_free(MemoryStruct* mem_struct) {
+    free(mem_struct->memory);
+    free(mem_struct);
 }
 
 
