@@ -12,7 +12,7 @@
  * Is this better with strncat?   
  */
 char* imapcmd_select_box(char *box_name) {
-    const char *template = "SELECT %s";
+    const char *template = "SELECT \"%s\"";
     char *buffer = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*buffer));
     sprintf(buffer, template, box_name);
     return buffer;

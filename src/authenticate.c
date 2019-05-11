@@ -275,10 +275,10 @@ char* getfreshcredentials(size_t *tokenlength) {
 
     if (status_code != 0) {
         free(post_data);
-	strarray_free(parsed_strarray, elem_count);
-	if (ht != NULL) {
-	    hashtable_destroy(ht); 
-	}
+        strarray_free(parsed_strarray, elem_count);
+        if (ht != NULL) {
+            hashtable_destroy(ht); 
+        }
     }
     http_post_no_auth(exchange_url, content_type, post_data, &curl_mem_callback, (void*)&mem);
 

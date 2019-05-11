@@ -235,8 +235,10 @@ unsigned long get_last_uid_from(char *output) {
 
 
 int morse_list_folders() {
-    char *command = "LIST \"\" *";
+    // char *command = "LIST \"\" *";
+    char *command = imapcmd_select_box("Receipts/Venmo");
     ImapResponse *resp = morse_exec_imap_google(command);
+    free(command);
     printf("Result:\n");
     struct curl_slist *result_lines = get_response_lines(resp->data->memory);
     print_list(result_lines);
