@@ -70,6 +70,6 @@ char *imapcmd_list_messages(size_t total_msg_count, size_t length) {
     const char *list_messages_cmd_template = "FETCH %zu:%zu (FLAGS)";
     char *retval = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*retval));
     sprintf(retval, list_messages_cmd_template, 
-        total_msg_count - length, total_msg_count);
+        total_msg_count - length + 1, total_msg_count);
     return retval;
 }
