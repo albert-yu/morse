@@ -261,6 +261,7 @@ CURL* get_imap_curl_google() {
 }
 
 
+
 void list_last_n(char *box_name, size_t n) {
     char *command1 = imapcmd_select_box(box_name);
     CURL *curl;
@@ -308,11 +309,16 @@ void list_last_n(char *box_name, size_t n) {
                 }              
                 item = next;
             } while (next);
+
+            // get the list of messages
             size_t total_count = 0;
             if (total_msg_count_as_str) {
                 size_t total_count = decimal_to_size_t(total_msg_count_as_str);
                 // printf("total: %zu\n", total_count);
                 free(total_msg_count_as_str);
+
+                // IMAP server throws an error if 
+                // one requests more messages than exists
                 if (n > total_count) {
                     n = total_count;
                 }
