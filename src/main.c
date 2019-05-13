@@ -4,6 +4,7 @@
 
 #include "morse.h"
 #include "secrets.h"
+#include "dataconv.h"
 
 int main(int argc, char *argv[]) {  
 
@@ -21,7 +22,6 @@ int main(int argc, char *argv[]) {
 
     list_last_n("[Gmail]/All Mail", 100);
     // morse_list_folders();
-    
     return 0;
 }
 

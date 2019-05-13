@@ -9,7 +9,6 @@
  * decimal value. E.g. '0' -> 0
  */
 int dec_char_to_int(char c) {
-    int result;
     int ZERO = 48;
     int NINE = 57;
     if (c > NINE || c < ZERO) {
@@ -17,7 +16,6 @@ int dec_char_to_int(char c) {
         // character, I guess
         return 0;
     }
-
     return ((int)c - ZERO);
 }
 
@@ -36,13 +34,13 @@ size_t square(size_t num) {
  */
 size_t expt_iter(size_t base, size_t pow, size_t total) {
     if (pow == 0) {
-        return (total * 1);
+        return total;
     }
     else if ((pow % 2) == 0) {
-        return expt_iter(base, pow / 2, total * square(base));
+        return expt_iter(square(base), pow / 2, total);
     }
     else {
-        return expt_iter(base, pow - 1, total * base);
+        return expt_iter(base, pow - 1, base * total);
     }
 }
 
@@ -62,8 +60,9 @@ size_t decimal_to_size_t(char *digits) {
     for (i = len, j = 0; i > 0; i--, j++) {
         c = digits[i - 1];
         int dec = dec_char_to_int(c);
-        // printf("%zu, %zu\n", i, j); 
-        value += (expt(BASE, j) * dec);
+        size_t value_to_add = (expt(BASE, j) * dec);
+        value += value_to_add;
     }
+    printf("%zu\n", value);
     return value;
 }
