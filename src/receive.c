@@ -311,10 +311,13 @@ void list_last_n(char *box_name, size_t n) {
             size_t total_count = 0;
             if (total_msg_count_as_str) {
                 size_t total_count = decimal_to_size_t(total_msg_count_as_str);
-                printf("total: %zu\n", total_count);
+                // printf("total: %zu\n", total_count);
                 free(total_msg_count_as_str);
+                if (n > total_count) {
+                    n = total_count;
+                }
                 char *command2 = imapcmd_list_messages(total_count, n);
-                printf("%s\n", command2);
+                // printf("%s\n", command2);
                 ImapResponse *second_resp = morse_exec_imap_stateful(curl, command2);
                 if (second_resp) {
                     printf("%s\n", second_resp->data->memory);
