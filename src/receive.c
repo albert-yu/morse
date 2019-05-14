@@ -295,6 +295,9 @@ size_t get_num_messages_from(char *select_box_response) {
         item = next;
     } while (next);
 
+    // clean up curl slist
+    curl_slist_free_all(lines);
+
     // get the list of messages
     size_t total_count = 0;
     if (total_msg_count_as_str) {
@@ -335,6 +338,25 @@ size_t extract_id_from(const char *line_containing_id) {
 }
 
 
+size_t get_msg_count(CURL *curlhandle, char *box_name) {
+    char *select_box_command = imapcmd_select_box(box_name);
+    ImapResponse *response_box = morse_exec_imap_stateful(curlhandle, select_box_command);  
+    free(select_box_command);
+    if (!response_box) {
+        fprintf(stderr, "Could not select box with name %s.\n", box_name);
+        return 0;
+    }
+    if (response_box->status != 0) {
+        fprintf(stderr, 
+            "Response returned status with error code %d\n", 
+            response_box->status);
+        return 0;
+    }
+    size_t total_messages_in_box = get_num_messages_from(response_box->data->memory);
+    imap_response_free(response_box);
+    return total_messages_in_box;
+}
+
 
 /*
  * Gets the specified range of messages in a given box name.
@@ -343,20 +365,8 @@ MailMessage* get_messages(CURL *curlhandle,
                           char *box_name, 
                           size_t start, 
                           size_t length) {
-    char *select_box_command = imapcmd_select_box(box_name);
-    ImapResponse *response_box = morse_exec_imap_stateful(curlhandle, select_box_command);  
-    free(select_box_command);
-    if (!response_box) {
-        fprintf(stderr, "Could not select box with name %s.\n", box_name);
-        return NULL;
-    }
-    if (response_box->status != 0) {
-        fprintf(stderr, 
-            "Response returned status with error code %d\n", 
-            response_box->status);
-    }
-    size_t total_messages_in_box = get_num_messages_from(response_box->data->memory);
-    imap_response_free(response_box);
+    size_t total_messages_in_box;
+    total_messages_in_box = get_msg_count(curlhandle, box_name);
     if (start > total_messages_in_box) {
         // start shouldn't be greater than number of messages
         fprintf(stderr, 
@@ -413,87 +423,19 @@ MailMessage* get_messages(CURL *curlhandle,
 
 
 void list_last_n(char *box_name, size_t n) {
-    // char *command1 = imapcmd_select_box(box_name);
     CURL *curl;
     curl = get_imap_curl_google();
-    // ImapResponse *response1 = morse_exec_imap_stateful(curl, command1);
-    // if (response1) {
-    //     if (response1->status == 0) {
-    //         printf("%s\n", response1->data->memory);
-    //         // get each line
-    //         struct curl_slist *lines = get_response_lines(response1->data->memory);
 
-    //         // iterate through to find how many exist in the
-    //         // given box
-    //         struct curl_slist *next;
-    //         struct curl_slist *item;
-    //         item = lines;
-    //         char *total_msg_count_as_str = NULL;
-    //         int found = 0;
-    //         do {
-    //             next = item->next;
-    //             char *content = item->data;
-    //             struct curl_slist *words = tokenize_into_list(content, " ");
-    //             struct curl_slist *inner_next; 
-    //             struct curl_slist *inner_item; 
-    //             inner_item = words; 
-
-    //             do {
-    //                 inner_next = inner_item->next;
-    //                 if (inner_next) {
-    //                     // get the next word
-    //                     char *word = inner_next->data;
-    //                     // printf("%s\n", word);
-    //                     if (strcmp(word, "EXISTS") == 0) {
-    //                         // number should be in the current node 
-    //                         total_msg_count_as_str = strdup(inner_item->data);
-    //                         found = 1;
-    //                         break;
-    //                     }
-    //                 }
-    //                 inner_item = inner_next;
-    //             } while (inner_next);
-                                
-    //             curl_slist_free(words);
-    //             if (found) {
-    //                 break;
-    //             }              
-    //             item = next;
-    //         } while (next);
-
-    //         curl_slist_free(lines);
-
-    //         // get the list of messages
-    //         size_t total_count = 0;
-    //         if (total_msg_count_as_str) {
-    //             size_t total_count = decimal_to_size_t(total_msg_count_as_str);
-    //             // printf("total: %zu\n", total_count);
-    //             free(total_msg_count_as_str);
-
-    //             // IMAP server throws an error if 
-    //             // one requests more messages than exists
-    //             if (n > total_count) {
-    //                 n = total_count;
-    //             }
-    //             char *command2 = imapcmd_list_messages(total_count, n);
-    //             // printf("%s\n", command2);
-    //             ImapResponse *second_resp = morse_exec_imap_stateful(curl, command2);
-    //             if (second_resp) {
-    //                 printf("%s\n", second_resp->data->memory);
-    //                 imap_response_free(second_resp);
-    //             }
-    //             free(command2);
-    //         }
-    //     }
-    //     imap_response_free(response1);
-    // }
-
-    // free(command1);
+    size_t num_messages = get_msg_count(curl, box_name);
+    printf("Total message count in %s: %zu\n", 
+        box_name, num_messages);
+    size_t length = (n > num_messages) ? num_messages : n;
     MailMessage *mailmessages;
-    mailmessages = get_messages(curl, box_name, 1, 10);
+    mailmessages = get_messages(curl, box_name, 
+        num_messages - length + 1, length);
 
     if (mailmessages) {
-        for (size_t i = 0; i < 10; i++) {
+        for (size_t i = 0; i < length; i++) {
             printf("%zu\n", mailmessages[i].uid);
         }
         free(mailmessages);
