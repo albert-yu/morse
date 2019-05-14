@@ -13,6 +13,12 @@ extern "C" {
 int dec_char_to_int(char c); 
 
 
+
+/* 
+ * Is this a decimal string?
+ */
+int is_decimal_str(const char *str); 
+
 /*
  * Squares a number
  */

@@ -4,20 +4,41 @@
 #include "dataconv.h"
 
 
+#define ASCII_ZERO 48
+#define ASCII_NINE 57
+
+
+// is this a valid decimal character?
+int is_decimal_char(char c) {
+    return (c <= ASCII_NINE && c >= ASCII_ZERO);
+}
+
+
 /*
  * Converts an ASCII char to its
  * decimal value. E.g. '0' -> 0
  */
 int dec_char_to_int(char c) {
-    int ZERO = 48;
-    int NINE = 57;
-    if (c > NINE || c < ZERO) {
+    if (!is_decimal_char(c)) {
         fprintf(stderr, "%c is not a valid decimal digit.\n", c);
         // just return 0 if not a valid decimal
         // character, I guess
         return 0;
     }
-    return ((int)c - ZERO);
+    return ((int)c - ASCII_ZERO);
+}
+
+
+// is this a decimal string?
+int is_decimal_str(const char *str) {
+    while (*str) {
+        if (!is_decimal_char(*str)) {
+            return 0;
+        }
+        str++;
+    }
+
+    return 1;
 }
 
 

@@ -41,6 +41,12 @@ char* imapcmd_id_fetch_body_text(char *uid);
 char* imapcmd_list_boxes();
 
 
+/*
+ * Fetches a range of messages with the starting index
+ */
+char* imapcmd_fetch_messages(size_t start_id, size_t length); 
+
+
 /* 
  * Lists most recent messages.
  */

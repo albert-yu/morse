@@ -61,6 +61,18 @@ char* imapcmd_list_boxes() {
 }
 
 
+/*
+ * Command for fetching emails
+ */
+char* imapcmd_fetch_messages(size_t start_id, size_t length) {
+    const char *list_messages_cmd_template = "FETCH %zu:%zu (FLAGS)";
+    char *retval = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*retval));
+    sprintf(retval, list_messages_cmd_template, 
+        start_id, start_id + length - 1);
+    return retval;
+}
+
+
 char *imapcmd_list_messages(size_t total_msg_count, size_t length) {
     if (length > total_msg_count) {
         fprintf(stderr, "Cannot have length (%zu) greater than total_msg_count (%zu).\n",
