@@ -13,11 +13,11 @@ extern "C" {
 int dec_char_to_int(char c); 
 
 
-
 /* 
  * Is this a decimal string?
  */
 int is_decimal_str(const char *str); 
+
 
 /*
  * Squares a number
@@ -36,6 +36,9 @@ size_t expt(size_t base, size_t pow);
  * type.
  */
 size_t decimal_to_size_t(char *digits);
+
+
+char* size_t_to_str(size_t num);
 
 #ifdef __cplusplus
 }

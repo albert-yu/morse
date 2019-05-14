@@ -406,6 +406,27 @@ MailMessage* get_messages(CURL *curlhandle,
 }
 
 
+char* get_subject(CURL *curl, size_t msg_id) {
+    char *subj;
+     
+
+    return subj; 
+}
+
+/*
+ * Populates the messages' subjects.
+ * Array is null-terminated.
+ */
+void populate_msgs_subjects(CURL *curlhandle, MailMessage *msgs) {
+    if (msgs) {
+        while (*msgs) {
+
+            msgs++;
+        }
+    }
+}
+
+
 void list_last_n(char *box_name, size_t n) {
     CURL *curl;
     curl = get_imap_curl_google();

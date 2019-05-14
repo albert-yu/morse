@@ -88,3 +88,23 @@ size_t decimal_to_size_t(char *digits) {
     // printf("%zu\n", value);
     return value;
 }
+
+
+size_t count_digits(size_t num) {
+    size_t BASE = 10;
+    size_t num_digits = 1;
+
+    while (num >= expt(BASE, num_digits)) {
+        num_digits++;
+    }
+    return num_digits;
+}
+
+
+char* size_t_to_str(size_t num) {
+    size_t length;
+    length = count_digits(num);
+    char *retval = calloc(length + 1, sizeof(*retval));
+    sprintf(retval, "%zu", num);
+    return retval;
+}
