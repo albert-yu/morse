@@ -444,28 +444,3 @@ void list_last_n(char *box_name, size_t n) {
 }
 
 
-int morse_list_folders() {
-    char *command1 = imapcmd_select_box("[Gmail]/All Mail");
-    char *command2 = imapcmd_list_messages(41916, 100);
-    CURL *curl;
-    curl = get_imap_curl_google();
-    ImapResponse *response1 = morse_exec_imap_stateful(curl, command1);
-    if (response1) {
-        if (response1->status == 0) {
-            printf("%s\n", response1->data->memory);
-            printf("\n");
-            ImapResponse *second_resp = morse_exec_imap_stateful(curl, command2);
-            if (second_resp) {
-                printf("%s\n", second_resp->data->memory);
-                imap_response_free(second_resp);
-            }
-        }
-        imap_response_free(response1);
-    }
-
-    free(command1);
-    free(command2);
-    curl_easy_cleanup(curl);
-    return 0;
-}
-
