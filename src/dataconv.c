@@ -12,6 +12,7 @@ int dec_char_to_int(char c) {
     int ZERO = 48;
     int NINE = 57;
     if (c > NINE || c < ZERO) {
+        fprintf(stderr, "%c is not a valid decimal digit.\n", c);
         // just return 0 if not a valid decimal
         // character, I guess
         return 0;

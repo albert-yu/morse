@@ -14,7 +14,9 @@ typedef struct mailmetadata_t {
     char *cc;
     char *bcc;
     char *preview;
-    int read;
+
+    /* has this message been marked as read? */
+    int marked_read;
 } MailMetadata;
 
 
