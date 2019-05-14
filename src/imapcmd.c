@@ -33,8 +33,8 @@ char *imapcmd_create_folder(char *foldername) {
 /*
  * Fetches the text of the message with the given ID
  */
-char* imapcmd_id_fetch_body_text(char *id) {
-    const char *template = "FETCH %s BODY[TEXT]";
+char* imapcmd_id_fetch_body_text(size_t id) {
+    const char *template = "FETCH %zu BODY[TEXT]";
     char *buffer = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*buffer));
     sprintf(buffer, template, id);
     return buffer;
@@ -45,8 +45,8 @@ char* imapcmd_id_fetch_body_text(char *id) {
  * Fetches the subject of the message WITHOUT opening it (marking
  * as read)
  */
-char* imapcmd_id_get_subject(char *id) {
-    const char *template = "FETCH %s BODY.PEEK[HEADER.FIELDS (SUBJECT)]";
+char* imapcmd_id_get_subject(size_t id) {
+    const char *template = "FETCH %zu BODY.PEEK[HEADER.FIELDS (SUBJECT)]";
     char *retval = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*retval));
     sprintf(retval, template, id);
     return retval;
