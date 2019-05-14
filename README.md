@@ -44,6 +44,7 @@ make
 TODO
 
 ## To-do list
+- [ ] Implement caching
 - [ ] Replace strarray usages with curl linked list
 - [x] Get user email from token
 - [ ] Receive emails
