@@ -298,12 +298,14 @@ size_t get_num_messages_from(char *select_box_response) {
     // get the list of messages
     size_t total_count = 0;
     if (total_msg_count_as_str) {
-        size_t total_count = decimal_to_size_t(total_msg_count_as_str);
+        // printf("total count: %s\n", total_msg_count_as_str);
+        total_count = decimal_to_size_t(total_msg_count_as_str);
         free(total_msg_count_as_str);
     }
     else {
         fprintf(stderr, "Could not get the number of messages in box.\n");
     }
+
     return total_count;
 }
 
@@ -357,6 +359,9 @@ MailMessage* get_messages(CURL *curlhandle,
     imap_response_free(response_box);
     if (start > total_messages_in_box) {
         // start shouldn't be greater than number of messages
+        fprintf(stderr, 
+            "Requested starting index (%zu) is greater than the total number of messages (%zu).\n", 
+            start, total_messages_in_box);
         return NULL;
     }
 
@@ -485,12 +490,14 @@ void list_last_n(char *box_name, size_t n) {
 
     // free(command1);
     MailMessage *mailmessages;
-    mailmessages = get_messages(curl, box_name, 7000, 10);
+    mailmessages = get_messages(curl, box_name, 1, 10);
 
-    for (size_t i = 0; i < 10; i++) {
-        printf("%zu\n", mailmessages[i].uid);
+    if (mailmessages) {
+        for (size_t i = 0; i < 10; i++) {
+            printf("%zu\n", mailmessages[i].uid);
+        }
+        free(mailmessages);
     }
-    free(mailmessages);
     curl_easy_cleanup(curl);
 }
 

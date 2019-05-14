@@ -85,6 +85,6 @@ size_t decimal_to_size_t(char *digits) {
         size_t value_to_add = (expt(BASE, j) * dec);
         value += value_to_add;
     }
-    printf("%zu\n", value);
+    // printf("%zu\n", value);
     return value;
 }
