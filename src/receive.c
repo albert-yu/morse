@@ -395,7 +395,8 @@ MailMessage* get_messages(CURL *curlhandle,
 
         // populate a mail response
         MailMessage *curr_msg;
-        curr_msg = messages + i;        
+        curr_msg = messages + i;    
+        mailmessage_setdefault(curr_msg);
         curr_msg->uid = extract_id_from(curr_line);
         i++; 
         item = next;
@@ -406,22 +407,44 @@ MailMessage* get_messages(CURL *curlhandle,
 }
 
 
-char* get_subject(CURL *curl, size_t msg_id) {
-    char *subj;
+/*
+ * Gets the subject associated with the given ID.
+ * Need to re-use an existing CURL handle which has
+ * already performed SELECT {box}.
+ */
+char* get_subject_stateful(CURL *curl, size_t msg_id) {
+    char *subj = NULL;
      
+    char *cmd_to_get_subject = imapcmd_id_get_subject(msg_id);
+    ImapResponse *response;
+    response = morse_exec_imap_stateful(curl, cmd_to_get_subject);
+    if (response && response->status == 0) {
+        subj = strdup(response->data->memory);
+    }
+    else {
+        fprintf(stderr, "IMAP call was unsuccessful. Returned %d.\n", 
+            response->status);
+    }
+    if (response) {
+        imap_response_free(response);
+    }
 
+    free(cmd_to_get_subject);
     return subj; 
 }
 
 /*
  * Populates the messages' subjects.
- * Array is null-terminated.
  */
-void populate_msgs_subjects(CURL *curlhandle, MailMessage *msgs) {
+void populate_msgs_subjects(CURL *curlhandle, 
+                            MailMessage *msgs,
+                            size_t msg_count) {
     if (msgs) {
-        while (*msgs) {
-
-            msgs++;
+        for (size_t i = 0; i < msg_count; i++) {
+            msgs[i].metadata = malloc(sizeof(MailMetadata));
+            mailmetadata_setdefault(msgs[i].metadata);
+            msgs[i].metadata->subject = get_subject_stateful(
+                curlhandle, msgs[i].uid);
         }
     }
 }
@@ -439,11 +462,14 @@ void list_last_n(char *box_name, size_t n) {
     mailmessages = get_messages(curl, box_name, 
         num_messages - length + 1, length);
 
+    populate_msgs_subjects(curl, mailmessages, length);
+
     if (mailmessages) {
         for (size_t i = 0; i < length; i++) {
-            printf("%zu\n", mailmessages[i].uid);
+            printf("%zu: %s\n", mailmessages[i].uid, 
+                mailmessages[i].metadata->subject);
         }
-        free(mailmessages);
+        mailmessage_free(mailmessages);
     }
     curl_easy_cleanup(curl);
 }
