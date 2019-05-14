@@ -214,15 +214,6 @@ struct curl_slist* get_response_lines(char *imap_output) {
         return lines;
     }
 
-    // // do not modify original string 
-    // char *copy_of_imap_output = strdup(imap_output); if (!copy_of_imap_output) {
-    //     fprintf(stderr, "Not enough memory for IMAP output\n");
-    //     return NULL;
-    // }
-
-    // save ptr
-    // char *ptr = NULL;
-
     // is this carriage return or newline feed?
     char *line_sep; 
     if (newline_char == RET_NEWLINE) {
@@ -232,13 +223,6 @@ struct curl_slist* get_response_lines(char *imap_output) {
     }
 
     lines = tokenize_into_list(imap_output, line_sep);
-    // ptr = strtok(copy_of_imap_output, line_sep);
-    // while (ptr != NULL) {
-    //     lines = curl_slist_append(lines, ptr);
-    //     ptr = strtok(NULL, line_sep);
-    // }
-
-    // free(copy_of_imap_output);
         
     return lines;
 }
