@@ -39,7 +39,7 @@ This email library is designed to be used as a backend for a UI.
   #   'morsemail' => ['morsemail/Assets/*.png']
   # }
 
-  s.public_header_files = 'include/morse.h'
+  s.public_header_files = 'include/*.h'
   s.frameworks = 'CoreFoundation', 'ApplicationServices'
   s.libraries = 'curl', 'sodium'
   # s.dependency 'AFNetworking', '~> 2.3'

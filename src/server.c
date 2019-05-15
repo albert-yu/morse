@@ -106,7 +106,7 @@ void get_d20(int fd) {
  */
 void resp_success(int fd) {
     char *message = "Success. You may close this tab/window and return to the app.";
-    int length = strlen(message);
+    size_t length = strlen(message);
     char *mime_type = MIME_TYPE_PLAIN;
     char *response_header = HTTP_200;
     send_response(fd, response_header, mime_type, message, length);
@@ -287,7 +287,7 @@ Hashtable* create_ht_from_strarray(char **parsed_kv_pairs, size_t array_num_elem
     if (array_num_elements % 2 != 0) {
         array_num_elements--; // ignore last
     }
-    size_t DEFAULT_SIZE = 32;
+    int DEFAULT_SIZE = 32;
     Hashtable *ht = hashtable_create(DEFAULT_SIZE, NULL);
     for (size_t i = 0; i < array_num_elements - 1; i += 2) {
         hashtable_put(ht, parsed_kv_pairs[i], parsed_kv_pairs[i + 1]);
