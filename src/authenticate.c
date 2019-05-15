@@ -4,6 +4,7 @@
 #include "crypto.h"
 #include "jsmn.h"
 #include "memstruct.h"
+#include "secrets.h"
 
 #define INITIAL_BUF_SIZE 64
 
