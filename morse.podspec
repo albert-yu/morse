@@ -33,15 +33,18 @@ This email library is designed to be used as a backend for a UI.
 
   s.source_files = 'include/*.h', 'src/*.c'
   s.exclude_files = 'src/main.c'
-  s.requires_arc = true
-  s.prepare_command = <<-CMD
-                    make
-                   CMD
+  s.requires_arc = false
+
   # s.resource_bundles = {
   #   'morsemail' => ['morsemail/Assets/*.png']
   # }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'Cocoa'
+  s.public_header_files = 'include/morse.h'
+  s.frameworks = 'CoreFoundation', 'ApplicationServices'
+  s.libraries = 'curl', 'sodium'
   # s.dependency 'AFNetworking', '~> 2.3'
+  s.prepare_command = <<-CMD
+                  make clean
+                 CMD
+
 end

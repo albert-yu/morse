@@ -51,9 +51,6 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# secret
-secrets.h
-
 # exe
 morse
 
