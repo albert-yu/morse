@@ -60,3 +60,6 @@ temp/
 # vim
 *.swp
 
+# include libs
+!lib/
+
