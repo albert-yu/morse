@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'morse'
-  s.version          = '0.1.4'
+  s.version          = '0.1.5'
   s.summary          = 'A C library for sending and receiving email.'
 
 # This description is used to generate tags and improve search results.
@@ -43,7 +43,7 @@ This email library is designed to be used as a backend for a UI.
   # s.subspec 'Sodium' do |sodium|
   #   sodium.vendored_libraries = 'lib/libsodium.a'
   # end
-  # # s.requires_arc = false
+  s.requires_arc = false
   # s.source_files = 'include/*.h', 'src/*.c'
   # s.public_header_files = 'include/*.h'
   # s.preserve_paths = 'include/*.h'
@@ -57,7 +57,10 @@ This email library is designed to be used as a backend for a UI.
   # #   'morsemail' => ['morsemail/Assets/*.png']
   # # }
 
-  # s.public_header_files = 'include/*.h'  
+  s.xcconfig = { 'HEADER_SEARCH_PATHS' => "${PODS_ROOT}/include/" }
+
+
+  s.public_header_files = 'morse/include/**'  
   s.vendored_libraries = 'libmorse.a' 
   s.library = 'morse'
   
