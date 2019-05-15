@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'morse'
-  s.version          = '0.1.3'
+  s.version          = '0.1.4'
   s.summary          = 'A C library for sending and receiving email.'
 
 # This description is used to generate tags and improve search results.
@@ -45,9 +45,9 @@ This email library is designed to be used as a backend for a UI.
   s.vendored_libraries = "lib/libcurl.a", "lib/libsodium.a"
   # s.dependency 'AFNetworking', '~> 2.3'
   s.preserve_paths = 'include/curl/*.h'
-  # s.prepare_command = <<-CMD
-  #                 make
-  #                 make clean
-  #                CMD
+  s.prepare_command = <<-CMD
+                  make clean
+                  make 
+                 CMD
 
 end

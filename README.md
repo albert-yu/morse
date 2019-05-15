@@ -39,4 +39,5 @@ TODO
   * [ ] macOS
   * [ ] Linux
   * [ ] Windows
-- [ ] Do not depend on environment for availability of dependencies
+- [x] Do not depend on environment for availability of dependencies
+
