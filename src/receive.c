@@ -450,7 +450,34 @@ void populate_msgs_subjects(CURL *curlhandle,
 }
 
 
+struct curl_slist* get_mailboxes() {
+    CURL *curl;
+    curl = get_imap_curl_google();
+
+    char *command = imapcmd_list_boxes();
+    ImapResponse *resp = morse_exec_imap_stateful(curl, command);
+    free(command);
+
+    struct curl_slist *mailboxes = NULL;
+    if (resp && resp->status == 0) {
+        mailboxes = get_response_lines(resp->data->memory);
+    }
+    curl_easy_cleanup(curl);    
+    return mailboxes;
+}
+
+
+void print_mailboxes() {
+    struct curl_slist *mailboxes = get_mailboxes();
+    if (mailboxes) {
+        print_list(mailboxes);
+        curl_slist_free_all(mailboxes);
+    }
+}
+
+
 void list_last_n(char *box_name, size_t n) {
+    print_mailboxes();
     CURL *curl;
     curl = get_imap_curl_google();
 
@@ -473,5 +500,3 @@ void list_last_n(char *box_name, size_t n) {
     }
     curl_easy_cleanup(curl);
 }
-
-
