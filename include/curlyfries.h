@@ -6,7 +6,7 @@
 #ifndef CURLYFRIES_H
 #define CURLYFRIES_H
 
-#include <curl/curl.h>
+#include "curl/curl.h"
 #include "authenticate.h"
 
 

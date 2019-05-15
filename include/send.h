@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
-#include <curl/curl.h>
+#include "curl/curl.h"
 
 #include "endpoints.h"
 #include "statuscodes.h"

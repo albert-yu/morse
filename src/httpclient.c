@@ -1,7 +1,7 @@
 #include "httpclient.h"
 
 #include <string.h>
-#include <curl/curl.h>
+#include "curl/curl.h"
 
 #define MORSE_USERAGENT "morse-cli/1.0"
 
