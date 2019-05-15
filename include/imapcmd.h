@@ -15,6 +15,12 @@ extern "C" {
  */
 char* imapcmd_select_box(char *box_name);
 
+/*
+ * Retrieves all UIDs in a given mailbox.
+ * SELECT {box} must be called first and 
+ * the same CURL handle must be used.
+ */
+char *imapcmd_search_all_uids();
 
 /*
  * Creates a folder.

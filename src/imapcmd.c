@@ -19,6 +19,12 @@ char* imapcmd_select_box(char *box_name) {
 }
 
 
+char *imapcmd_search_all_uids() {
+    const char *result = "UID SEARCH ALL";
+    return strdup(result);
+}
+
+
 /*
  * Creates a folder
  */
