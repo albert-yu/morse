@@ -105,7 +105,7 @@ void get_d20(int fd) {
  * Respond with a generic success operation
  */
 void resp_success(int fd) {
-    char *message = "Success. Return to the app.";
+    char *message = "Success. You may close this tab/window and return to the app.";
     int length = strlen(message);
     char *mime_type = MIME_TYPE_PLAIN;
     char *response_header = HTTP_200;

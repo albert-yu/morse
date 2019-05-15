@@ -20,8 +20,8 @@ int main(int argc, char *argv[]) {
           "e-mail viewers able to handle HTML.</p><code>foo();</code>"
           "</body></html>\r\n";
 
-    list_last_n("[Gmail]/All Mail", 10);
-    // list_last_n("INBOX", 10);
+    // list_last_n("[Gmail]/All Mail", 1);
+    list_last_n("INBOX", 10);
     // morse_list_folders();
     return 0;
 }

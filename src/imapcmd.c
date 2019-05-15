@@ -47,7 +47,8 @@ char* imapcmd_id_fetch_body_text(size_t id) {
  */
 char* imapcmd_id_get_subject(size_t id) {
     // const char *template = "FETCH %zu BODY.PEEK[HEADER.FIELDS (SUBJECT)]";
-    const char *template = "FETCH %zu all";
+    // const char *template = "FETCH %zu BODY[TEXT]";
+    const char *template = "FETCH %zu ENVELOPE";
     char *retval = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*retval));
     sprintf(retval, template, id);
     return retval;
