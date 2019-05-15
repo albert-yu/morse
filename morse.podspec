@@ -31,20 +31,37 @@ This email library is designed to be used as a backend for a UI.
   s.platform = :osx
   s.osx.deployment_target = "10.14"
 
-  s.source_files = 'include/*', 'include/*.h', 'src/*.c'
-  s.exclude_files = 'src/main.c'
-  s.requires_arc = false
+  s.subspec 'Curl' do |curl|
+    curl.source_files = 'include/curl/*.h', 'src/*.c'
+    curl.public_header_files = 'include/curl/*.h'
+    curl.preserve_paths = 'include/curl/*.h'
+    curl.vendored_libraries = "lib/libcurl.a", "lib/libcurl.dylib", "lib/libcurl.4.dylib", "lib/pkgconfig/libcurl.pc"
+    curl.libraries = 'curl'
+    curl.xcconfig = { 'HEADER_SEARCH_PATHS' => "${PODS_ROOT}/include/**" }
+  end
 
+  s.subspec 'Sodium' do |sodium|
+    sodium.vendored_libraries = 'lib/libsodium.a'
+  end
+  # s.requires_arc = false
+  s.source_files = 'include/*.h', 'src/*.c'
+  s.public_header_files = 'include/*.h'
+  s.preserve_paths = 'include/*.h'
+  s.vendored_libraries = "libmorse.a"
+  # s.exclude_files = 'src/main.c'
+  s.xcconfig = { 'HEADER_SEARCH_PATHS' => "${PODS_ROOT}/include/" }
+  # s.requires_arc = false
+  s.frameworks = 'CoreFoundation', 'ApplicationServices'
+  # s.libraries = 'curl', 'sodium'
   # s.resource_bundles = {
   #   'morsemail' => ['morsemail/Assets/*.png']
   # }
 
-  s.public_header_files = 'include/*.h'
-  s.frameworks = 'CoreFoundation', 'ApplicationServices'
-  s.libraries = 'curl', 'sodium'
-  s.vendored_libraries = "lib/libcurl.a", "lib/libsodium.a"
+  
+  
+  
   # s.dependency 'AFNetworking', '~> 2.3'
-  s.preserve_paths = 'include/curl/*.h'
+  
   s.prepare_command = <<-CMD
                   make clean
                   make 
