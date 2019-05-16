@@ -43,7 +43,7 @@ MorseClient* morse_client_login(MailProvider provider) {
 
 
 /* 
- * Logs out and garbage collects a MorseClient.
+ * Logs out and garbage collects a heap-allocated MorseClient.
  */ 
 void morse_client_logout(MorseClient *client) {
     if (client) {
