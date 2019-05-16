@@ -240,7 +240,7 @@ CURL* get_imap_curl_google() {
  * Reads the response from a SELECT {boxname} command
  * by looking for EXISTS
  */
-size_t get_num_messages_from(char *select_box_response) {
+size_t get_num_messages_from_str(char *select_box_response) {
     struct curl_slist *lines = get_response_lines(select_box_response);
 
     // iterate through to find how many exist in the
@@ -336,7 +336,7 @@ size_t get_msg_count(CURL *curlhandle, char *box_name) {
             response_box->status);
         return 0;
     }
-    size_t total_messages_in_box = get_num_messages_from(response_box->data->memory);
+    size_t total_messages_in_box = get_num_messages_from_str(response_box->data->memory);
     imap_response_free(response_box);
     return total_messages_in_box;
 }
@@ -495,8 +495,9 @@ void list_last_n(char *box_name, size_t n) {
         for (size_t i = 0; i < length; i++) {
             printf("%zu: %s\n", mailmessages[i].uid, 
                 mailmessages[i].metadata->subject);
+            mailmessage_free(mailmessages + i);
         }
-        mailmessage_free(mailmessages);
+        free(mailmessages);
     }
     curl_easy_cleanup(curl);
 }
