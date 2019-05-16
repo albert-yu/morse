@@ -52,6 +52,7 @@ The main API functions are declared `send.h` and `receive.h`, but these are both
 - [ ] Use configuration file
 - [ ] Implement caching
 - [ ] Clean up API design
+  - User should get all top-level API functions just by reading `morse.h`.
 - [ ] Replace strarray usages with curl linked list
 - [x] Get user email from token
 - [ ] Receive emails
