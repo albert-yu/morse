@@ -21,11 +21,11 @@ Pod::Spec.new do |s|
 This email library is designed to be used as a backend for a UI.
                        DESC
 
-  s.homepage         = 'https://github.com/albert-yu/morse-mail'
+  s.homepage         = 'https://github.com/albert-yu/morse'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'albert-yu' => 'albert.yu@gmail.com' }
-  s.source           = { :git => 'https://github.com/albert-yu/morse-mail.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/albert-yu/morse.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.platform = :osx, '10.14'
