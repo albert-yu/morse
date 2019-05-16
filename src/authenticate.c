@@ -140,7 +140,7 @@ char* build_auth_url(char *state) {
     // append query string to end of base URL
     size_t url_buf_size = strlen(GOOGLE_AUTH_URL) + qrystrlen + 1;
     char *url_buffer = calloc(url_buf_size, sizeof(*url_buffer));
-    size_t url_length = sprintf(url_buffer, "%s?%s", GOOGLE_AUTH_URL, querystring);
+    sprintf(url_buffer, "%s?%s", GOOGLE_AUTH_URL, querystring);
     return url_buffer;
 }
 
@@ -514,7 +514,6 @@ char* getgmailaddress(char *token) {
         char *validation_resp = validate_google_token(token);
         if (validation_resp) {
             retval = json_get(validation_resp, "email");
-            printf("User email: %s...\n", retval);
         }
     }
 

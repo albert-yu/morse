@@ -11,6 +11,7 @@ void config_gmail_client(MorseClient *client) {
     if (client->bearertoken) {
         client->user_email = getgmailaddress(
             client->bearertoken);
+        printf("Logged in as: %s\n", client->user_email);
         client->curl_imap = get_imap_curl_google(); 
     }
     else {
