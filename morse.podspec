@@ -62,7 +62,7 @@ This email library is designed to be used as a backend for a UI.
   # s.dependency 'morse/Sodium'
   # s.dependency 'morse/Curl'
   s.static_framework = true
-  s.source_files = 'include/**/*.h', 'src/*.c'
+  s.source_files = 'include/**/*.h'
   s.public_header_files = 'include/*.h'  
   s.vendored_libraries = 'libmorse.a' 
   s.library = 'morse'

@@ -17,7 +17,7 @@ char* bytes_to_hex(unsigned char *bytes, size_t bytes_len);
 /**
  * Generate random integer
  */
-uint32_t gen_random_int();
+uint32_t gen_random_int(void);
 
 
 /**
@@ -49,7 +49,7 @@ char* crypto_decrypt(unsigned char *ciphertext, size_t ciphertext_len, size_t de
 /**
  * Decrypt a pre-determined file's contents. Returns NULL if not found or failed.
  */
-char* crypto_decrypt_from_file();
+char* crypto_decrypt_from_file(void);
 
 
 #ifdef __cplusplus

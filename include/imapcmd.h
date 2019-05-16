@@ -20,7 +20,7 @@ char* imapcmd_select_box(char *box_name);
  * SELECT {box} must be called first and 
  * the same CURL handle must be used.
  */
-char *imapcmd_search_all_uids();
+char *imapcmd_search_all_uids(void);
 
 /*
  * Creates a folder.
@@ -44,7 +44,7 @@ char* imapcmd_id_fetch_body_text(size_t id);
 /*
  * Lists the folders that are available.
  */
-char* imapcmd_list_boxes();
+char* imapcmd_list_boxes(void);
 
 
 /*

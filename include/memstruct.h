@@ -28,7 +28,7 @@ int memstruct_init(MemoryStruct *chunk);
 /*
  * Creates a new MemoryStruct on the heap.
  */
-MemoryStruct* memstruct_new(); 
+MemoryStruct* memstruct_new(void); 
 
 
 /*

@@ -25,7 +25,7 @@ typedef struct imap_response_t {
  * Creates a new ImapResponse on the heap.
  * Also allocates the MemoryStruct member
  */
-ImapResponse* imap_response_new();
+ImapResponse* imap_response_new(void);
 
 
 /* 
