@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
         request.mimetype = "text/plain";
         request.attachments = NULL;
         morse_client_sendmail(client, &request);
-        curl_easy_cleanup(client->curl_imap);
+        morse_client_logout(client);
     }
     return 0;
 }

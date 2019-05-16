@@ -281,23 +281,39 @@ int morse_sendmail_inner(char *bearer_token, char *from, char *to, char *cc, cha
 
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-        if (body && mimetype) {
-            mime = curl_mime_init(curl);
-            alt = curl_mime_init(curl);
-            if (strcmp(mimetype, MIME_TYPE_HTML) == 0) {
-                // MIME_x constants defined in mime.h
+        // if (body && mimetype) {
+        //     mime = curl_mime_init(curl);
+        //     alt = curl_mime_init(curl);
+        //     if (strcmp(mimetype, MIME_TYPE_HTML) == 0) {
+        //         // MIME_x constants defined in mime.h
                 
-                // HTML
-                part = curl_mime_addpart(alt);
-                curl_mime_data(part, body, CURL_ZERO_TERMINATED);
-                curl_mime_type(part, MIME_TYPE_HTML);
-            }
-            else {
-                // plain text
-                part = curl_mime_addpart(alt);
-                curl_mime_data(part, body, CURL_ZERO_TERMINATED);
-            }
-        }       
+        //         // HTML
+        //         part = curl_mime_addpart(alt);
+        //         curl_mime_data(part, body, CURL_ZERO_TERMINATED);
+        //         curl_mime_type(part, MIME_TYPE_HTML);
+        //     }
+        //     else {
+        //         // plain text
+        //         part = curl_mime_addpart(alt);
+        //         curl_mime_data(part, body, CURL_ZERO_TERMINATED);
+        //     }
+        // }      
+
+        mime = curl_mime_init(curl);
+        alt = curl_mime_init(curl);
+        if (strcmp(mimetype, MIME_TYPE_HTML) == 0) {
+            // MIME_x constants defined in mime.h
+            
+            // HTML
+            part = curl_mime_addpart(alt);
+            curl_mime_data(part, body, CURL_ZERO_TERMINATED);
+            curl_mime_type(part, MIME_TYPE_HTML);
+        }
+        else {
+            // plain text
+            part = curl_mime_addpart(alt);
+            curl_mime_data(part, body, CURL_ZERO_TERMINATED);
+        } 
 
         /* Create the inline part. */
         part = curl_mime_addpart(mime);
@@ -345,26 +361,25 @@ int morse_sendmail_inner(char *bearer_token, char *from, char *to, char *cc, cha
                   curl_easy_strerror(res));
         }
           
-        curl_cleanup:  
-            printf("Cleaning...\n");
-            /* Free lists. */
-            curl_slist_free_all(recipients);
-            curl_slist_free_all(headers);
+        printf("Cleaning...\n");
+        /* Free lists. */
+        curl_slist_free_all(recipients);
+        curl_slist_free_all(headers);
 
-            /* curl won't send the QUIT command until you call cleanup, so you should
-             * be able to re-use this connection for additional messages (setting
-             * CURLOPT_MAIL_FROM and CURLOPT_MAIL_RCPT as required, and calling
-             * curl_easy_perform() again. It may not be a good idea to keep the
-             * connection open for a very long time though (more than a few minutes
-             * may result in the server timing out the connection), and you do want to
-             * clean up in the end.
-             */
-            curl_easy_cleanup(curl);
+        /* curl won't send the QUIT command until you call cleanup, so you should
+         * be able to re-use this connection for additional messages (setting
+         * CURLOPT_MAIL_FROM and CURLOPT_MAIL_RCPT as required, and calling
+         * curl_easy_perform() again. It may not be a good idea to keep the
+         * connection open for a very long time though (more than a few minutes
+         * may result in the server timing out the connection), and you do want to
+         * clean up in the end.
+         */
+        curl_easy_cleanup(curl);
 
-            /* Free multipart message. */
-            curl_mime_free(mime);
+        /* Free multipart message. */
+        curl_mime_free(mime);
     }
-    free(bearer_token);
+    // free(bearer_token);
     printf("Done.\n");
 
     return (int)res;
