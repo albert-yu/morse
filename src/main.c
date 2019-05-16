@@ -12,8 +12,8 @@ int main(int argc, char *argv[]) {
     // morse_list_folders();
     MorseClient *client = morse_client_login(MailProvider_Google);
     char *email = NULL;
-    if (argc == 1) {
-        email = argv[0];
+    if (argc == 2) {
+        email = argv[1];
     }
     else {
         email = "test@foo.com";
