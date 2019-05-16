@@ -11,11 +11,17 @@ int main(int argc, char *argv[]) {
     // list_last_n("INBOX", 10);
     // morse_list_folders();
     MorseClient *client = morse_client_login(MailProvider_Google);
-
+    char *email = NULL;
+    if (argc == 1) {
+        email = argv[0];
+    }
+    else {
+        email = "test@foo.com";
+    }
     if (client) {
         SmtpRequest request;
 
-        request.to = "blah@foo.com";
+        request.to = email;
         request.cc = NULL;
         request.bcc = NULL;
         request.subject = "Test email";
