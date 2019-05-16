@@ -34,8 +34,8 @@ This email library is designed to be used as a backend for a UI.
   s.static_framework = true
   s.source_files = 'include/**/*.h'
   s.public_header_files = 'include/*.h'  
-  s.vendored_libraries = 'libmorse.a' 
-  s.library = 'morse'
+  s.vendored_libraries = 'libmorse.a', 'lib/libcurl.a', 'lib/libsodium.a'
+  s.library = 'morse', 'curl', 'sodium'
   
   
   # s.dependency 'AFNetworking', '~> 2.3'
