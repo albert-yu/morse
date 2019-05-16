@@ -293,7 +293,6 @@ char* getfreshcredentials(size_t *tokenlength) {
     char *ret_buffer = calloc(mem.size + 1, sizeof(*ret_buffer));
     memcpy(ret_buffer, mem.memory, mem.size);
 
-    printf("Copied memory to buffer.\n");
     if (tokenlength) {
         *tokenlength = mem.size;
     }
@@ -305,8 +304,6 @@ char* getfreshcredentials(size_t *tokenlength) {
     if (ht != NULL) {
         hashtable_destroy(ht);
     }    
-
-    printf("Garbage collected.\n");
     return ret_buffer;
 }
 
