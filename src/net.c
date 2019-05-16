@@ -29,7 +29,7 @@ void *get_in_addr(struct sockaddr *sa) {
  * Returns -1 or error
  */
 int get_listener_socket(char *port) {
-    int sockfd;
+    int sockfd = 0;
     struct addrinfo hints, *servinfo, *p;
     int yes = 1;
     int rv;

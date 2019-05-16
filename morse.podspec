@@ -28,8 +28,8 @@ This email library is designed to be used as a backend for a UI.
   s.source           = { :git => 'https://github.com/albert-yu/morse-mail.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.platform = :osx
-  s.osx.deployment_target = "10.14"
+  s.platform = :osx, '10.14'
+  # s.osx.deployment_target = "10.14"
 
   # s.subspec 'Curl' do |curl|
   #   curl.source_files = 'include/curl/*.h', 'src/*.c'
@@ -43,6 +43,7 @@ This email library is designed to be used as a backend for a UI.
   # s.subspec 'Sodium' do |sodium|
   #   sodium.vendored_libraries = 'lib/libsodium.a'
   # end
+
   s.requires_arc = false
   # s.source_files = 'include/*.h', 'src/*.c'
   # s.public_header_files = 'include/*.h'
@@ -57,10 +58,12 @@ This email library is designed to be used as a backend for a UI.
   # #   'morsemail' => ['morsemail/Assets/*.png']
   # # }
 
-  s.xcconfig = { 'HEADER_SEARCH_PATHS' => "${PODS_ROOT}/include/" }
-
-
-  s.public_header_files = 'morse/include/**'  
+  # s.xcconfig = { 'HEADER_SEARCH_PATHS' => "${PODS_ROOT}/include/" }
+  # s.dependency 'morse/Sodium'
+  # s.dependency 'morse/Curl'
+  s.static_framework = true
+  s.source_files = 'include/**/*.h', 'src/*.c'
+  s.public_header_files = 'include/*.h'  
   s.vendored_libraries = 'libmorse.a' 
   s.library = 'morse'
   
