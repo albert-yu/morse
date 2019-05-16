@@ -3,6 +3,7 @@ os: osx
 compiler:
   - clang
   - gcc
-script: 
+before_script:
   - brew install libsodium 
+script: 
   - make
