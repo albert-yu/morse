@@ -30,12 +30,15 @@ This email library is designed to be used as a backend for a UI.
 
   s.platform = :osx, '10.14'
 
+# -framework CoreFoundation -framework Security -lldap -lz
+
   s.requires_arc = false
   s.static_framework = true
+  s.frameworks = 'CoreFoundation', 'Security'
   s.source_files = 'include/**/*.h'
   s.public_header_files = 'include/*.h'  
   s.vendored_libraries = 'libmorse.a', 'lib/libcurl.a', 'lib/libsodium.a' 
-  s.library = 'morse', 'curl', 'sodium'
+  s.library = 'morse', 'curl', 'sodium', 'ldap', 'z'
   
   
   # s.dependency 'AFNetworking', '~> 2.3'
