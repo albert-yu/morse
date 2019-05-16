@@ -5,6 +5,7 @@
 
 #include "curl/curl.h"
 #include "imap_response.h"
+#include "send.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,6 +53,16 @@ MorseClient* morse_client_login(MailProvider provider);
  * Logs out and garbage collects a MorseClient.
  */ 
 void morse_client_logout(MorseClient *client);
+
+
+/*
+ * Sends an email. Does not affect or depend 
+ * on the state of the curl_imap handle.
+ * SmtpRequest is defined in send.h.
+ * Returns a status code of 0 if successful.
+ */
+int morse_client_sendmail(MorseClient *client, SmtpRequest *smtp_request);
+
 
 /* 
  * Executes an IMAP command and returns the response.

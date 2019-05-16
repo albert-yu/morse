@@ -4,7 +4,6 @@
 #include "curlyfries.h"
 #include "morse.h"
 #include "receive.h"
-#include "send.h"
 
 
 void config_gmail_client(MorseClient *client) {
@@ -32,6 +31,7 @@ MorseClient* morse_client_login(MailProvider provider) {
     switch (provider) {
         case MailProvider_Google:
             config_gmail_client(client);
+            break;
         default:
             fprintf(stderr, "This mail provider is not supported.\n");
             free(client);
@@ -57,6 +57,21 @@ void morse_client_logout(MorseClient *client) {
         client = NULL;
     }
 }
+
+
+int morse_client_sendmail(MorseClient *client, SmtpRequest *smtp_request) {
+    int status = -1;
+    switch (client->mailprovider) {
+        case MailProvider_Google:
+            status = morse_sendmail_google(client->bearertoken, smtp_request);
+            break;
+        default:
+            fprintf(stderr, "Provider is not supported.\n");
+            break;
+    }
+    return status;
+}
+
 
 /* 
  * Executes an IMAP command and returns the response.
