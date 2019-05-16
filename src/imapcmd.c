@@ -53,7 +53,7 @@ char* imapcmd_id_fetch_body_text(size_t id) {
  */
 char* imapcmd_id_get_subject(size_t id) {
     // const char *template = "FETCH %zu BODY.PEEK[HEADER.FIELDS (SUBJECT)]<0.2048>";
-    const char *template = "FETCH %zu (BODY[HEADER.FIELDS (SUBJECT FROM)])";
+    const char *template = "FETCH %zu (FLAGS BODY.PEEK[HEADER.FIELDS (SUBJECT DATE FROM)])";
     // const char *template = "FETCH %zu ENVELOPE";
     char *retval = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*retval));
     sprintf(retval, template, id);
@@ -73,7 +73,7 @@ char* imapcmd_list_boxes() {
  * Command for fetching emails
  */
 char* imapcmd_fetch_messages(size_t start_id, size_t length) {
-    const char *list_messages_cmd_template = "FETCH %zu:%zu BODY.PEEK[HEADER.FIELDS (SUBJECT)]";
+    const char *list_messages_cmd_template = "FETCH %zu:%zu (FLAGS BODY.PEEK[HEADER.FIELDS (SUBJECT)])";
     char *retval = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*retval));
     sprintf(retval, list_messages_cmd_template, 
         start_id, start_id + length - 1);

@@ -5,7 +5,6 @@
 #include "dataconv.h"
 #include "imapcmd.h"
 #include "imap_request.h"
-#include "imap_response.h"
 #include "mailmessage.h"
 #include "memstruct.h"
 #include "receive.h"
@@ -50,6 +49,9 @@ char* construct_url(char *base_url, char *path) {
 
 
 ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command) {
+    if (!curl || !command) {
+        return NULL;
+    }
     ImapResponse *response = imap_response_new();
 
     // set a timeout
