@@ -46,7 +46,9 @@ void mailmetadata_free(MailMetadata *meta);
 
 
 /* 
- * Also frees the inner metadata member
+ * Frees the inner memory used by the msg.
+ * Does not free memory allocated if this is the first member 
+ * of an array.
  */
 void mailmessage_free(MailMessage *msg);
 

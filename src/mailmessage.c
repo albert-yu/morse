@@ -61,7 +61,7 @@ void mailmessage_free(MailMessage *msg) {
             free(msg->body);
             msg->body = NULL;
         }
-        free(msg);
-        msg = NULL;
+        // free(msg);
+        // msg = NULL;
     }
 }

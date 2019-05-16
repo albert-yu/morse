@@ -73,7 +73,7 @@ char* imapcmd_list_boxes() {
  * Command for fetching emails
  */
 char* imapcmd_fetch_messages(size_t start_id, size_t length) {
-    const char *list_messages_cmd_template = "FETCH %zu:%zu (FLAGS)";
+    const char *list_messages_cmd_template = "FETCH %zu:%zu BODY.PEEK[HEADER.FIELDS (SUBJECT)]";
     char *retval = calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*retval));
     sprintf(retval, list_messages_cmd_template, 
         start_id, start_id + length - 1);
