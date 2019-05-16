@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "authenticate.h"
 #include "curlyfries.h"
 #include "morse.h"
