@@ -24,6 +24,7 @@ void browser_openurl(const char *url_str) {
 
 #ifdef _WIN32   // Windows (32 or 64-bit)
 
+#error Windows is not yet supported!
 #include <windows.h>
 #include <ShellApi.h>
 
@@ -38,6 +39,6 @@ void browser_openurl(const char *url_str) {
 
 
 #ifdef __linux__
-
+#error Linux is not yet supported!
 #endif /* __linux__ */
 
