@@ -31,7 +31,13 @@ These are in the `lib/` folder.
 
 ### Compile
 
-With [`GNU Make`](https://www.gnu.org/software/make/manual/html_node/Overview.html#Overview), just run
+`libcurl` has headers included, but `libsodium`'s headers need to be made available through an install.
+
+```bash
+brew install libsodium
+```
+
+Then, with [`GNU Make`](https://www.gnu.org/software/make/manual/html_node/Overview.html#Overview), just run
 
 ```bash
 make
@@ -43,6 +49,7 @@ make
 The main API functions are declared `send.h` and `receive.h`, but these are both referenced by `morse.h`. 
 
 ## To-do list
+- [ ] Use configuration file
 - [ ] Implement caching
 - [ ] Clean up API design
 - [ ] Replace strarray usages with curl linked list
@@ -53,7 +60,7 @@ The main API functions are declared `send.h` and `receive.h`, but these are both
 - [ ] Compile to debug
 - [x] Add separate `morse.h` header for API
 - [ ] Cross-platform compile
-  * [ ] macOS
+  * [x] macOS
   * [ ] Linux
   * [ ] Windows
 - [x] Do not depend on environment for availability of dependencies
