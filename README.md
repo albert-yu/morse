@@ -46,7 +46,7 @@ make
 
 ## Usage
 
-The main API functions are declared `send.h` and `receive.h`, but these are both referenced by `morse.h`. 
+The main API functions are declared `morse.h`. See [`main.c`](src/main.c) for example usage.
 
 ## To-do list
 - [ ] Use configuration file
