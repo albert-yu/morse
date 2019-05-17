@@ -27,8 +27,14 @@ struct mailbox_t {
      */
     struct mailbox_t *parent;
 
+    /*
+     * Array of pointers, I think, is better than
+     * copying the values of the children into a
+     * memory array.
+     */
     size_t child_count;
-    struct mailbox_t *children;
+    size_t child_bufsize; // how much memory alloc'd?
+    struct mailbox_t **children;
 
     /*
      * Attributes returned in
@@ -36,6 +42,7 @@ struct mailbox_t {
      * as HasNoChildren, Important
      */
     size_t attr_count;
+    size_t attr_bufsize; // how much mem alloc'd?
     char **attrs;
 };
 
