@@ -46,18 +46,10 @@ typedef struct smtp_request_t {
  * Send an email to the designated recipients.
  * Recipients are comma-delimited strings.
  * @bearertoken - the token used for authentication
- * @to - the main recipient(s)
- * @cc - copied recipient(s)
- * @bcc - blind copied recipient(s)
- * @subject - email subject
- * @body - string of body
- * @mimetype - the MIME type of the body (text/html, text/plain)
- * @attachments - the file paths of the attachments, NULL-terminated
+ * @user_email - the user's email address
+ * @smtp_req - pointer to an SmtpRequest--unused fields must be NULL
  */
-// int morse_sendmail_google(char *bearertoken, char *to, char *cc, char *bcc, 
-//              char *subject, char *body, char *mimetype,
-//              char **attachments);
-int morse_sendmail_google(char *bearertoken, SmtpRequest *smtp_req);
+int morse_sendmail_google(char *bearertoken, char *user_email, SmtpRequest *smtp_req);
 
 #ifdef __cplusplus
 }

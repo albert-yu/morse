@@ -64,7 +64,10 @@ int morse_client_sendmail(MorseClient *client, SmtpRequest *smtp_request) {
     int status = -1;
     switch (client->mailprovider) {
         case MailProvider_Google:
-            status = morse_sendmail_google(client->bearertoken, smtp_request);
+            status = morse_sendmail_google(
+                client->bearertoken, 
+                client->user_email, 
+                smtp_request);
             break;
         default:
             fprintf(stderr, "Provider is not supported.\n");
