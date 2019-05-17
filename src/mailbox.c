@@ -37,6 +37,25 @@ void mailbox_add_attr(Mailbox *mbox, char *attribute) {
         mbox->attrs = malloc(mbox->attr_bufsize * sizeof(*(mbox->attrs)));
     }
 
+    // increase the buffer size if needed
+    if (mbox->attr_bufsize == mbox->attr_count) {
+        char **new_attrs;
+        new_attrs = realloc(mbox->attrs, mbox->attr_bufsize * 2 * sizeof(*new_attrs));
+        if (!new_attrs) {
+            fprintf(stderr, "Not enough mem for new attributes.\n");
+            return;
+        }
+        // successful realloc means old pointer is invalid
+        mbox->attrs = new_attrs;
+        mbox->attr_bufsize *= 2;
+    }
+
+    // add the attribute (duplicate the string)
+    mbox->attrs[mbox->attr_count] = strdup(attribute);
+    mbox->attr_count += 1;
+}
+
+
 /*
  * I suppose that the way to check if this operation succeeds
  * is to check if the parent's child_count increases by 1 after.
