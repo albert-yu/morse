@@ -26,6 +26,16 @@ Mailbox* mailbox_create_new_root() {
     return newbox;
 }
 
+void mailbox_add_attr(Mailbox *mbox, char *attribute) {
+    if (!mbox) {
+        fprintf(stderr, "Mailbox cannot be NULL when adding attr.\n");
+        return;
+    }
+
+    if (!mbox->attrs) {
+        mbox->attr_bufsize = 1;
+        mbox->attrs = malloc(mbox->attr_bufsize * sizeof(*(mbox->attrs)));
+    }
 
 /*
  * I suppose that the way to check if this operation succeeds

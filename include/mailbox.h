@@ -33,7 +33,7 @@ struct mailbox_t {
      * memory array.
      */
     size_t child_count;
-    size_t child_bufsize; // how much memory alloc'd?
+    size_t child_bufsize; // memory alloc'd for how many children?
     struct mailbox_t **children;
 
     /*
@@ -42,7 +42,7 @@ struct mailbox_t {
      * as HasNoChildren, Important
      */
     size_t attr_count;
-    size_t attr_bufsize; // how much mem alloc'd?
+    size_t attr_bufsize; // mem alloc'd for how many attrs?
     char **attrs;
 };
 
