@@ -471,6 +471,47 @@ struct curl_slist* get_list_cmd_result(CURL *curl) {
 
 
 /*
+ * Converts a line in the IMAP response returned by
+ * get_list_cmd_result into a Mailbox, parsing out 
+ * child mailboxes as well.
+ * Returns NULL if an invalid string.
+ * Examples:
+ * LIST (\HasNoChildren) "/" "INBOX"
+ * LIST (\HasChildren) "/" "Receipts"
+ * LIST (\HasNoChildren) "/" "Receipts/Venmo"
+ */
+Mailbox *convert_str_to_mailbox(const char *str) {
+    Mailbox *box = NULL;
+   
+    char *copied = strdup(str);
+    if (!copied) {
+        fprintf(stderr, "Not enough memory to copy string!\n");
+        return box; // NULL at this point
+    }
+
+    char *beg = copied;
+
+    // isolate the attributes and the name
+    // the middle is separated by "/"
+    const char *separator = "\"/\"";
+    size_t sep_len = strlen(separator);
+
+    // should point to the location
+    // of "/" in the string
+    char *sep;
+    sep = strstr(copied, separator); 
+    
+    if (sep) {
+        // get the name from the right side
+        char *right_side = sep;
+        
+    }
+
+    free(copied);
+    
+    return box;
+}
+/*
  * Executes the IMAP command to retrieve the raw lines.
  * Then parses them into Mailbox structures.
  * Returns the pointer to the ROOT box which has the 
@@ -485,7 +526,19 @@ Mailbox* get_mailboxes(CURL *curl) {
 
     Mailbox *rootnode = NULL;
     struct curl_slist *raw_lines = get_list_cmd_result(curl);
+    rootnode = mailbox_create_new_root();
 
+    if (rootnode && raw_lines) {
+        // iterate through linked list
+        struct curl_slist *item;
+        struct curl_slist *next;
+        item = raw_lines;
+        do {
+            next = item->next;
+              
+            item = next; 
+        } while (next);
+    }
     // parse single line
     return rootnode;
 }
