@@ -480,7 +480,7 @@ struct curl_slist* get_list_cmd_result(CURL *curl) {
  * LIST (\HasChildren) "/" "Receipts"
  * LIST (\HasNoChildren) "/" "Receipts/Venmo"
  */
-Mailbox *convert_str_to_mailbox(const char *str) {
+Mailbox* convert_str_to_mailbox(const char *str) {
     Mailbox *box = NULL;
    
     char *copied = strdup(str);
@@ -499,18 +499,49 @@ Mailbox *convert_str_to_mailbox(const char *str) {
     // should point to the location
     // of "/" in the string
     char *sep;
-    sep = strstr(copied, separator); 
+    sep = strstr(beg, separator); 
     
+    char *boxname = NULL;
     if (sep) {
         // get the name from the right side
         char *right_side = sep;
+
+        // move past the forward slash separator
+        right_side += sep_len;      
         
+        // create a copy that we will modify
+        char *rt_side_dup = strdup(right_side);
+
+        // find the first quote
+        char quote = '"';
+        char *frst_quote = strchr(rt_side_dup, quote);
+        if (frst_quote) {
+            char *ptr = frst_quote;
+            ptr++;
+            char *sec_quote = strchr(ptr, quote);
+            if (sec_quote) {
+                // null out to terminate
+                *sec_quote = '\0';
+
+                // copy to new string
+                boxname = strdup(ptr);
+            }
+        }
+
+        free(rt_side_dup);
     }
 
+    if (boxname) {
+        box = mailbox_create_new(boxname);
+        free(boxname);
+    }
+    // TODO: parse out attributes
     free(copied);
     
     return box;
 }
+
+
 /*
  * Executes the IMAP command to retrieve the raw lines.
  * Then parses them into Mailbox structures.
@@ -539,18 +570,17 @@ Mailbox* get_mailboxes(CURL *curl) {
             item = next; 
         } while (next);
     }
-    // parse single line
     return rootnode;
 }
 
 
-// void print_mailboxes() {
-//     struct curl_slist *mailboxes = get_list_cmd_result();
-//     if (mailboxes) {
-//         print_list(mailboxes);
-//         curl_slist_free_all(mailboxes);
-//     }
-// }
+void print_mailboxes(CURL *curl) {
+    struct curl_slist *mailboxes = get_list_cmd_result(curl);
+    if (mailboxes) {
+        print_list(mailboxes);
+        curl_slist_free_all(mailboxes);
+    }
+}
 
 
 void list_last_n(char *box_name, size_t n) {
