@@ -26,6 +26,7 @@ Mailbox* mailbox_create_new_root() {
     return newbox;
 }
 
+
 void mailbox_add_attr(Mailbox *mbox, char *attribute) {
     if (!mbox) {
         fprintf(stderr, "Mailbox cannot be NULL when adding attr.\n");
@@ -120,3 +121,35 @@ void mailbox_add_child(Mailbox *parent, Mailbox *child) {
 }
 
 
+void mailbox_free_tree(Mailbox *rootbox) {
+    if (!rootbox) {
+        return;
+    }
+
+    // free children recursively
+    if (rootbox->child_count > 0) {
+        for (size_t i = 0; i < rootbox->child_count; i++) {
+            mailbox_free_tree((rootbox->children)[i]);
+        }
+        free(rootbox->children);
+    }
+    
+    // free attributes
+    if (rootbox->attr_count > 0) {
+        // all attributes are copied strings, so
+        // they need to be freed
+        char **attrs = rootbox->attrs;
+        for (size_t i = 0; i < rootbox->attr_count; i++) {
+            free(attrs[i]);
+        }
+        free(attrs);
+    }
+
+    // names are copied, so need to be freed
+    if (rootbox->name) {
+        free(rootbox->name);
+    }
+
+    free(rootbox);
+    rootbox = NULL;
+}

@@ -61,6 +61,14 @@ Mailbox* mailbox_create_new(char *name);
  */
 Mailbox* mailbox_create_new_root(void);
 
+
+/*
+ * Frees an entire tree with the given parent
+ * node.
+ */
+void mailbox_free_tree(Mailbox *rootbox);
+
+
 #ifdef __cplusplus
 }
 #endif
