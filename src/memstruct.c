@@ -33,9 +33,10 @@ MemoryStruct* memstruct_new() {
 /*
  * Frees the char array, then frees the struct.
  */
-void memstruct_free(MemoryStruct* mem_struct) {
+void memstruct_free(MemoryStruct *mem_struct) {
     free(mem_struct->memory);
     free(mem_struct);
+    mem_struct = NULL;
 }
 
 
