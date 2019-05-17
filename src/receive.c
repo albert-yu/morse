@@ -594,6 +594,7 @@ Mailbox* convert_str_to_mailbox(const char *str) {
     free(copied);
     copied = NULL; 
      
+    // TODO: check if HasChildren attribute applies
     return box;
 }
 
