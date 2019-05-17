@@ -69,6 +69,11 @@ Mailbox* mailbox_create_new_root(void);
 void mailbox_free_tree(Mailbox *rootbox);
 
 
+/* 
+ * Add an attribute to an existing Mailbox
+ */
+void mailbox_add_attr(Mailbox *mbox, char *attribute);
+
 #ifdef __cplusplus
 }
 #endif

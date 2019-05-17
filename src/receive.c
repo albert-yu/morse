@@ -504,9 +504,13 @@ Mailbox* convert_str_to_mailbox(const char *str) {
     char *boxname = NULL;
     if (sep) {
         // get the name from the right side
+        // e.g. "/" "INBOX"
+        //      ^
         char *right_side = sep;
 
         // move past the forward slash separator
+        // e.g. "/" "INBOX"
+        //         ^
         right_side += sep_len;      
         
         // create a copy that we will modify
@@ -529,15 +533,67 @@ Mailbox* convert_str_to_mailbox(const char *str) {
         }
 
         free(rt_side_dup);
+
     }
 
+    // stores the attributes
+    struct curl_slist *linked_list_attrs = NULL;
     if (boxname) {
         box = mailbox_create_new(boxname);
         free(boxname);
+
+        // find the left side attributes
+        char *left_parens_ptr = strchr(beg, '(');
+        if (left_parens_ptr) {
+            char *right_parens_ptr = NULL;
+            // keep track of length
+            size_t len = 0;
+            right_parens_ptr = left_parens_ptr;
+            while (*right_parens_ptr) {
+                if (*right_parens_ptr == ')') {
+                    break;
+                }
+                right_parens_ptr++;
+                len++;
+            }
+            if (right_parens_ptr && len > 0) {
+                // should have a valid parentheses pair, so
+                // make copy of string, ignoring the left parens...
+                char *begin_attr = left_parens_ptr + 1;
+
+                // ... and the right parens (hence, len - 1);
+                char *attr_list = strndup(begin_attr, len - 1);
+
+                // tokenize
+                char *whitespace = " ";
+                linked_list_attrs = tokenize_into_list(attr_list, whitespace);
+                free(attr_list);
+            }
+        }
     }
-    // TODO: parse out attributes
+
+    // copy the attributes over if found
+    if (linked_list_attrs && box) {
+        // iterate through list
+        struct curl_slist *item;
+        struct curl_slist *next;
+        item = linked_list_attrs;
+        do {
+            next = item->next;
+            char *property = item->data;
+            // attributes begin with a backslash
+            if (property && (*property == '\\')) {
+                char *attr_ptr = property + 1;
+                mailbox_add_attr(box, attr_ptr); 
+            }
+            item = next;
+        } while (next);
+
+        curl_slist_free_all(linked_list_attrs);
+    }
     free(copied);
-    
+    copied = NULL; 
+     
     return box;
 }
 
