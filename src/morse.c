@@ -27,8 +27,16 @@ void config_gmail_client(MorseClient *client) {
  */
 MorseClient* morse_client_login(MailProvider provider) {
     MorseClient *client = malloc(sizeof(*client));
-    client->mailprovider = provider; 
-
+    if (!client) {
+        fprintf(stderr, "Out of memory! Could not alloc MorseClient.\n");
+        return NULL;
+    }
+    *client = (MorseClient) {
+        .bearertoken = NULL,
+        .user_email = NULL,
+        .curl_imap = NULL,
+        .mailprovider = provider
+    };
     switch (provider) {
         case MailProvider_Google:
             config_gmail_client(client);
