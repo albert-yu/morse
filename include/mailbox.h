@@ -63,6 +63,14 @@ Mailbox* mailbox_create_new_root(void);
 
 
 /*
+ * Adds a heap-allocated child to the parent node.
+ * Caller should verify that the parent's child count
+ * has increased by 1
+ */
+void mailbox_add_child(Mailbox *parent, Mailbox *child);
+
+
+/*
  * Frees an entire tree with the given parent
  * node.
  */

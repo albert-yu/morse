@@ -617,16 +617,27 @@ Mailbox* get_mailboxes(CURL *curl) {
     rootnode = mailbox_create_new_root();
 
     if (rootnode && raw_lines) {
+        size_t attr_count = 0;
         // iterate through linked list
         struct curl_slist *item;
         struct curl_slist *next;
         item = raw_lines;
         do {
+            attr_count++;
             next = item->next;
-              
+            // this curr_box SHOULD be heap-allocated
+            Mailbox *curr_box = convert_str_to_mailbox(item->data);
+            mailbox_add_child(rootnode, curr_box);
             item = next; 
         } while (next);
+        
+        // notify if attr_count does not match 
+        if (attr_count > rootnode->attr_count) {
+            fprintf(stderr, "Expected %zu attrs, but could"
+                            " only add %zu.\n");
+        }
     }
+
     return rootnode;
 }
 
