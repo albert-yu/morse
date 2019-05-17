@@ -452,10 +452,11 @@ void populate_msgs_subjects(CURL *curlhandle,
 }
 
 
-struct curl_slist* get_mailboxes() {
-    CURL *curl;
-    curl = get_imap_curl_google();
-
+/*
+ * Returns the lines from the command 
+ * LIST "" *
+ */
+struct curl_slist* get_list_cmd_result(CURL *curl) {
     char *command = imapcmd_list_boxes();
     ImapResponse *resp = morse_exec_imap_stateful(curl, command);
     free(command);
@@ -469,17 +470,37 @@ struct curl_slist* get_mailboxes() {
 }
 
 
-void print_mailboxes() {
-    struct curl_slist *mailboxes = get_mailboxes();
-    if (mailboxes) {
-        print_list(mailboxes);
-        curl_slist_free_all(mailboxes);
+/*
+ * Executes the IMAP command to retrieve the raw lines.
+ * Then parses them into Mailbox structures.
+ * Returns the pointer to the ROOT box which has the 
+ * name defined by ROOT_MAILBOX_NAME in mailbox.h.
+ * Returns NULL on failure.
+ */
+Mailbox* get_mailboxes(CURL *curl) {
+    if (!curl) {
+        fprintf(stderr, "NULL curl handle passed into get_mailboxes.\n");
+        return NULL;
     }
+
+    Mailbox *rootnode = NULL;
+    struct curl_slist *raw_lines = get_list_cmd_result(curl);
+
+    // parse single line
+    return rootnode;
 }
 
 
+// void print_mailboxes() {
+//     struct curl_slist *mailboxes = get_list_cmd_result();
+//     if (mailboxes) {
+//         print_list(mailboxes);
+//         curl_slist_free_all(mailboxes);
+//     }
+// }
+
+
 void list_last_n(char *box_name, size_t n) {
-    print_mailboxes();
     CURL *curl;
     curl = get_imap_curl_google();
 

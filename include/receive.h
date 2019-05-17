@@ -4,6 +4,7 @@
 #include "curl/curl.h"
 #include "endpoints.h"
 #include "imap_response.h"
+#include "mailbox.h"
 #include "statuscodes.h"
 
 
@@ -17,8 +18,16 @@ extern "C" {
  */
 CURL* get_imap_curl_google(void);
 
-void list_last_n(char *box_name, size_t n);
 
+/*
+ * Retrieves an array of mailboxes
+ */
+Mailbox* get_mailboxes(CURL *curl);
+
+
+/* 
+ * Execute an arbitrary IMAP command.
+ */
 ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command);
 
 #ifdef __cplusplus
