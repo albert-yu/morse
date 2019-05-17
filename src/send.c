@@ -233,13 +233,6 @@ int morse_sendmail_inner(char *bearer_token, char *from, char *to, char *cc, cha
 
         // add FROM (not strictly required)
         if (from) {
-            // size_t from_len = strlen(from);
-            // if (from_len > 0) {
-            //     // char from_header [from_len + header_label_size];
-            //     // sprintf(from_header, "From: %s", from);
-            //     // headers = curl_slist_append(headers, from_header);
-
-            // }  
             headers = add_mail_header(headers, "From", from);
             curl_easy_setopt(curl, CURLOPT_MAIL_FROM, from);          
         }
@@ -281,24 +274,6 @@ int morse_sendmail_inner(char *bearer_token, char *from, char *to, char *cc, cha
 
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-        // if (body && mimetype) {
-        //     mime = curl_mime_init(curl);
-        //     alt = curl_mime_init(curl);
-        //     if (strcmp(mimetype, MIME_TYPE_HTML) == 0) {
-        //         // MIME_x constants defined in mime.h
-                
-        //         // HTML
-        //         part = curl_mime_addpart(alt);
-        //         curl_mime_data(part, body, CURL_ZERO_TERMINATED);
-        //         curl_mime_type(part, MIME_TYPE_HTML);
-        //     }
-        //     else {
-        //         // plain text
-        //         part = curl_mime_addpart(alt);
-        //         curl_mime_data(part, body, CURL_ZERO_TERMINATED);
-        //     }
-        // }      
-
         mime = curl_mime_init(curl);
         alt = curl_mime_init(curl);
         if (strcmp(mimetype, MIME_TYPE_HTML) == 0) {
@@ -323,15 +298,6 @@ int morse_sendmail_inner(char *bearer_token, char *from, char *to, char *cc, cha
         curl_mime_headers(part, slist, 1);
 
         if (attachments) {
-            // char *attachment = *attachments;
-            // while (attachment) {
-            //     if (fileexists(attachment)) {
-            //         part = curl_mime_addpart(mime);
-            //         curl_mime_filedata(part, attachment);                   
-            //     }
-            //     ++attachment;
-            // }         
-
             // iterate through the linked list
             struct curl_slist *next;
             struct curl_slist *item;
@@ -379,7 +345,6 @@ int morse_sendmail_inner(char *bearer_token, char *from, char *to, char *cc, cha
         /* Free multipart message. */
         curl_mime_free(mime);
     }
-    // free(bearer_token);
     printf("Done.\n");
 
     return (int)res;
