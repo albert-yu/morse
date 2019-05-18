@@ -4,6 +4,8 @@
 
 #include "morse.h"
 #include "receive.h" // not needed unless printing
+#include "mailbox.h"
+
 
 int main(int argc, char *argv[]) {  
     MorseClient *client = morse_client_login(MailProvider_Google);
@@ -30,6 +32,7 @@ int main(int argc, char *argv[]) {
             Mailbox *root = morse_client_get_mailboxes(client);
             if (root) {
                 print_mailboxes(root);
+                mailbox_free_tree(root);
             }
         }
         morse_client_logout(client);
