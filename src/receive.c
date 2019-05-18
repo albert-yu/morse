@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stddef.h>
 
 #include "authenticate.h"
 #include "curlyfries.h"
@@ -542,34 +543,52 @@ Mailbox* convert_str_to_mailbox(const char *str) {
         box = mailbox_create_new(boxname);
         free(boxname);
 
-        // find the left side attributes
+        // find the locations 
         char *left_parens_ptr = strchr(beg, '(');
-        if (left_parens_ptr) {
-            char *right_parens_ptr = NULL;
-            // keep track of length
-            size_t len = 0;
-            right_parens_ptr = left_parens_ptr;
-            while (*right_parens_ptr) {
-                if (*right_parens_ptr == ')') {
-                    break;
-                }
-                right_parens_ptr++;
-                len++;
-            }
-            if (right_parens_ptr && len > 0) {
-                // should have a valid parentheses pair, so
-                // make copy of string, ignoring the left parens...
-                char *begin_attr = left_parens_ptr + 1;
+        char *right_parens_ptr = strchr(beg, ')');
+        
+        // are they in the correct order?
+        ptrdiff_t dist = right_parens_ptr - left_parens_ptr;
+        if (dist > 0) {
+            // should have a valid parentheses pair, so
+            // make copy of string, ignoring the left parens...
+            char *begin_attr = left_parens_ptr + 1;
 
-                // ... and the right parens (hence, len - 1);
-                char *attr_list = strndup(begin_attr, len - 1);
+            // ... and the right parens (hence, dist - 1);
+            char *attr_list = strndup(begin_attr, dist - 1);
 
-                // tokenize
-                char *whitespace = " ";
-                linked_list_attrs = tokenize_into_list(attr_list, whitespace);
-                free(attr_list);
-            }
+            // tokenize
+            char *whitespace = " ";
+            linked_list_attrs = tokenize_into_list(attr_list, whitespace);
+            free(attr_list);
         }
+
+        // if (left_parens_ptr) {
+        //     char *right_parens_ptr = NULL;
+        //     // keep track of length
+        //     size_t len = 0;
+        //     right_parens_ptr = left_parens_ptr;
+        //     while (*right_parens_ptr) {
+        //         if (*right_parens_ptr == ')') {
+        //             break;
+        //         }
+        //         right_parens_ptr++;
+        //         len++;
+        //     }
+        //     if (right_parens_ptr && len > 0) {
+        //         // should have a valid parentheses pair, so
+        //         // make copy of string, ignoring the left parens...
+        //         char *begin_attr = left_parens_ptr + 1;
+
+        //         // ... and the right parens (hence, len - 1);
+        //         char *attr_list = strndup(begin_attr, len - 1);
+
+        //         // tokenize
+        //         char *whitespace = " ";
+        //         linked_list_attrs = tokenize_into_list(attr_list, whitespace);
+        //         free(attr_list);
+        //     }
+        // }
     }
 
     // copy the attributes over if found
@@ -634,7 +653,9 @@ Mailbox* get_mailboxes(CURL *curl) {
         // notify if attr_count does not match 
         if (attr_count > rootnode->attr_count) {
             fprintf(stderr, "Expected %zu attrs, but could"
-                            " only add %zu.\n");
+                            " only add %zu.\n",
+                            attr_count,
+                            rootnode->attr_count);
         }
     }
 
