@@ -466,7 +466,6 @@ struct curl_slist* get_list_cmd_result(CURL *curl) {
     if (resp && resp->status == 0) {
         mailboxes = get_response_lines(resp->data->memory);
     }
-    curl_easy_cleanup(curl);    
     return mailboxes;
 }
 
@@ -534,7 +533,6 @@ Mailbox* convert_str_to_mailbox(const char *str) {
         }
 
         free(rt_side_dup);
-
     }
 
     // stores the attributes
@@ -651,7 +649,7 @@ Mailbox* get_mailboxes(CURL *curl) {
         } while (next);
         
         // notify if attr_count does not match 
-        if (attr_count > rootnode->attr_count) {
+        if (attr_count != rootnode->attr_count) {
             fprintf(stderr, "Expected %zu attrs, but could"
                             " only add %zu.\n",
                             attr_count,
@@ -663,11 +661,23 @@ Mailbox* get_mailboxes(CURL *curl) {
 }
 
 
-void print_mailboxes(CURL *curl) {
-    struct curl_slist *mailboxes = get_list_cmd_result(curl);
-    if (mailboxes) {
-        print_list(mailboxes);
-        curl_slist_free_all(mailboxes);
+void print_mailboxes(Mailbox *root) {
+    // struct curl_slist *mailboxes = get_list_cmd_result(curl);
+    // if (mailboxes) {
+    //     print_list(mailboxes);
+    //     curl_slist_free_all(mailboxes);
+    // }
+    if (root) {
+        for (size_t i = 0; i < root->child_count; i++) {
+            printf("[%zu]: ", i);
+            Mailbox *child = (root->children)[i];
+            if (child) {
+                printf("name: %s\n", child->name);
+                for (size_t j = 0; j < child->attr_count; j++) {
+                    printf("\t%s\n", (child->attrs)[j]);
+                }
+            }
+        }
     }
 }
 

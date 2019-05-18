@@ -56,12 +56,15 @@ MorseClient* morse_client_login(MailProvider provider) {
  */ 
 void morse_client_logout(MorseClient *client) {
     if (client) {
-        if (client->bearertoken)
+        if (client->bearertoken) {
             free(client->bearertoken);
-        if (client->user_email)
+        }
+        if (client->user_email) {
             free(client->user_email);
-        if (client->curl_imap)
+        }
+        if (client->curl_imap) {
             curl_easy_cleanup(client->curl_imap);
+        }
         free(client);
         client = NULL;
     }
@@ -90,5 +93,21 @@ int morse_client_sendmail(MorseClient *client, SmtpRequest *smtp_request) {
  */
 ImapResponse* morse_client_exec_raw_imap(MorseClient *client, char *command) {
     return morse_exec_imap_stateful(client->curl_imap, command);
+}
+
+
+Mailbox* morse_client_get_mailboxes(MorseClient *client) {
+    if (!client) {
+        fprintf(stderr, "Client is NULL!\n");
+        return NULL;
+    }
+    // if (!client->mailprovider) {
+    //     fprintf(stderr, "Mail provider missing.\n");
+    //     return NULL;
+    // }
+    if (!client->curl_imap) {
+        morse_client_login(client->mailprovider);
+    }
+    return get_mailboxes(client->curl_imap);
 }
 

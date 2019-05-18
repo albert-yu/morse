@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "morse.h"
-
+#include "receive.h" // not needed unless printing
 
 int main(int argc, char *argv[]) {  
     MorseClient *client = morse_client_login(MailProvider_Google);
@@ -26,7 +26,11 @@ int main(int argc, char *argv[]) {
             morse_client_sendmail(client, &request);
         }
         else {
-            printf("Receiving email.\n");
+            printf("Available mail boxes:\n");
+            Mailbox *root = morse_client_get_mailboxes(client);
+            if (root) {
+                print_mailboxes(root);
+            }
         }
         morse_client_logout(client);
     }

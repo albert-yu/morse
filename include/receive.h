@@ -25,6 +25,9 @@ CURL* get_imap_curl_google(void);
 Mailbox* get_mailboxes(CURL *curl);
 
 
+void print_mailboxes(Mailbox *root);
+
+
 /* 
  * Execute an arbitrary IMAP command.
  */

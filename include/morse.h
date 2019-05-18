@@ -5,6 +5,7 @@
 
 #include "curl/curl.h"
 #include "imap_response.h"
+#include "mailbox.h"
 #include "send.h"
 
 #ifdef __cplusplus
@@ -72,6 +73,13 @@ int morse_client_sendmail(MorseClient *client, SmtpRequest *smtp_request);
  * or the command passed in is NULL.
  */
 ImapResponse* morse_client_exec_raw_imap(MorseClient *client, char *command);
+
+
+/*
+ * Returns a list of mailboxes. Returns NULL if an error occurs.
+ */
+Mailbox* morse_client_get_mailboxes(MorseClient *client);
+
 
 #ifdef __cplusplus
 }
