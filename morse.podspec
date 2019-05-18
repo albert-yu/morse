@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'morse'
-  s.version          = 'v0.1.8-alpha'
+  s.version          = '0.1.8'
   s.summary          = 'A C library for sending and receiving email.'
 
 # This description is used to generate tags and improve search results.
