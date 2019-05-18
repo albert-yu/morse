@@ -1,6 +1,6 @@
 # Morse
 
-C library for sending emails.
+C library for sending and receiving emails.
 
 [![CI Status](https://img.shields.io/travis/albert-yu/morse.svg?style=flat)](https://travis-ci.org/albert-yu/morse)
 [![Version](https://img.shields.io/cocoapods/v/morse.svg?style=flat)](https://cocoapods.org/pods/morse)
@@ -51,11 +51,11 @@ The main API functions are declared `morse.h`. See [`main.c`](src/main.c) for ex
 ## To-do list
 - [ ] Use configuration file
 - [ ] Implement caching
-- [ ] Clean up API design
-  - User should get all top-level API functions just by reading `morse.h`.
-- [ ] Replace strarray usages with curl linked list
+- [x] Clean up API design
+  - [x] User should get all top-level API functions just by reading `morse.h`.
 - [x] Get user email from token
 - [ ] Receive emails
+  - [ ] Use the IDLE command to get push notifications
 - [x] Support multiple recipients
 - [x] Compile to static library
 - [ ] Compile to debug
