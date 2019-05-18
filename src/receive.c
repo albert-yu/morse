@@ -549,7 +549,7 @@ Mailbox* convert_str_to_mailbox(const char *str) {
         
         // are they in the correct order?
         ptrdiff_t dist = right_parens_ptr - left_parens_ptr;
-        if (dist > 0) {
+        if (dist > 1) {
             // should have a valid parentheses pair, so
             // make copy of string, ignoring the left parens...
             char *begin_attr = left_parens_ptr + 1;
