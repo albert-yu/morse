@@ -635,14 +635,9 @@ Mailbox* get_mailboxes(CURL *curl) {
 
 
 void print_mailboxes(Mailbox *root) {
-    // struct curl_slist *mailboxes = get_list_cmd_result(curl);
-    // if (mailboxes) {
-    //     print_list(mailboxes);
-    //     curl_slist_free_all(mailboxes);
-    // }
     if (root) {
         for (size_t i = 0; i < root->child_count; i++) {
-            printf("[%zu]: ", i);
+            printf("[%zu]:\t", i);
             Mailbox *child = (root->children)[i];
             if (child) {
                 printf("name: %s\n", child->name);
