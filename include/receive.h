@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 /*
- * Invokes the authenticatation process for the user to 
+ * Invokes the authentication process for the user to 
  * log into Gmail
  */
 CURL* get_imap_curl_google(void);

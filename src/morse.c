@@ -6,7 +6,7 @@
 #include "receive.h"
 
 
-void config_gmail_client(MorseClient *client) {
+void config_client_gmail(MorseClient *client) {
     client->bearertoken = getgooglebearertoken(); 
     if (client->bearertoken) {
         client->user_email = getgmailaddress(
@@ -18,7 +18,6 @@ void config_gmail_client(MorseClient *client) {
         fprintf(stderr, "Could not authenticate client for Gmail.\n");
         morse_client_logout(client);
     }
-    
 }
 
 /*
@@ -39,7 +38,7 @@ MorseClient* morse_client_login(MailProvider provider) {
     };
     switch (provider) {
         case MailProvider_Google:
-            config_gmail_client(client);
+            config_client_gmail(client);
             break;
         default:
             fprintf(stderr, "This mail provider is not supported.\n");
