@@ -77,6 +77,7 @@ ImapResponse* morse_client_exec_raw_imap(MorseClient *client, char *command);
 
 /*
  * Returns a list of mailboxes. Returns NULL if an error occurs.
+ * Result must be freed with mailbox_free_tree(Mailbox*).
  */
 Mailbox* morse_client_get_mailboxes(MorseClient *client);
 
