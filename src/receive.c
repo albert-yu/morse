@@ -12,7 +12,7 @@
 #include "receive.h"
 
 
-/**
+/*
  * Caller must free returned buffer
  */
 char* construct_url(char *base_url, char *path) {
@@ -111,61 +111,6 @@ ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command) {
 
     return response;
 }
-
-
-// int morse_exec_imap_xoauth2(const char *bearertoken, 
-//                             const char *imap_url,
-//                             const char *username,
-//                             const char *command,
-//                             MemoryStruct *mem  
-//                             ) {
-//     MorseStatusCode result = MorseStatus_OK; 
-//     CURL *curl;
-//     CURLcode res = CURLE_OK;
-// 
-//     if (!mem) {
-//         fprintf(stderr, "Passed in memory struct cannot be null.\n");
-//         return (int)MorseStatus_InvalidArg;
-//     }
-// 
-//     if (!mem->memory) {
-//         fprintf(stderr, "Passed in memory struct doesn't have memory.\n");
-//         return (int)MorseStatus_MemoryError;
-//     }
-// 
-//     curl = get_curl_xoauth2(bearertoken, imap_url, username);
-//     if (curl) {
-//         printf("curl init OK [IMAP]\n");
-// 
-//         // set a timeout
-//         curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L);
-// 
-//         // verbose output
-//         // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-// 
-//         // COMMAND GOES HERE
-//         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
-// 
-//         // set callback
-//         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_mem_callback);
-//         curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)mem);
-// 
-//         /* Perform the fetch */
-//         res = curl_easy_perform(curl);
-// 
-//         /* Check for errors */
-//         if (res != CURLE_OK) {
-//             fprintf(stderr, "curl_easy_perform() failed: %s\n",
-//                 curl_easy_strerror(res));
-//             result = MorseStatus_CurlError;
-//         }
-// 
-//         /* Always cleanup */
-//         curl_easy_cleanup(curl);
-//     }
-// 
-//     return (int)result;
-// }
 
 
 typedef enum retchar_t {
