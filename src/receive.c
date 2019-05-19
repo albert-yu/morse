@@ -74,6 +74,30 @@ char* add_tag_to_cmd(const char *imap_cmd) {
 
 
 /*
+ * Appends \r\n to the given command
+ */
+char* add_carriage_ret(const char *imap_cmd) {
+    char *retval = NULL;
+    if (!imap_cmd) {
+        return NULL;
+    }
+    // need room for \r\n\0
+    size_t max_input_len = 
+        DEFAULT_IMAP_CMD_LENGTH - 3;
+    if (strlen(imap_cmd) > max_input_len) {
+        return NULL;
+    }
+    retval = calloc(DEFAULT_IMAP_CMD_LENGTH,
+                sizeof(*retval));
+    if (retval) {
+        strcpy(retval, imap_cmd);
+        strcat(retval, "\r\n");
+    }
+    return retval;
+}
+
+
+/*
  * Executes an IMAP command with an existing CURL connection.
  * Thus, does NOT close the curl connection after.
  */
