@@ -2,6 +2,7 @@
 #include <stddef.h>
 
 #include "authenticate.h"
+#include "cmdtag.h"
 #include "curlyfries.h"
 #include "dataconv.h"
 #include "imapcmd.h"
@@ -49,6 +50,33 @@ char* construct_url(char *base_url, char *path) {
 }
 
 
+/*
+ * Prepends the command tag to a given IMAP 
+ * command. E.g.
+ * SELECT INBOX -> A001 SELECT INBOX
+ * Returns NULL if failed.
+ */
+char* add_tag_to_cmd(const char *imap_cmd) {
+    char *final_cmd = NULL;
+    char *tag = getcmdtag(); 
+    if (tag) {
+        // DEFAULT_IMAP_CMD_LENGTH is defined in "imapcmd.h"
+        final_cmd = 
+            calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*final_cmd));
+        if (final_cmd) {
+            // concatenate the prefix plus a space 
+            sprintf(final_cmd, "%s %s", tag, imap_cmd);
+        }
+        free(tag);
+    }
+    return final_cmd;
+}
+
+
+/*
+ * Executes an IMAP command with an existing CURL connection.
+ * Thus, does NOT close the curl connection after.
+ */
 ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command) {
     if (!curl || !command) {
         return NULL;
