@@ -10,7 +10,7 @@
 /*
  * Pretty arbitrary
  */
-#define MAX_TAG_BUF_SIZE 64 
+#define MAX_TAG_BUF_SIZE 32 
 
 /*
  * Let's send a max of 10 billion commands
