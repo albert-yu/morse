@@ -58,7 +58,7 @@ char* construct_url(char *base_url, char *path) {
  */
 char* add_tag_to_cmd(const char *imap_cmd) {
     char *final_cmd = NULL;
-    char *tag = getcmdtag(); 
+    char *tag = getnexttag(); 
     if (tag) {
         // DEFAULT_IMAP_CMD_LENGTH is defined in "imapcmd.h"
         final_cmd = 
