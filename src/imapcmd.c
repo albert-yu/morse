@@ -4,7 +4,7 @@
 
 #include "imapcmd.h"
 
-#define DEFAULT_IMAP_CMD_LENGTH 64
+#define DEFAULT_IMAP_CMD_LENGTH 128 
 
 
 /*
