@@ -90,7 +90,10 @@ ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command) {
     // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
     // COMMAND GOES HERE
-    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
+    // char *final_cmd = add_tag_to_cmd(command);
+    char *final_cmd = command;
+    printf("final command: %s\n", final_cmd);
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, final_cmd);
 
     // set callback
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_mem_callback);

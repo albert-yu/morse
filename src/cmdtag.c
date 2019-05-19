@@ -5,7 +5,7 @@
 #include "cmdtag.h"
 #include "dataconv.h"
 
-#define IMAP_CMD_TAG_PREFIX "MORSEY"
+#define IMAP_CMD_TAG_PREFIX "MORSE"
 
 /*
  * Pretty arbitrary
@@ -13,9 +13,10 @@
 #define MAX_TAG_BUF_SIZE 32 
 
 /*
- * Let's send a max of 10 billion commands
+ * Let's send a max of 10 ^ MAX_DIGIT_LENGTH 
+ * commands per session 
  */
-#define MAX_DIGIT_LENGTH 10
+#define MAX_DIGIT_LENGTH 5 
 
 
 /*
