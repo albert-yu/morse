@@ -103,8 +103,48 @@ size_t count_digits(size_t num) {
 
 char* size_t_to_str(size_t num) {
     size_t length;
+    char *retval = NULL;
     length = count_digits(num);
-    char *retval = calloc(length + 1, sizeof(*retval));
-    sprintf(retval, "%zu", num);
+    retval = calloc(length + 1, sizeof(*retval));
+    if (retval)
+        sprintf(retval, "%zu", num);
     return retval;
 }
+
+
+/*
+ * Computes the number of base 10 digits in the
+ * number and fills in the string buffer
+ * with zeroes until it reaches the max number 
+ * of digits.
+ * Allocated buffer should be large enough for
+ * padding and number.
+ */
+char* size_t_to_str_padded(size_t num, size_t max_digits) {
+    size_t num_digits = count_digits(num);
+    char *retval = NULL;
+    
+    // size_t is unsigned, so we cannot
+    // subtract and check for negativity
+    if (num_digits > max_digits) {
+        return NULL;
+    }
+    char *as_str = size_t_to_str(num);
+    retval = calloc(max_digits + 1, sizeof(*retval));
+    if (as_str && retval) {
+        // add the padding
+        char zero = '0';
+        size_t num_zeros = max_digits - num_digits; 
+        for (size_t i = 0; i < num_zeros; i++) {
+            retval[i] = zero;
+        }
+        strcat(retval, as_str);
+    }
+    if (as_str) {
+        free(as_str);
+    }
+    
+    return retval;
+}
+
+

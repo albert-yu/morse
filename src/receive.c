@@ -650,27 +650,17 @@ void print_mailboxes(Mailbox *root) {
 }
 
 
-void list_last_n(char *box_name, size_t n) {
-    CURL *curl;
-    curl = get_imap_curl_google();
-
-    size_t num_messages = get_msg_count(curl, box_name);
-    printf("Total message count in %s: %zu\n", 
-        box_name, num_messages);
-    size_t length = (n > num_messages) ? num_messages : n;
-    MailMessage *mailmessages;
-    mailmessages = get_messages(curl, box_name, 
-        num_messages - length + 1, length);
-
-    populate_msgs_subjects(curl, mailmessages, length);
-
-    if (mailmessages) {
-        for (size_t i = 0; i < length; i++) {
-            printf("%zu: %s\n", mailmessages[i].uid, 
-                mailmessages[i].metadata->subject);
-            mailmessage_free(mailmessages + i);
-        }
-        free(mailmessages);
+/*
+ * Transforms the CURL into IDLE mode by 
+ * sending the IDLE command
+ */
+int begin_idle(CURL *curl) {
+    char *command = "IDLE"; 
+    int status = -1;
+    ImapResponse *r = morse_exec_imap_stateful(curl, command);
+    if (r) {
+        status = r->status;
     }
-    curl_easy_cleanup(curl);
+    return status;
 }
+

@@ -20,6 +20,7 @@ void config_client_gmail(MorseClient *client) {
     }
 }
 
+
 /*
  * Creates a mail client with the given provider and
  * logs the user in through the browser.
@@ -100,10 +101,6 @@ Mailbox* morse_client_get_mailboxes(MorseClient *client) {
         fprintf(stderr, "Client is NULL!\n");
         return NULL;
     }
-    // if (!client->mailprovider) {
-    //     fprintf(stderr, "Mail provider missing.\n");
-    //     return NULL;
-    // }
     if (!client->curl_imap) {
         morse_client_login(client->mailprovider);
     }

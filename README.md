@@ -54,9 +54,14 @@ The main API functions are declared `morse.h`. See [`main.c`](src/main.c) for ex
 - [x] Clean up API design
   - [x] User should get all top-level API functions just by reading `morse.h`.
 - [x] Get user email from token
-- [ ] Receive emails
-  - [ ] Use the IDLE command to get push notifications
+
+### IMAP
+
+- [ ] Generate command tags to prefix each command (e.g. "A004")
+- [ ] Use the IDLE command to get push notifications
 - [x] Support multiple recipients
+
+### Compilation
 - [x] Compile to static library
 - [ ] Compile to debug
 - [x] Add separate `morse.h` header for API

@@ -38,7 +38,21 @@ size_t expt(size_t base, size_t pow);
 size_t decimal_to_size_t(char *digits);
 
 
+/*
+ * Converts a size_t to a NULL-terminated string.
+ * Returns NULL if failed.
+ */
 char* size_t_to_str(size_t num);
+
+
+/*
+ * Converts a size_t to a NULL-terminated string,
+ * but with padding zeroes.
+ * For example, converting 15 with max_digits 4 gives
+ * "0015".
+ * Returns NULL if max_digits < num's number of digits.
+ */
+char* size_t_to_str_padded(size_t num, size_t max_digits);
 
 #ifdef __cplusplus
 }

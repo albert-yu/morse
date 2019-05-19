@@ -25,6 +25,15 @@ CURL* get_imap_curl_google(void);
 Mailbox* get_mailboxes(CURL *curl);
 
 
+/*
+ * Begin IDLE. Returns 0 if successful.
+ */
+int begin_idle(CURL *curl);
+
+
+/*
+ * Print out mail
+ */
 void print_mailboxes(Mailbox *root);
 
 
