@@ -25,7 +25,7 @@ void iter_list(struct curl_slist *list,
  * Prints a single item with the given index
  */
 void print_item(size_t index, char *data) {
-    printf("[%zu]: %s\n", index, data);
+    printf("[%zu]:\t%s\n", index, data);
 }
 
 
