@@ -6,9 +6,13 @@
 extern "C" {
 #endif
 
+
 /*
  * This module contains functions for constructing IMAP commands.
  */
+
+#define DEFAULT_IMAP_CMD_LENGTH 128 
+
 
 /*
  * Prepends "SELECT " to a given box name  
