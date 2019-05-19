@@ -75,6 +75,8 @@ char* add_tag_to_cmd(const char *imap_cmd) {
 
 /*
  * Appends \r\n to the given command
+ * Return NULL if mem alloc fails or
+ * imap_cmd is too long
  */
 char* add_carriage_ret(const char *imap_cmd) {
     char *retval = NULL;
@@ -134,6 +136,33 @@ ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command) {
     }
 
     return response;
+}
+
+
+/*
+ * Sends raw data through a connection.
+ */
+int imap_send(CURL *curl, const char *cmd) {
+    size_t len = 0;
+    CURLcode res = CURLE_OK;
+    // prepend the tag and append the
+    // carriage return
+    char *with_tag = add_tag_to_cmd(cmd);
+    char *with_retandtag = add_carriage_ret(with_tag);
+
+    if (with_retandtag) {
+        res = curl_easy_send(curl, cmd,
+                  strlen(cmd), &len);
+    }
+    
+    return (int)res;
+}
+
+
+ImapResponse* imap_recv(CURL *curl) {
+    ImapResponse *resp = NULL;
+
+    return resp;
 }
 
 
