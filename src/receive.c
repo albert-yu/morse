@@ -222,6 +222,8 @@ ImapResponse* imap_recv(CURL *curl) {
     if (resp) {
         char *new_data = realloc(resp->data->memory, bytes_read + 1);
         if (new_data) {
+            memcpy(new_data, buffer, bytes_read);
+            new_data[bytes_read] = '\0';
             resp->data->memory = new_data;
             resp->data->size = bytes_read;
         }
