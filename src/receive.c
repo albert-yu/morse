@@ -140,8 +140,7 @@ ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command) {
 
 
 /* Auxiliary function that waits on the socket. */ 
-static int wait_on_socket(curl_socket_t sockfd, int for_recv, long timeout_ms)
-{
+static int wait_on_socket(curl_socket_t sockfd, int for_recv, long timeout_ms) {
     struct timeval tv;
     fd_set infd, outfd, errfd;
     int res;
@@ -179,9 +178,15 @@ int imap_send(CURL *curl, const char *cmd) {
     char *with_tag = add_tag_to_cmd(cmd);
     char *with_retandtag = add_carriage_ret(with_tag);
 
+    //res = curl_easy_getinfo(curl, CURLINFO_ACTIVESOCKET, &sockfd); 
+
     if (with_retandtag) {
         res = curl_easy_send(curl, cmd,
                   strlen(cmd), &len);
+        free(with_retandtag);
+    }
+    if (with_tag) {
+        free(with_tag);        
     }
     
     return (int)res;
@@ -189,6 +194,9 @@ int imap_send(CURL *curl, const char *cmd) {
 
 
 ImapResponse* imap_recv(CURL *curl) {
+    if (!curl) {
+        return NULL;
+    }
     ImapResponse *resp = NULL;
     size_t block_size = 8192;
     char buffer [block_size];
@@ -196,7 +204,7 @@ ImapResponse* imap_recv(CURL *curl) {
     CURLcode res;
     do {
         bytes_read = 0;
-        res = curl_easy_recv(curl, buffer, sizeof(buffer), &bytes_read); 
+        res = curl_easy_recv(curl, buffer, sizeof(buffer) - 1, &bytes_read); 
         
         // if (res == CURLE_AGAIN && !wait_on_socket(sockfd, 1, 60000L)) {
         //     fprintf(stderr, "Error: timeout\n");

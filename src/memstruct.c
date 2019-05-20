@@ -14,7 +14,7 @@ int memstruct_init(MemoryStruct *chunk) {
 
 
 MemoryStruct* memstruct_new() {
-    MemoryStruct* new_mem = malloc(sizeof(MemoryStruct));
+    MemoryStruct *new_mem = malloc(sizeof(*new_mem));
     if (new_mem == NULL) {
         fprintf(stderr, "Cannot allocate memory for new MemoryStruct.\n");
         return NULL;
