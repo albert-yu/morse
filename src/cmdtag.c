@@ -4,6 +4,7 @@
 
 #include "cmdtag.h"
 #include "dataconv.h"
+#include "imapcmd.h"
 
 #define IMAP_CMD_TAG_PREFIX "MORSE"
 
@@ -51,6 +52,55 @@ char* getnexttag() {
     }
     
     return result_tag;
+}
+
+
+/*
+ * Prepends the command tag to a given IMAP 
+ * command. E.g.
+ * SELECT INBOX -> A001 SELECT INBOX
+ * Returns NULL if failed.
+ */
+char* add_tag_to_cmd(const char *imap_cmd) {
+    char *final_cmd = NULL;
+    char *tag = getnexttag(); 
+    if (tag) {
+        // DEFAULT_IMAP_CMD_LENGTH is defined in "imapcmd.h"
+        final_cmd = 
+            calloc(DEFAULT_IMAP_CMD_LENGTH, sizeof(*final_cmd));
+        if (final_cmd) {
+            // concatenate the prefix plus a space 
+            sprintf(final_cmd, "%s %s", tag, imap_cmd);
+        }
+        free(tag);
+    }
+    return final_cmd;
+}
+
+
+/*
+ * Appends \r\n to the given command
+ * Return NULL if mem alloc fails or
+ * imap_cmd is too long
+ */
+char* add_carriage_ret(const char *imap_cmd) {
+    char *retval = NULL;
+    if (!imap_cmd) {
+        return NULL;
+    }
+    // need room for \r\n\0
+    size_t max_input_len = 
+        DEFAULT_IMAP_CMD_LENGTH - 3;
+    if (strlen(imap_cmd) > max_input_len) {
+        return NULL;
+    }
+    retval = calloc(DEFAULT_IMAP_CMD_LENGTH,
+                sizeof(*retval));
+    if (retval) {
+        strcpy(retval, imap_cmd);
+        strcat(retval, "\r\n");
+    }
+    return retval;
 }
 
 

@@ -12,5 +12,23 @@
  */
 char* getnexttag(void);
 
+
+/*
+ * Prepends the command tag to a given IMAP 
+ * command. E.g.
+ * SELECT INBOX -> A001 SELECT INBOX
+ * Returns NULL if failed.
+ */
+char* add_tag_to_cmd(const char *imap_cmd);
+
+
+/*
+ * Appends \r\n to the given command
+ * Return NULL if mem alloc fails or
+ * imap_cmd is too long
+ */
+char* add_carriage_ret(const char *imap_cmd);
+
+
 #endif
 
