@@ -758,9 +758,10 @@ void print_mailboxes(Mailbox *root) {
             printf("[%zu]:\t", i);
             Mailbox *child = (root->children)[i];
             if (child) {
-                printf("name: %s\n", child->name);
+                printf("Name: %s\n", child->name);
+                printf("\tAttributes:\n");
                 for (size_t j = 0; j < child->attr_count; j++) {
-                    printf("\t%s\n", (child->attrs)[j]);
+                    printf("\t - %s\n", (child->attrs)[j]);
                 }
             }
         }

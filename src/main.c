@@ -37,17 +37,13 @@ int main(int argc, char *argv[]) {
             printf("Selecting INBOX...\n");
             ImapResponse *r = morse_client_select_box(client, "INBOX");
             if (r) {
+                printf("%s\n", r->data->memory);
                 imap_response_free(r);
             }
 
             printf("Beginning IDLE...\n");
             morse_client_begin_idle(client);
             
-            // if (res == 0) {
-            //     printf("Press any key to exit...\n");
-            //     getchar();
-            // }
-            // printf("Error occured.\n");
         }
         morse_client_logout(client);
     }

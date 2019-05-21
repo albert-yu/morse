@@ -1,7 +1,7 @@
 #ifndef MORSE_H
 #define MORSE_H
 
-/* This header file just combines send and receive functionality. */
+/* This module defines the public API */
 
 #include "curl/curl.h"
 #include "imap_response.h"
