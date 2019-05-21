@@ -373,6 +373,7 @@ size_t extract_id_from(const char *line_containing_id) {
         char *str = item->data;
         if (is_decimal_str(str)) {
             id = decimal_to_size_t(str);
+            break;
         } 
         item = next;
     } while (next);
