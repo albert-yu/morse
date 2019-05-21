@@ -53,8 +53,6 @@ char* construct_url(char *base_url, char *path) {
 }
 
 
-
-
 /*
  * Executes an IMAP command with an existing CURL connection.
  * Thus, does NOT close the curl connection after.
@@ -90,108 +88,6 @@ ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command) {
 
     return response;
 }
-
-
-// /* Auxiliary function that waits on the socket. */ 
-// static int wait_on_socket(curl_socket_t sockfd, int for_recv, long timeout_ms) {
-//     struct timeval tv;
-//     fd_set infd, outfd, errfd;
-//     int res;
-//    
-//     tv.tv_sec = timeout_ms / 1000;
-//     tv.tv_usec = (timeout_ms % 1000) * 1000;
-//    
-//     FD_ZERO(&infd);
-//     FD_ZERO(&outfd);
-//     FD_ZERO(&errfd);
-//    
-//     FD_SET(sockfd, &errfd); /* always check for error */ 
-//    
-//     if(for_recv) {
-//         FD_SET(sockfd, &infd);
-//     }
-//     else {
-//         FD_SET(sockfd, &outfd);
-//     }
-//    
-//     /* select() returns the number of signalled sockets or -1 */ 
-//     res = select((int)sockfd + 1, &infd, &outfd, &errfd, &tv);
-//     return res;
-// }
-// 
-// 
-// /*
-//  * Sends raw data through a connection.
-//  */
-// int imap_send(CURL *curl, const char *cmd) {
-//     size_t len = 0;
-//     CURLcode res = CURLE_OK;
-//     // prepend the tag and append the
-//     // carriage return
-//     char *with_tag = add_tag_to_cmd(cmd);
-//     char *with_retandtag = add_carriage_ret(with_tag);
-// 
-//     //res = curl_easy_getinfo(curl, CURLINFO_ACTIVESOCKET, &sockfd); 
-// 
-//     if (with_retandtag) {
-//         res = curl_easy_send(curl, cmd,
-//                   strlen(cmd), &len);
-//         free(with_retandtag);
-//     }
-//     if (with_tag) {
-//         free(with_tag);        
-//     }
-//     
-//     return (int)res;
-// }
-// 
-// 
-// ImapResponse* imap_recv(CURL *curl) {
-//     if (!curl) {
-//         return NULL;
-//     }
-//     ImapResponse *resp = NULL;
-//     size_t block_size = 8192;
-//     char buffer [block_size];
-//     size_t bytes_read = 0;
-//     CURLcode res;
-//     do {
-//         bytes_read = 0;
-//         res = curl_easy_recv(curl, buffer, sizeof(buffer) - 1, &bytes_read); 
-//         
-//         // if (res == CURLE_AGAIN && !wait_on_socket(sockfd, 1, 60000L)) {
-//         //     fprintf(stderr, "Error: timeout\n");
-//         //     resp = imap_response_new();
-//         //     resp->status = 1;
-//         //     return resp;
-//         // }
-//     } while (res == CURLE_AGAIN);
-// 
-//     if (res != CURLE_OK) {
-//         fprintf(stderr, "Error: %s\n", curl_easy_strerror(res));
-//     }
-//     
-//     if (bytes_read == 0) {
-//         // do something here?
-//     }
-// 
-//     // print number of bytes
-//     printf("Received %" CURL_FORMAT_CURL_OFF_T " bytes.\n", 
-//         (curl_off_t)bytes_read);
-//     
-//     resp = imap_response_new();
-//     if (resp) {
-//         char *new_data = realloc(resp->data->memory, bytes_read + 1);
-//         if (new_data) {
-//             memcpy(new_data, buffer, bytes_read);
-//             new_data[bytes_read] = '\0';
-//             resp->data->memory = new_data;
-//             resp->data->size = bytes_read;
-//         }
-//         resp->status = res;
-//     }
-//     return resp;
-// }
 
 
 typedef enum retchar_t {
@@ -286,6 +182,50 @@ struct curl_slist* get_response_lines(char *imap_output) {
     lines = tokenize_into_list(imap_output, line_sep);
         
     return lines;
+}
+
+
+/*
+ * Iterates through the list of strings
+ * and returns lines that start with a given char.
+ * Returns NULL if no such lines are found or
+ * if the argument is NULL.
+ */
+struct curl_slist* filter_lines_w_start_char(
+                struct curl_slist *all_lines, char start_char) {
+    // make a copy
+    struct curl_slist *filtered_lines = NULL;
+
+    if (all_lines) {
+        struct curl_slist *item;
+        struct curl_slist *next;
+        item = all_lines;
+        do {
+            next = item->next;
+            char *line = item->data;
+            if (line) {
+                if (line[0] == start_char) {
+                    filtered_lines = 
+                        curl_slist_append(filtered_lines, line);
+                }
+            }
+            item = next;
+        } while (next);
+    }
+            
+    return filtered_lines;
+}
+
+
+/*
+ * Iterates through the lines of an IMAP response
+ * and only returns what the server responded with.
+ * These lines begin with '<'. 
+ * Returns NULL if no such lines are found, or if 
+ * passed in pointer is NULL.
+ */
+struct curl_slist* filter_server_only(struct curl_slist *all_lines) {
+    return filter_lines_w_start_char(all_lines, '<');   
 }
 
 
