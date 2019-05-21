@@ -405,7 +405,9 @@ size_t get_msg_count(CURL *curlhandle, char *box_name) {
     ImapResponse *response_box = NULL;
     response_box = select_box(curlhandle, box_name);
     if (!response_box) {
-        fprintf(stderr, "Could not select box with name %s.\n", box_name);
+        fprintf(stderr, 
+            "Could not select box with name %s.\n", 
+            box_name);
         return 0;
     }
     if (response_box->status != 0) {
@@ -414,7 +416,8 @@ size_t get_msg_count(CURL *curlhandle, char *box_name) {
             response_box->status);
         return 0;
     }
-    size_t total_messages_in_box = get_num_messages_from_str(response_box->data->memory);
+    size_t total_messages_in_box = 
+        get_num_messages_from_str(response_box->data->memory);
     imap_response_free(response_box);
     return total_messages_in_box;
 }
@@ -432,7 +435,8 @@ MailMessage* get_messages(CURL *curlhandle,
     if (start > total_messages_in_box) {
         // start shouldn't be greater than number of messages
         fprintf(stderr, 
-            "Requested starting index (%zu) is greater than the total number of messages (%zu).\n", 
+            "Requested starting index (%zu) is "
+            "greater than the total number of messages (%zu).\n", 
             start, total_messages_in_box);
         return NULL;
     }
@@ -447,7 +451,8 @@ MailMessage* get_messages(CURL *curlhandle,
     // allocate array memory
     MailMessage *messages = calloc(num_messages + 1, sizeof(*messages));
     if (!messages) {
-        fprintf(stderr, "Not enough memory for %zu mail messages.\n", num_messages);
+        fprintf(stderr, 
+            "Not enough memory for %zu mail messages.\n", num_messages);
         return NULL;
     }     
 
@@ -460,6 +465,14 @@ MailMessage* get_messages(CURL *curlhandle,
     struct curl_slist *response_lines;
     response_lines = get_response_lines(
         message_ids_resp->data->memory);
+
+    if (!response_lines) {
+        fprintf(stderr,
+            "Could not get lines from response: %s\n", 
+            message_ids_resp->data->memory);
+        free(messages);
+        return NULL;
+    }
 
     // iterate through and get the IDs
     struct curl_slist *item;
