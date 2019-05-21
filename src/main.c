@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
                 mailbox_free_tree(root);
             }
 
-            printf("Selecting INBOX...\n");
+            printf("Selecting box...\n");
             ImapResponse *r = morse_client_select_box(client, "INBOX");
             if (r) {
                 printf("%s\n", r->data->memory);
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
             
             // do some IMAP stuff
             ImapResponse *r2 = morse_client_exec_raw_imap(client, 
-                "UID SEARCH ALL");
+                "FETCH 1:6 ALL");
             if (r2) {
                 printf("%s\n", r2->data->memory);
                 imap_response_free(r2);

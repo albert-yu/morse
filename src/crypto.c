@@ -180,7 +180,7 @@ void set_nonce(unsigned char *nonce) {
 
 size_t byteslen(unsigned char *bytes) {
     size_t ret_val = 0;
-    unsigned char *ptr;
+    unsigned char *ptr = bytes;
     while (*ptr) {
         ret_val++;
         ptr++;
