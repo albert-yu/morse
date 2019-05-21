@@ -777,7 +777,6 @@ int begin_idle(CURL *curl) {
     char *command = "IDLE"; 
     int status = -1;
     ImapResponse *r = morse_exec_imap_stateful(curl, command);
-    printf("foo\n");
     if (r) {
         status = r->status;
         printf("IDLE response: %s\n", r->data->memory);

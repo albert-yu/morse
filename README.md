@@ -57,7 +57,7 @@ The main API functions are declared `morse.h`. See [`main.c`](src/main.c) for ex
 
 ### IMAP
 
-- [ ] Generate command tags to prefix each command (e.g. "A004")
+- [x] Generate command tags to prefix each command (e.g. "A004")
 - [ ] Use the IDLE command to get push notifications
 - [x] Support multiple recipients
 

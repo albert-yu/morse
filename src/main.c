@@ -41,9 +41,7 @@ int main(int argc, char *argv[]) {
                 imap_response_free(r);
             }
 
-            printf("Beginning IDLE...\n");
-            morse_client_begin_idle(client);
-            
+             
         }
         morse_client_logout(client);
     }
