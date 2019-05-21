@@ -48,6 +48,10 @@ int main(int argc, char *argv[]) {
                 printf("%s\n", r2->data->memory);
                 imap_response_free(r2);
             }
+            
+            // begin IDLE
+            printf("Begin IDLE...\n");
+            morse_client_begin_idle(client);
         }
         morse_client_logout(client);
     }
