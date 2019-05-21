@@ -26,6 +26,12 @@ Mailbox* get_mailboxes(CURL *curl);
 
 
 /*
+ * Performs "SELECT {boxname}"
+ */
+ImapResponse* select_box(CURL *curlhandle, char *box_name) {
+
+
+/*
  * Begin IDLE. Returns 0 if successful.
  */
 int begin_idle(CURL *curl);

@@ -432,7 +432,7 @@ size_t extract_id_from(const char *line_containing_id) {
 /*
  * Performs "SELECT {boxname}"
  */
-ImapResponse* select_box(CURL *curlhanlde, char *box_name) {
+ImapResponse* select_box(CURL *curlhandle, char *box_name) {
     char *select_box_cmd = imapcmd_select_box(box_name);
     ImapResponse *response_box = NULL; 
     if (select_box_cmd) {

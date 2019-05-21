@@ -83,6 +83,12 @@ Mailbox* morse_client_get_mailboxes(MorseClient *client);
 
 
 /*
+ * Selects a mailbox
+ */
+ImapResponse* morse_client_select_box(MorseClient *client, char *box_name);
+
+
+/*
  * Begins IDLE mode as documented in 
  * https://tools.ietf.org/html/rfc2177
  */
