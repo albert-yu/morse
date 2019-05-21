@@ -446,7 +446,7 @@ ImapResponse* select_box(CURL *curlhandle, char *box_name) {
 
 size_t get_msg_count(CURL *curlhandle, char *box_name) {
     ImapResponse *response_box = NULL;
-    response_box = select_box(box_name);
+    response_box = select_box(curlhandle, box_name);
     if (!response_box) {
         fprintf(stderr, "Could not select box with name %s.\n", box_name);
         return 0;

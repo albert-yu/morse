@@ -28,7 +28,7 @@ Mailbox* get_mailboxes(CURL *curl);
 /*
  * Performs "SELECT {boxname}"
  */
-ImapResponse* select_box(CURL *curlhandle, char *box_name) {
+ImapResponse* select_box(CURL *curlhandle, char *box_name);
 
 
 /*

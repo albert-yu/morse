@@ -88,34 +88,56 @@ int morse_client_sendmail(MorseClient *client, SmtpRequest *smtp_request) {
 }
 
 
+static int validate_client(MorseClient *client) {
+    int status = 0;
+    if (!client) {
+        fprintf(stderr, "Client is NULL!\n");
+        return -1;
+    }
+    if (!client->curl_imap) {
+        MorseClient *old_c = client;
+        client = morse_client_login(client->mailprovider);
+        morse_client_logout(old_c); 
+    }
+    return status;
+}
+
+
 /* 
  * Executes an IMAP command and returns the response.
  */
 ImapResponse* morse_client_exec_raw_imap(MorseClient *client, char *command) {
-    return morse_exec_imap_stateful(client->curl_imap, command);
+    ImapResponse *resp = NULL;
+    int validation = validate_client(client);
+    if (validation == 0) {
+        resp =  morse_exec_imap_stateful(client->curl_imap, command);
+    }
+    return resp;
 }
 
 
 Mailbox* morse_client_get_mailboxes(MorseClient *client) {
-    if (!client) {
-        fprintf(stderr, "Client is NULL!\n");
-        return NULL;
+    if (validate_client(client) == 0) {
+        return get_mailboxes(client->curl_imap);
     }
-    if (!client->curl_imap) {
-        morse_client_login(client->mailprovider);
+    return NULL;
+}
+
+
+ImapResponse* morse_client_select_box(MorseClient *client, char *box_name) {
+    ImapResponse *resp = NULL;
+    if (validate_client(client) == 0) {
+        resp = select_box(client->curl_imap, box_name);
     }
-    return get_mailboxes(client->curl_imap);
+    return resp;
 }
 
 
 int morse_client_begin_idle(MorseClient *client) {
-    if (!client) {
-        return -1;
+    int res = 0;
+    if (validate_client(client) == 0) {
+        res = begin_idle(client->curl_imap);
     }
-    if (!client->curl_imap) {
-        morse_client_login(client->mailprovider);
-    }
-    return begin_idle(client->curl_imap);
+    return res;
 }
-
 

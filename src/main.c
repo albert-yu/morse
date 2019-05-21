@@ -4,7 +4,6 @@
 
 #include "morse.h"
 #include "receive.h" // not needed unless printing
-#include "mailbox.h"
 
 
 int main(int argc, char *argv[]) {  
@@ -33,6 +32,12 @@ int main(int argc, char *argv[]) {
             if (root) {
                 print_mailboxes(root);
                 mailbox_free_tree(root);
+            }
+
+            printf("Selecting INBOX...\n");
+            ImapResponse *r = morse_client_select_box(client, "INBOX");
+            if (r) {
+                imap_response_free(r);
             }
 
             printf("Beginning IDLE...\n");
