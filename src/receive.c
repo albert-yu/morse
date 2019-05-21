@@ -69,7 +69,7 @@ ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command) {
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, DEFAULT_IMAP_TIMEOUT);
 
     // verbose output
-    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
     // COMMAND GOES HERE
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
