@@ -361,6 +361,9 @@ size_t extract_id_from(const char *line_containing_id) {
     struct curl_slist *words;
     words = tokenize_into_list(line_containing_id, " ");
 
+    if (!words)
+        return 0;
+
     struct curl_slist *item;
     struct curl_slist *next;
 
