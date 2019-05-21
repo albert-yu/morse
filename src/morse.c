@@ -88,6 +88,10 @@ int morse_client_sendmail(MorseClient *client, SmtpRequest *smtp_request) {
 }
 
 
+/*
+ * Is this client a valid one?
+ * Tries to re-login if the curl_imap member is missing.
+ */
 static int validate_client(MorseClient *client) {
     int status = 0;
     if (!client) {
@@ -98,6 +102,10 @@ static int validate_client(MorseClient *client) {
         MorseClient *old_c = client;
         client = morse_client_login(client->mailprovider);
         morse_client_logout(old_c); 
+        if (!client) {
+            fprintf(stderr, "Could not re-login client.\n");
+            return -1;
+        }
     }
     return status;
 }
