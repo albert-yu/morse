@@ -40,8 +40,14 @@ int main(int argc, char *argv[]) {
                 printf("%s\n", r->data->memory);
                 imap_response_free(r);
             }
-
-             
+            
+            // do some IMAP stuff
+            ImapResponse *r2 = morse_client_exec_raw_imap(client, 
+                "FETCH 1:6 BODY.PEEK[HEADER.FIELDS (SUBJECT)]");
+            if (r2) {
+                printf("%s\n", r2->data->memory);
+                imap_response_free(r2);
+            }
         }
         morse_client_logout(client);
     }

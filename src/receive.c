@@ -69,7 +69,7 @@ ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command) {
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, DEFAULT_IMAP_TIMEOUT);
 
     // verbose output
-    // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
     // COMMAND GOES HERE
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
@@ -282,6 +282,7 @@ struct curl_slist* get_response_lines(char *imap_output) {
         line_sep = "\r\n";
     }
 
+    // WARNING: this function can return NULL!
     lines = tokenize_into_list(imap_output, line_sep);
         
     return lines;
