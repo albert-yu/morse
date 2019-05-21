@@ -12,6 +12,9 @@
 #include "receive.h"
 
 
+// 29 minutes
+#define DEFAULT_IMAP_TIMEOUT (60L * 29L)
+
 /*
  * Caller must free returned buffer
  */
@@ -110,16 +113,13 @@ ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command) {
     ImapResponse *response = imap_response_new();
 
     // set a timeout
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 60L);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, DEFAULT_IMAP_TIMEOUT);
 
     // verbose output
     // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
     // COMMAND GOES HERE
-    // char *final_cmd = add_tag_to_cmd(command);
-    char *final_cmd = command;
-    printf("final command: %s\n", final_cmd);
-    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, final_cmd);
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
 
     // set callback
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_mem_callback);
@@ -429,10 +429,24 @@ size_t extract_id_from(const char *line_containing_id) {
 }
 
 
+/*
+ * Performs "SELECT {boxname}"
+ */
+ImapResponse* select_box(CURL *curlhanlde, char *box_name) {
+    char *select_box_cmd = imapcmd_select_box(box_name);
+    ImapResponse *response_box = NULL; 
+    if (select_box_cmd) {
+        response_box = morse_exec_imap_stateful(curlhandle, select_box_cmd); 
+        free(select_box_cmd);
+    }
+    
+    return response_box;
+}
+
+
 size_t get_msg_count(CURL *curlhandle, char *box_name) {
-    char *select_box_command = imapcmd_select_box(box_name);
-    ImapResponse *response_box = morse_exec_imap_stateful(curlhandle, select_box_command);  
-    free(select_box_command);
+    ImapResponse *response_box = NULL;
+    response_box = select_box(box_name);
     if (!response_box) {
         fprintf(stderr, "Could not select box with name %s.\n", box_name);
         return 0;
@@ -762,8 +776,19 @@ int begin_idle(CURL *curl) {
     char *command = "IDLE"; 
     int status = -1;
     ImapResponse *r = morse_exec_imap_stateful(curl, command);
+    printf("foo\n");
     if (r) {
         status = r->status;
+        printf("IDLE response: %s\n", r->data->memory);
+        if (status == 0) {
+            ImapResponse *r2 = morse_exec_imap_stateful(curl, "DONE");
+            if (r2) {
+                status = r2->status;
+                printf("IDLE response: %s\n", r->data->memory);
+            }
+        }
+        
+        imap_response_free(r);
     }
     return status;
 }

@@ -82,6 +82,13 @@ ImapResponse* morse_client_exec_raw_imap(MorseClient *client, char *command);
 Mailbox* morse_client_get_mailboxes(MorseClient *client);
 
 
+/*
+ * Begins IDLE mode as documented in 
+ * https://tools.ietf.org/html/rfc2177
+ */
+int morse_client_begin_idle(MorseClient *client);
+
+
 #ifdef __cplusplus
 }
 #endif

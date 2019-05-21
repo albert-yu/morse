@@ -107,3 +107,15 @@ Mailbox* morse_client_get_mailboxes(MorseClient *client) {
     return get_mailboxes(client->curl_imap);
 }
 
+
+int morse_client_begin_idle(MorseClient *client) {
+    if (!client) {
+        return -1;
+    }
+    if (!client->curl_imap) {
+        morse_client_login(client->mailprovider);
+    }
+    return begin_idle(client->curl_imap);
+}
+
+

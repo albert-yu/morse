@@ -34,6 +34,15 @@ int main(int argc, char *argv[]) {
                 print_mailboxes(root);
                 mailbox_free_tree(root);
             }
+
+            printf("Beginning IDLE...\n");
+            morse_client_begin_idle(client);
+            
+            // if (res == 0) {
+            //     printf("Press any key to exit...\n");
+            //     getchar();
+            // }
+            // printf("Error occured.\n");
         }
         morse_client_logout(client);
     }
