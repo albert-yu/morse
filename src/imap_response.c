@@ -8,7 +8,7 @@ ImapResponse* imap_response_new() {
     ImapResponse* new_resp = NULL;
     MemoryStruct *inner_data = memstruct_new();
     if (inner_data) {
-        new_resp = malloc(sizeof(ImapResponse));
+        new_resp = malloc(sizeof(*new_resp));
         if (new_resp) {
             new_resp->data = inner_data;
             new_resp->status = 0;
@@ -25,3 +25,5 @@ void imap_response_free(ImapResponse* response) {
     memstruct_free(response->data);
     free(response);
 }
+
+
