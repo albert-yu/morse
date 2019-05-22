@@ -46,7 +46,7 @@ void print_mailboxes(Mailbox *root);
 /* 
  * Execute an arbitrary IMAP command.
  */
-ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command);
+ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command, int verbose_out);
 
 #ifdef __cplusplus
 }

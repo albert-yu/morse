@@ -72,7 +72,9 @@ int morse_client_sendmail(MorseClient *client, SmtpRequest *smtp_request);
  * Returns NULL if the client's curl handle is missing
  * or the command passed in is NULL.
  */
-ImapResponse* morse_client_exec_raw_imap(MorseClient *client, char *command);
+ImapResponse* morse_client_exec_raw_imap(MorseClient *client, 
+                                         char *command, 
+                                         int verbose);
 
 
 /*

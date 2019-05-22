@@ -114,11 +114,11 @@ static int validate_client(MorseClient *client) {
 /* 
  * Executes an IMAP command and returns the response.
  */
-ImapResponse* morse_client_exec_raw_imap(MorseClient *client, char *command) {
+ImapResponse* morse_client_exec_raw_imap(MorseClient *client, char *command, int verbose) {
     ImapResponse *resp = NULL;
     int validation = validate_client(client);
     if (validation == 0) {
-        resp =  morse_exec_imap_stateful(client->curl_imap, command);
+        resp =  morse_exec_imap_stateful(client->curl_imap, command, verbose);
     }
     return resp;
 }

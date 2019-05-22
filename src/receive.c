@@ -57,7 +57,7 @@ char* construct_url(char *base_url, char *path) {
  * Executes an IMAP command with an existing CURL connection.
  * Thus, does NOT close the curl connection after.
  */
-ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command) {
+ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command, int verbose_out) {
     if (!curl || !command) {
         return NULL;
     }
@@ -66,15 +66,19 @@ ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command) {
     // set a timeout
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, DEFAULT_IMAP_TIMEOUT);
 
-    // verbose output
-    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-
     // COMMAND GOES HERE
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
 
     // set callback
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_mem_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)response->data);
+
+    // verbose output if specified
+    if (verbose_out) {
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+        curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, &curl_mem_debug_callback);
+        curl_easy_setopt(curl, CURLOPT_DEBUGDATA, (void*)response->v_data);
+    }
 
     /* Perform the fetch */
     CURLcode res = curl_easy_perform(curl);
@@ -334,7 +338,7 @@ ImapResponse* select_box(CURL *curlhandle, char *box_name) {
     char *select_box_cmd = imapcmd_select_box(box_name);
     ImapResponse *response_box = NULL; 
     if (select_box_cmd) {
-        response_box = morse_exec_imap_stateful(curlhandle, select_box_cmd); 
+        response_box = morse_exec_imap_stateful(curlhandle, select_box_cmd, 1); 
         free(select_box_cmd);
     }
     
@@ -400,7 +404,7 @@ MailMessage* get_messages(CURL *curlhandle,
     char *list_message_ids_cmd = imapcmd_fetch_messages(
         start, num_messages);
     ImapResponse *message_ids_resp = morse_exec_imap_stateful(
-        curlhandle, list_message_ids_cmd);
+        curlhandle, list_message_ids_cmd, 1);
     free(list_message_ids_cmd);
 
     struct curl_slist *response_lines;
@@ -449,7 +453,7 @@ char* get_subject_stateful(CURL *curl, size_t msg_id) {
      
     char *cmd_to_get_subject = imapcmd_id_get_subject(msg_id);
     ImapResponse *response;
-    response = morse_exec_imap_stateful(curl, cmd_to_get_subject);
+    response = morse_exec_imap_stateful(curl, cmd_to_get_subject, 1);
     if (response && response->status == 0) {
         subj = strdup(response->data->memory);
     }
@@ -489,7 +493,7 @@ void populate_msgs_subjects(CURL *curlhandle,
  */
 struct curl_slist* get_list_cmd_result(CURL *curl) {
     char *command = imapcmd_list_boxes();
-    ImapResponse *resp = morse_exec_imap_stateful(curl, command);
+    ImapResponse *resp = morse_exec_imap_stateful(curl, command, 1);
     free(command);
 
     struct curl_slist *mailboxes = NULL;
@@ -688,12 +692,12 @@ void print_mailboxes(Mailbox *root) {
 int begin_idle(CURL *curl) {
     char *command = "IDLE"; 
     int status = -1;
-    ImapResponse *r = morse_exec_imap_stateful(curl, command);
+    ImapResponse *r = morse_exec_imap_stateful(curl, command, 1);
     if (r) {
         status = r->status;
         printf("IDLE response: %s\n", r->data->memory);
         if (status == 0) {
-            ImapResponse *r2 = morse_exec_imap_stateful(curl, "DONE");
+            ImapResponse *r2 = morse_exec_imap_stateful(curl, "DONE", 1);
             if (r2) {
                 status = r2->status;
                 printf("IDLE response: %s\n", r->data->memory);
