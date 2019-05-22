@@ -89,34 +89,33 @@ int curl_mem_debug_callback(CURL *handle,
     }
 
     // switch block not used thus far
-    char *text;
-    switch (type) {
-        case CURLINFO_TEXT:
-            fprintf(stderr, "== Info: %s", data);
-            /* FALLTHROUGH */
-        default: /* in case a new one is introduced to shock us */
-            free(ptr);
-            return 0;
+    // char *text;
+    // switch (type) {
+    //     case CURLINFO_TEXT:
+    //         fprintf(stderr, "== Info: %s", data);
+    //         /* FALLTHROUGH */
+    //     default: /* in case a new one is introduced to shock us */
+    //         return 0;
 
-        case CURLINFO_HEADER_OUT:
-            text = "=> Send header";
-            break;
-        case CURLINFO_DATA_OUT:
-            text = "=> Send data";
-            break;
-        case CURLINFO_SSL_DATA_OUT:
-            text = "=> Send SSL data";
-            break;
-        case CURLINFO_HEADER_IN:
-            text = "<= Recv header";
-            break;
-        case CURLINFO_DATA_IN:
-            text = "<= Recv data";
-            break;
-        case CURLINFO_SSL_DATA_IN:
-            text = "<= Recv SSL data";
-            break;
-    } 
+    //     case CURLINFO_HEADER_OUT:
+    //         text = "=> Send header";
+    //         break;
+    //     case CURLINFO_DATA_OUT:
+    //         text = "=> Send data";
+    //         break;
+    //     case CURLINFO_SSL_DATA_OUT:
+    //         text = "=> Send SSL data";
+    //         break;
+    //     case CURLINFO_HEADER_IN:
+    //         text = "<= Recv header";
+    //         break;
+    //     case CURLINFO_DATA_IN:
+    //         text = "<= Recv data";
+    //         break;
+    //     case CURLINFO_SSL_DATA_IN:
+    //         text = "<= Recv SSL data";
+    //         break;
+    // } 
     
     /* copy to memstruct */
     // old mem->memory is invalid if realloc successful

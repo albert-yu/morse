@@ -493,7 +493,7 @@ void populate_msgs_subjects(CURL *curlhandle,
  */
 struct curl_slist* get_list_cmd_result(CURL *curl) {
     char *command = imapcmd_list_boxes();
-    ImapResponse *resp = morse_exec_imap_stateful(curl, command, 1);
+    ImapResponse *resp = morse_exec_imap_stateful(curl, command, 0);
     free(command);
 
     struct curl_slist *mailboxes = NULL;
