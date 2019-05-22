@@ -70,6 +70,16 @@ size_t curl_mem_callback(void *buffer, size_t size, size_t nmemb, void *userp) {
 
 
 /*
+ * Print out the data to stdout
+ */
+void debug_print(char *data, size_t size) {
+    for (size_t i = 0; i < size; i++) {
+        putchar(data[i]);
+    }
+}
+
+
+/*
  * Callback function that puts verbose data into the v_data member
  * This can be used alongside curl_mem_callback.
  */
@@ -88,6 +98,7 @@ int curl_mem_debug_callback(CURL *handle,
         return 0;
     }
 
+    debug_print(data, size);
     // switch block not used thus far
     // char *text;
     // switch (type) {
