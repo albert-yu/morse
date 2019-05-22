@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
             
             // do some IMAP stuff
             ImapResponse *r2 = morse_client_exec_raw_imap(client, 
-                "FETCH 1 (UID RFC822.SIZE BODY.PEEK[])");
+                "FETCH 1 (UID RFC822.SIZE BODY.PEEK[])", 1);
             if (r2) {
                 printf("%s\n", r2->data->memory);
                 imap_response_free(r2);

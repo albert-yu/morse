@@ -99,7 +99,7 @@ int curl_mem_debug_callback(CURL *handle,
     }
 
     debug_print(data, size);
-    // switch block not used thus far
+    // // switch block not used thus far
     // char *text;
     // switch (type) {
     //     case CURLINFO_TEXT:
@@ -122,6 +122,7 @@ int curl_mem_debug_callback(CURL *handle,
     //         break;
     //     case CURLINFO_DATA_IN:
     //         text = "<= Recv data";
+    //         debug_print(data, size);
     //         break;
     //     case CURLINFO_SSL_DATA_IN:
     //         text = "<= Recv SSL data";
