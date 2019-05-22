@@ -44,12 +44,11 @@ void memstruct_free(MemoryStruct *mem_struct) {
 }
 
 
-/**
+/*
  * Callback function for handling server response.
  * signature: size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
  */
-size_t curl_mem_callback(void *buffer, size_t size, size_t nmemb, void *userp)
-{
+size_t curl_mem_callback(void *buffer, size_t size, size_t nmemb, void *userp) {
     size_t realsize = size * nmemb;
 
     MemoryStruct *mem = (MemoryStruct *)userp;
@@ -68,3 +67,71 @@ size_t curl_mem_callback(void *buffer, size_t size, size_t nmemb, void *userp)
 
     return realsize;
 }
+
+
+/*
+ * Callback function that puts verbose data into the v_data member
+ * This can be used alongside curl_mem_callback.
+ */
+int curl_mem_debug_callback(CURL *handle,
+                            curl_infotype type,
+                            char *data,
+                            size_t size,
+                            void *userptr) {
+    int retcode = 0;
+    MemoryStruct *mem = (MemoryStruct *)userptr;
+    // + 1 for the zero terminated
+    char *ptr = realloc(mem->memory, mem->size + size + 1);
+    if (!ptr) {
+        /* some way to handle the error */
+        fprintf(stderr, "Not enough memory (realloc returned NULL).\n");
+        return 0;
+    }
+
+    // switch block not used thus far
+    char *text;
+    switch (type) {
+        case CURLINFO_TEXT:
+            fprintf(stderr, "== Info: %s", data);
+            /* FALLTHROUGH */
+        default: /* in case a new one is introduced to shock us */
+            free(ptr);
+            return 0;
+
+        case CURLINFO_HEADER_OUT:
+            text = "=> Send header";
+            break;
+        case CURLINFO_DATA_OUT:
+            text = "=> Send data";
+            break;
+        case CURLINFO_SSL_DATA_OUT:
+            text = "=> Send SSL data";
+            break;
+        case CURLINFO_HEADER_IN:
+            text = "<= Recv header";
+            break;
+        case CURLINFO_DATA_IN:
+            text = "<= Recv data";
+            break;
+        case CURLINFO_SSL_DATA_IN:
+            text = "<= Recv SSL data";
+            break;
+    } 
+    
+    /* copy to memstruct */
+    // old mem->memory is invalid if realloc successful
+    mem->memory = ptr;     
+
+    // append the data to existing mem struct
+    memcpy(&(mem->memory[mem->size]), data, size);
+
+    // adjust size
+    mem->size += size;
+
+    // add null-term
+    mem->memory[mem->size] = '\0';
+
+    return retcode;
+}
+
+
