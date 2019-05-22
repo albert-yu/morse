@@ -16,8 +16,12 @@ typedef struct imap_response_t {
     /* The response data. Should be NULL if failed */
     MemoryStruct *data;
 
+    /* Verbose mode data */
+    MemoryStruct *v_data;
+
     /* Did any errors occur? A success is 0. */
     int status;
+
 } ImapResponse;
 
 
