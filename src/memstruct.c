@@ -147,7 +147,12 @@ int curl_mem_debug_callback(CURL *handle,
         return 0;
     }
 
-    debug_print(data, size);
+    // debug_print(data, size);
+
+    char *new_data = remove_equals_sign(data, size);
+    printf("%s", new_data);
+    free(new_data);
+
     // // switch block not used thus far
     // char *text;
     // switch (type) {
