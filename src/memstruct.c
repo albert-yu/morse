@@ -75,7 +75,56 @@ size_t curl_mem_callback(void *buffer, size_t size, size_t nmemb, void *userp) {
 void debug_print(char *data, size_t size) {
     for (size_t i = 0; i < size; i++) {
         putchar(data[i]);
+        if (i == size - 1) {
+            printf("foo");
+        }
     }
+}
+
+
+/*
+ * Removes an equals sign if it's right before a
+ * newline character or carriage return that signifies
+ * the end of a line.
+ * Caller must free returned buffer.
+ */
+char* remove_equals_sign(char *input, size_t length) {
+    char *retval = NULL;
+    retval = calloc(length + 1, sizeof(*retval));
+    if (!retval) {
+        fprintf(stderr, "Memory error: could not dup string %s\n", input);
+        return NULL;
+    }
+    memcpy(retval, input, length);
+    if (length < 3) {
+        return retval;
+    }
+
+    // remove the equals
+    char *ptr = retval;
+    ptr += length - 1;
+    if (*ptr == '\n') {
+        int is_carriage = 0;
+        ptr--;
+        if (*ptr == '\r') {
+            ptr--;
+            is_carriage = 1;
+        }
+        if (*ptr == '=') {
+            if (is_carriage) {
+                // append \r\n
+                *ptr = '\r';
+                ptr[1] = '\n';
+                ptr[2] = '\0';
+            }
+            else {
+                *ptr = '\n';
+                ptr[1] = '\0';
+            }
+        }
+    }
+
+    return retval;
 }
 
 
