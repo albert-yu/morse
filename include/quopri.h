@@ -13,6 +13,12 @@ extern "C" {
 #endif
 
 
+/*
+ * Read 'input', apply quoted-printable decoding, and 
+ * return the output.
+ * If 'header' is true, decode underscore as space (per RFC 1522).
+ */
+char* quopri_decode(const char *input, int header);
 
 #ifdef __cplusplus
 }
