@@ -2,6 +2,7 @@
 
 #include "authenticate.h"  // curl is in httpclient.h
 #include "curlyfries.h"
+#include "dataconv.h"
 #include "file.h"
 #include "mime.h"
 #include "send.h"

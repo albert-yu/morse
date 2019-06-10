@@ -1,5 +1,6 @@
 #include <string.h>
 #include "crypto.h"
+#include "dataconv.h"
 #include "secrets.h"
 #include "file.h"
 
@@ -12,95 +13,7 @@
 #define CRYPTO_SECRET_FILENAME "creds.txt"
 #define CRYPTO_DECRYPT_LEN_FILENAME "len.txt"
 #define CRYPTO_FILEPATH_SIZE 32
-#define NUM_BYTES_IN_UNSIGNED_LONG 4
-#define UNSIGNED_LONG_HEX_LEN (NUM_BYTES_IN_UNSIGNED_LONG * 2)
 
-
-/*
- * Convert bytes to hex string by parsing two chars at a time.
- * Need to free resulting pointer's memory.
- * Adapted from https://stackoverflow.com/a/46210658
- */
-char* bytes_to_hex(unsigned char *bytes, size_t bytes_len) {
-    char *hex = calloc(bytes_len * 2, sizeof(*hex));
-
-    for (size_t i = 0, j = 0; i < bytes_len; ++i, j += 2) {
-        sprintf(hex + j, "%02x", bytes[i] & 0xff);
-    }
-    return hex;
-}
-
-
-/*
- * Convert hex string to bytes by parsing two chars at a time
- * Need to free resulting pointer's memory.
- * Adapted from https://stackoverflow.com/a/46210658
- */
-unsigned char* hex_to_bytes_with_len(char *hex_string, size_t hex_length) {
-    // not handling the odd case--yet
-    if ((hex_length % 2) != 0) {
-        unsigned char *empty_buf = calloc(1, sizeof(*empty_buf));
-        return empty_buf;
-    }
-
-    size_t ascii_length = hex_length / 2;
-    // printf("%zu\n", ascii_length);
-    unsigned char *byte_array = calloc(ascii_length + 1, sizeof(*byte_array));
-    size_t i = 0;
-    size_t j = 0;
-    // printf("foo!\n");
-    for (; j < hex_length; ++i, j += 2) {
-        int val [1];
-        sscanf(hex_string + j, "%2x", val);
-        byte_array[i] = val[0];
-        byte_array[i + 1] = '\0';
-    }
-    return byte_array;
-}
-
-
-unsigned char* hex_to_bytes(char *hex_string) {
-    size_t hex_length = strlen(hex_string);
-    return hex_to_bytes_with_len(hex_string, hex_length);
-}
-
-
-/**
- * Convert unsigned long to null-terminated byte array.
- * Caller must free returned buffer.
- * Adapted from: https://stackoverflow.com/a/3784478/9555588
- */
-unsigned char* unsigned_long_to_bytes(unsigned long n) {
-    int size = NUM_BYTES_IN_UNSIGNED_LONG + 1; // 4 + 1
-    unsigned char *bytes = calloc(size, sizeof(*bytes));
-    bytes[0] = (n >> 24) & 0xff;
-    bytes[1] = (n >> 16) & 0xff;
-    bytes[2] = (n >> 8) & 0xff;
-    bytes[3] = n & 0xFF;
-    return bytes;
-}
-
-
-/**
- * Convert bytes to unsigned long
- */
-unsigned long bytes_to_unsigned_long(unsigned char *bytes) {
-    unsigned long value = 0;
-    value += (bytes[0] << 24) & 0xffff;
-    value += (bytes[1] << 16) & 0xffff;
-    value += (bytes[2] << 8) & 0xffff;
-    value += (bytes[3]) & 0xffff;
-    return value;
-}
-
-
-/**
- * Convert hex string to unsigned long. Will truncate anything longer than 8 chars.
- */
-unsigned long hex_bytes_to_unsigned_long(char *hex_bytes) {
-    unsigned char *bytes = hex_to_bytes_with_len(hex_bytes, UNSIGNED_LONG_HEX_LEN);
-    return bytes_to_unsigned_long(bytes);
-}
 
 
 uint32_t gen_random_int() {

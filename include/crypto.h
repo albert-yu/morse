@@ -8,11 +8,6 @@
 extern "C" {
 #endif
 
-/*
- * Convert bytes to hex string by parsing two chars at a time.
- * Need to free resulting pointer's memory.
- */
-char* bytes_to_hex(unsigned char *bytes, size_t bytes_len);
 
 /**
  * Generate random integer
