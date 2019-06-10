@@ -86,6 +86,9 @@ void debug_print(char *data, size_t size) {
  * Removes an equals sign if it's right before a
  * newline character or carriage return that signifies
  * the end of a line.
+ * EDIT: this is probably not needed. Use a module to
+ * decode "MIME quoted-printable data"
+ * https://stackoverflow.com/a/15621614
  * Caller must free returned buffer.
  */
 char* remove_equals_sign(char *input, size_t length) {
@@ -149,9 +152,9 @@ int curl_mem_debug_callback(CURL *handle,
 
     // debug_print(data, size);
 
-    char *new_data = remove_equals_sign(data, size);
-    printf("%s", new_data);
-    free(new_data);
+    // char *new_data = remove_equals_sign(data, size);
+    // printf("%s", new_data);
+    // free(new_data);
 
     // // switch block not used thus far
     // char *text;
