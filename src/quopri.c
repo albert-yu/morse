@@ -1,10 +1,13 @@
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 #include "dataconv.h"
 #include "quopri.h"
 
 
-#define ESCAPE_CHAR_STR "=" 
+#define ESCAPE_CHAR '=' 
+
 
 char* quopri_decode(const char *input, int header) {
     char *decoded = NULL;
@@ -18,8 +21,8 @@ char* quopri_decode(const char *input, int header) {
         fprintf(stderr, "Could not alloc memory for decoded! (quopri)\n");
         return NULL;
     }
-    
-    // get the lines
+
+    // dup the string
     char *cp_input = strdup(input);
     if (!cp_input) {
         fprintf(stderr, "Could not dup string!\n");
@@ -27,11 +30,17 @@ char* quopri_decode(const char *input, int header) {
         return NULL;
     }
 
+    // tokenize by newlines
     char *saveptr = NULL;
-    saveptr = strtok(cp_input, ESCAPE_CHAR_STR);
+    saveptr = strtok(cp_input, "\n");
     while (saveptr != NULL) {
-        
-        saveptr = strtok(NULL, ESCAPE_CHAR_STR);
+        size_t i, n;
+        i = 0;  // index
+        n = strlen(saveptr);  // length of line
+        while (i < n) {
+            
+        }
+        saveptr = strtok(NULL, "\n");
     }
 
     if (cp_input) {
