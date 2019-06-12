@@ -151,6 +151,15 @@ char* size_t_to_str_padded(size_t num, size_t max_digits) {
 /* ------HEX STUFF--------------*/
 
 /*
+ * Is this a hex character?
+ */
+int is_hex(char c) {
+    int is_hex_alpha = (c <= 'f' && c >= 'a') || (c <= 'F' && c >= 'A');
+    return is_decimal_char(c) || is_hex_alpha; 
+}
+
+
+/*
  * Convert bytes to hex string by parsing two chars at a time.
  * Need to free resulting pointer's memory.
  * Adapted from https://stackoverflow.com/a/46210658
@@ -173,8 +182,9 @@ char* bytes_to_hex(unsigned char *bytes, size_t bytes_len) {
 unsigned char* hex_to_bytes_with_len(char *hex_string, size_t hex_length) {
     // not handling the odd case--yet
     if ((hex_length % 2) != 0) {
-        unsigned char *empty_buf = calloc(1, sizeof(*empty_buf));
-        return empty_buf;
+        fprintf(stderr, "Passed in string must have even length."
+                        " Got length %zu instead.\n", hex_length);
+        return NULL;
     }
 
     size_t ascii_length = hex_length / 2;

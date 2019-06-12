@@ -63,6 +63,12 @@ char* size_t_to_str_padded(size_t num, size_t max_digits);
 
 
 /*
+ * Is this character a hex char?
+ */
+int is_hex(char c);
+
+
+/*
  * Convert bytes to hex string by parsing two chars at a time.
  * Need to free resulting pointer's memory.
  */

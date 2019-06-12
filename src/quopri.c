@@ -101,9 +101,19 @@ char* quopri_decode(const char *input, int header) {
                 partial = 1;
                 break;
             }
-            else if (i + 1 < n && decoded_ptr[i + 1] == ESCAPE_CHAR) {
+            else if (i + 1 < n && saveptr[i + 1] == ESCAPE_CHAR) {
                 *decoded_ptr = ESCAPE_CHAR;
                 i += 2;
+            }
+            else if (i + 2 < n &&
+                     is_hex(saveptr[i + 1]) && is_hex(saveptr[i + 2])) {
+                // hex to integer
+                char hex [3];
+                hex[0] = saveptr[i + 1];
+                hex[1] = saveptr[i + 2];
+                hex[2] = '\0';
+
+                
             }
 
             decoded_ptr++;
