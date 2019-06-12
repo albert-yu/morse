@@ -18,7 +18,7 @@ int is_w_space(char c) {
 
 
 /*
- * Implementation copied from:
+ * Implementation translated from:
  * https://github.com/python/cpython/blob/3.8/Lib/quopri.py#L117
  */
 char* quopri_decode(const char *input, int header) {

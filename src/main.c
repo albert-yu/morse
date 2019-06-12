@@ -4,7 +4,7 @@
 
 #include "morse.h"
 #include "receive.h" // not needed unless printing
-
+#include "quopri.h"
 
 int main(int argc, char *argv[]) {  
     MorseClient *client = morse_client_login(MailProvider_Google);
@@ -45,7 +45,10 @@ int main(int argc, char *argv[]) {
             ImapResponse *r2 = morse_client_exec_raw_imap(client, 
                 "FETCH 1 (UID RFC822.SIZE BODY.PEEK[])", 1);
             if (r2) {
-                printf("%s\n", r2->v_data->memory);
+                // decode quoted-printable
+                int headr = 0;
+                char *decoded = quopri_decode(r2->v_data->memory, headr); 
+                printf("Decoded:\n%s\n", decoded);
                 imap_response_free(r2);
             }
             
