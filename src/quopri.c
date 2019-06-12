@@ -26,7 +26,7 @@ char* quopri_decode(const char *input, int header) {
     if (!input) {
         return decoded; // NULL
     }
-    size_t buf_size = 1;
+    size_t buf_size = 4;
     decoded = malloc(buf_size * sizeof(*decoded));
     if (!decoded) {
         fprintf(stderr, "Could not alloc memory for decoded! (quopri)\n");
@@ -51,7 +51,10 @@ char* quopri_decode(const char *input, int header) {
     size_t len = 0;  // length of string
     while (saveptr != NULL) {
         // check if need to realloc
-        if (len == buf_size) {
+        if (len == buf_size - 2) {
+            // realloc'ing if buf_size is only two more, 
+            // as we need the newline char if it's 
+            // a "partial" or the null-terminator if it's the end. 
             char *new_decoded = realloc(
                 decoded,
                 buf_size * 2);
@@ -137,14 +140,18 @@ char* quopri_decode(const char *input, int header) {
             decoded_ptr++;
             len++;
         }
-        
-        // if (!partial) {
-        //     *decoded_ptr = '\n';
-        //     decoded_ptr++;
-        //     len++;
-        // }
+       
+        // partial check
+        if (!partial) {
+            *decoded_ptr = '\n';
+            decoded_ptr++;
+            len++;
+        }
         saveptr = strtok(NULL, "\n");
     }
+
+    // add null-term
+    decoded[len] = '\0';
 
     if (cp_input) {
         free(cp_input);
