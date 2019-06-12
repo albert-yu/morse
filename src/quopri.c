@@ -50,6 +50,28 @@ char* quopri_decode(const char *input, int header) {
     saveptr = strtok(cp_input, "\n");
     size_t len = 0;  // length of string
     while (saveptr != NULL) {
+        // check if need to realloc
+        if (len == buf_size) {
+            char *new_decoded = realloc(
+                decoded,
+                buf_size * 2);
+            if (!new_decoded) {
+                fprintf(stderr, 
+                    "Not enough mem for realloc!\n");
+                free(decoded);
+                decoded = NULL;
+                break;
+            }
+
+            // should have valid buffer
+            decoded = new_decoded;
+            buf_size *= 2;
+
+            // move the ptr to the 
+            // correct place
+            decoded_ptr = decoded;
+            decoded_ptr += len;
+        }
         int partial = 1;
         size_t i, n;
         i = 0;  // index
@@ -66,28 +88,6 @@ char* quopri_decode(const char *input, int header) {
         }
         // else: partial = 1, which it is already
         while (i < n) {
-            // check if need to realloc
-            if (len == buf_size) {
-                char *new_decoded = realloc(
-                    decoded,
-                    buf_size * 2);
-                if (!new_decoded) {
-                    fprintf(stderr, 
-                        "Not enough mem for realloc!\n");
-                    free(decoded);
-                    decoded = NULL;
-                    break;
-                }
-
-                // should have valid buffer
-                decoded = new_decoded;
-                buf_size *= 2;
-
-                // move the ptr to the 
-                // correct place
-                decoded_ptr = decoded;
-                decoded_ptr += len;
-            }
             char c = saveptr[i];
             if (c == '_' && header) {
                 *decoded_ptr = ' ';
@@ -107,18 +107,42 @@ char* quopri_decode(const char *input, int header) {
             }
             else if (i + 2 < n &&
                      is_hex(saveptr[i + 1]) && is_hex(saveptr[i + 2])) {
-                // hex to integer
+                // hex to byte 
                 char hex [3];
                 hex[0] = saveptr[i + 1];
                 hex[1] = saveptr[i + 2];
                 hex[2] = '\0';
-
+                unsigned char *ordinal = hex_to_bytes(hex);
                 
+                if (!ordinal) {
+                    // eek!
+                    fprintf(stderr,
+                        "Could not get byte array from hex.\n");
+                    break;
+                }
+
+                // byte array should be null-terminated
+                // but its length should be 1 anyway
+                *decoded_ptr = (char)*ordinal;
+                free(ordinal); 
+
+                i += 3;
+            }
+            else {
+                // bad escape sequence -- leave as-is
+                *decoded_ptr = c;
+                i++;
             }
 
             decoded_ptr++;
             len++;
         }
+        
+        // if (!partial) {
+        //     *decoded_ptr = '\n';
+        //     decoded_ptr++;
+        //     len++;
+        // }
         saveptr = strtok(NULL, "\n");
     }
 

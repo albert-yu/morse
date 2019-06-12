@@ -188,11 +188,9 @@ unsigned char* hex_to_bytes_with_len(char *hex_string, size_t hex_length) {
     }
 
     size_t ascii_length = hex_length / 2;
-    // printf("%zu\n", ascii_length);
     unsigned char *byte_array = calloc(ascii_length + 1, sizeof(*byte_array));
     size_t i = 0;
     size_t j = 0;
-    // printf("foo!\n");
     for (; j < hex_length; ++i, j += 2) {
         int val [1];
         sscanf(hex_string + j, "%2x", val);
