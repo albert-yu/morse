@@ -42,13 +42,22 @@ int main(int argc, char *argv[]) {
             }
             
             // do some IMAP stuff
+            char *imap_command = "FETCH 1 (UID RFC822.SIZE BODY.PEEK[])";
+            printf("Executing IMAP command:\n");
+            printf("------\n");
+            printf("%s\n", imap_command);
+            printf("------\n");
             ImapResponse *r2 = morse_client_exec_raw_imap(client, 
-                "FETCH 1 (UID RFC822.SIZE BODY.PEEK[])", 1);
+                imap_command, 1);
             if (r2) {
                 // decode quoted-printable
-                int headr = 0;
+                int headr = 1;
                 char *decoded = quopri_decode(r2->v_data->memory, headr); 
-                printf("Decoded:\n%s\n", decoded);
+                if (decoded) {
+                    printf("Decoded:\n%s\n", decoded);
+                    free(decoded);
+                }
+                // printf("%s", r2->v_data->memory);
                 imap_response_free(r2);
             }
             

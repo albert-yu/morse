@@ -50,49 +50,56 @@ char* quopri_decode(const char *input, int header) {
     saveptr = strtok(cp_input, "\n");
     size_t len = 0;  // length of string
     while (saveptr != NULL) {
-        // check if need to realloc
-        if (len == buf_size - 2) {
-            // realloc'ing if buf_size is only two more, 
-            // as we need the newline char if it's 
-            // a "partial" or the null-terminator if it's the end. 
-            char *new_decoded = realloc(
-                decoded,
-                buf_size * 2);
-            if (!new_decoded) {
-                fprintf(stderr, 
-                    "Not enough mem for realloc!\n");
-                free(decoded);
-                decoded = NULL;
-                break;
-            }
-
-            // should have valid buffer
-            decoded = new_decoded;
-            buf_size *= 2;
-
-            // move the ptr to the 
-            // correct place
-            decoded_ptr = decoded;
-            decoded_ptr += len;
+        char *line = NULL;
+        line = strdup(saveptr);
+        if (!line) {
+            fprintf(stderr, "Could not alloc memory for"
+                            " line!\n");
+            break;
         }
+
         int partial = 1;
         size_t i, n;
         i = 0;  // index
-        n = strlen(saveptr);  // length of line
+        n = strlen(line);  // length of line
 
         // check for partial
-        if (n > 0 && saveptr[n - 1] == '\n') {
+        if (n > 0 && line[n - 1] == '\n') {
             partial = 0;
             n--;
             // strip trailing whitespace
-            while (n > 0 && is_w_space(saveptr[n - 1])) {
+            while (n > 0 && is_w_space(line[n - 1])) {
                 n--;
             }
         }
         // else: partial = 1, which it is already
         while (i < n) {
-            char c = saveptr[i];
-            if (c == '_' && header) {
+            // check if need to realloc
+            if (len == buf_size - 2) {
+                // realloc'ing if buf_size is only two more, 
+                // as we need the newline char if it's 
+                // a "partial" or the null-terminator if it's the end. 
+                char *new_decoded = realloc(
+                    decoded,
+                    buf_size * 2);
+                if (!new_decoded) {
+                    fprintf(stderr, 
+                        "Not enough mem for realloc!\n");
+                    free(decoded);
+                    decoded = NULL;
+                    break;
+                }
+
+                // new_decoded should have valid buffer
+                decoded = new_decoded;
+                buf_size *= 2;
+                // move the ptr to the 
+                // correct place
+                decoded_ptr = decoded;
+                decoded_ptr += len;
+            }
+            char c = line[i];
+            if ((c == '_') && header) {
                 *decoded_ptr = ' ';
                 i++;
             }
@@ -104,19 +111,20 @@ char* quopri_decode(const char *input, int header) {
                 partial = 1;
                 break;
             }
-            else if (i + 1 < n && saveptr[i + 1] == ESCAPE_CHAR) {
+            else if ((i + 1 < n) && 
+                     (line[i + 1] == ESCAPE_CHAR)) {
                 *decoded_ptr = ESCAPE_CHAR;
                 i += 2;
             }
-            else if (i + 2 < n &&
-                     is_hex(saveptr[i + 1]) && is_hex(saveptr[i + 2])) {
+            else if ((i + 2 < n) &&
+                     is_hex(line[i + 1]) && 
+                     is_hex(line[i + 2])) {
                 // hex to byte 
                 char hex [3];
-                hex[0] = saveptr[i + 1];
-                hex[1] = saveptr[i + 2];
+                hex[0] = line[i + 1];
+                hex[1] = line[i + 2];
                 hex[2] = '\0';
                 unsigned char *ordinal = hex_to_bytes(hex);
-                
                 if (!ordinal) {
                     // eek!
                     fprintf(stderr,
@@ -126,9 +134,9 @@ char* quopri_decode(const char *input, int header) {
 
                 // byte array should be null-terminated
                 // but its length should be 1 anyway
-                *decoded_ptr = (char)*ordinal;
+                char signed_byte = (char)*ordinal;
+                *decoded_ptr = signed_byte;
                 free(ordinal); 
-
                 i += 3;
             }
             else {
@@ -136,7 +144,6 @@ char* quopri_decode(const char *input, int header) {
                 *decoded_ptr = c;
                 i++;
             }
-
             decoded_ptr++;
             len++;
         }
@@ -147,6 +154,7 @@ char* quopri_decode(const char *input, int header) {
             decoded_ptr++;
             len++;
         }
+        free(line);
         saveptr = strtok(NULL, "\n");
     }
 
