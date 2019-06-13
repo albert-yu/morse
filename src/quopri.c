@@ -40,7 +40,7 @@ char* quopri_decode(const char *input, int header) {
         free(decoded);
         return NULL;
     }
-
+    printf("input len: %zu\n", strlen(input));
     // we use this ptr for modification
     // of buffer
     char *decoded_ptr = decoded;
@@ -117,6 +117,11 @@ char* quopri_decode(const char *input, int header) {
                 partial = 1;
                 break;
             }
+            else if (((i + 1) == n)) {
+                // soft line break
+                *decoded_ptr = '\n';
+                i++;
+            }
             else if ((i + 1 < n) && 
                      (line[i + 1] == ESCAPE_CHAR)) {
                 *decoded_ptr = ESCAPE_CHAR;
@@ -161,16 +166,15 @@ char* quopri_decode(const char *input, int header) {
         //     len++;
         // }
         // add newline back (redundant) 
-        *decoded_ptr = '\n';
-        decoded_ptr++;
-        len++;
         free(line);
         saveptr = strtok(NULL, "\n");
     }
 
+    printf("len: %zu\n", len);
     // add null-term
     decoded[len] = '\0';
 
+    printf("strlen decoded: %zu\n", strlen(decoded));
     if (cp_input) {
         free(cp_input);
         cp_input = NULL;

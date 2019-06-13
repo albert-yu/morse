@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "file.h"
 #include "morse.h"
 #include "receive.h" // not needed unless printing
 #include "quopri.h"
@@ -55,6 +56,7 @@ int main(int argc, char *argv[]) {
                 char *decoded = quopri_decode(r2->v_data->memory, headr); 
                 if (decoded) {
                     printf("Decoded:\n%s\n", decoded);
+                    //file_write(decoded, ".", "out.txt");
                     free(decoded);
                 }
                 // printf("%s", r2->v_data->memory);
