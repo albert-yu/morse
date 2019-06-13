@@ -62,8 +62,8 @@ int main(int argc, char *argv[]) {
             }
             
             // begin IDLE
-            printf("Begin IDLE...\n");
-            morse_client_begin_idle(client);
+            // printf("Begin IDLE...\n");
+            // morse_client_begin_idle(client);
         }
         morse_client_logout(client);
     }

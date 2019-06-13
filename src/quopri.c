@@ -63,7 +63,11 @@ char* quopri_decode(const char *input, int header) {
         i = 0;  // index
         n = strlen(line);  // length of line
 
-        // check for partial
+        // check if it's a partial line 
+        // NOTE: I think we can remove this 
+        // check, as it's specific to the 
+        // input.readline() in python, which should
+        // leave a newline char at the end
         if (n > 0 && line[n - 1] == '\n') {
             partial = 0;
             n--;
@@ -73,12 +77,13 @@ char* quopri_decode(const char *input, int header) {
             }
         }
         // else: partial = 1, which it is already
+        char c;
         while (i < n) {
             // check if need to realloc
             if (len == buf_size - 2) {
                 // realloc'ing if buf_size is only two more, 
                 // as we need the newline char if it's 
-                // a "partial" or the null-terminator if it's the end. 
+                // a partial line or the null-terminator if it's the end. 
                 char *new_decoded = realloc(
                     decoded,
                     buf_size * 2);
@@ -98,7 +103,8 @@ char* quopri_decode(const char *input, int header) {
                 decoded_ptr = decoded;
                 decoded_ptr += len;
             }
-            char c = line[i];
+            
+            c = line[i];
             if ((c == '_') && header) {
                 *decoded_ptr = ' ';
                 i++;
@@ -148,12 +154,16 @@ char* quopri_decode(const char *input, int header) {
             len++;
         }
        
-        // partial check
-        if (!partial) {
-            *decoded_ptr = '\n';
-            decoded_ptr++;
-            len++;
-        }
+        // // partial check
+        // if (!partial) {
+        //     *decoded_ptr = '\n';
+        //     decoded_ptr++;
+        //     len++;
+        // }
+        // add newline back (redundant) 
+        *decoded_ptr = '\n';
+        decoded_ptr++;
+        len++;
         free(line);
         saveptr = strtok(NULL, "\n");
     }
