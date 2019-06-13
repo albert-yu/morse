@@ -114,7 +114,7 @@ static int validate_client(MorseClient *client) {
 /* 
  * Executes an IMAP command and returns the response.
  */
-ImapResponse* morse_client_exec_raw_imap(MorseClient *client, char *command, int verbose) {
+ImapResponse* morse_client_exec_raw_imap(MorseClient *client, const char *command, int verbose) {
     ImapResponse *resp = NULL;
     int validation = validate_client(client);
     if (validation == 0) {
@@ -132,7 +132,7 @@ Mailbox* morse_client_get_mailboxes(MorseClient *client) {
 }
 
 
-ImapResponse* morse_client_select_box(MorseClient *client, char *box_name) {
+ImapResponse* morse_client_select_box(MorseClient *client, const char *box_name) {
     ImapResponse *resp = NULL;
     if (validate_client(client) == 0) {
         resp = select_box(client->curl_imap, box_name);

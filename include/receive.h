@@ -28,7 +28,7 @@ Mailbox* get_mailboxes(CURL *curl);
 /*
  * Performs "SELECT {boxname}"
  */
-ImapResponse* select_box(CURL *curlhandle, char *box_name);
+ImapResponse* select_box(CURL *curlhandle, const char *box_name);
 
 
 /*
@@ -46,7 +46,7 @@ void print_mailboxes(Mailbox *root);
 /* 
  * Execute an arbitrary IMAP command.
  */
-ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command, int verbose_out);
+ImapResponse* morse_exec_imap_stateful(CURL *curl, const char *command, int verbose_out);
 
 #ifdef __cplusplus
 }

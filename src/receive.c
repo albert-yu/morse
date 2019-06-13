@@ -57,7 +57,7 @@ char* construct_url(char *base_url, char *path) {
  * Executes an IMAP command with an existing CURL connection.
  * Thus, does NOT close the curl connection after.
  */
-ImapResponse* morse_exec_imap_stateful(CURL *curl, char *command, int verbose_out) {
+ImapResponse* morse_exec_imap_stateful(CURL *curl, const char *command, int verbose_out) {
     if (!curl || !command) {
         return NULL;
     }
@@ -106,7 +106,7 @@ typedef enum retchar_t {
 } ReturnChar;
 
 
-ReturnChar get_return_type(char *string) {
+ReturnChar get_return_type(const char *string) {
     ReturnChar retchar = RET_NONE;
 
     if (!string) {
@@ -334,7 +334,7 @@ size_t extract_id_from(const char *line_containing_id) {
 /*
  * Performs "SELECT {boxname}"
  */
-ImapResponse* select_box(CURL *curlhandle, char *box_name) {
+ImapResponse* select_box(CURL *curlhandle, const char *box_name) {
     char *select_box_cmd = imapcmd_select_box(box_name);
     ImapResponse *response_box = NULL; 
     if (select_box_cmd) {
@@ -346,7 +346,7 @@ ImapResponse* select_box(CURL *curlhandle, char *box_name) {
 }
 
 
-size_t get_msg_count(CURL *curlhandle, char *box_name) {
+size_t get_msg_count(CURL *curlhandle, const char *box_name) {
     ImapResponse *response_box = NULL;
     response_box = select_box(curlhandle, box_name);
     if (!response_box) {
@@ -372,7 +372,7 @@ size_t get_msg_count(CURL *curlhandle, char *box_name) {
  * Gets the specified range of messages in a given box name.
  */
 MailMessage* get_messages(CURL *curlhandle, 
-                          char *box_name, 
+                          const char *box_name, 
                           size_t start, 
                           size_t length) {
     size_t total_messages_in_box;

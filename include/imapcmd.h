@@ -17,7 +17,7 @@ extern "C" {
 /*
  * Prepends "SELECT " to a given box name  
  */
-char* imapcmd_select_box(char *box_name);
+char* imapcmd_select_box(const char *box_name);
 
 /*
  * Retrieves all UIDs in a given mailbox.
@@ -29,7 +29,7 @@ char *imapcmd_search_all_uids(void);
 /*
  * Creates a folder.
  */
-char *imapcmd_create_folder(char *foldername);
+char *imapcmd_create_folder(const char *foldername);
 
 
 /*

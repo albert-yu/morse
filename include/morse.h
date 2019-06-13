@@ -73,7 +73,7 @@ int morse_client_sendmail(MorseClient *client, SmtpRequest *smtp_request);
  * or the command passed in is NULL.
  */
 ImapResponse* morse_client_exec_raw_imap(MorseClient *client, 
-                                         char *command, 
+                                         const char *command, 
                                          int verbose);
 
 
@@ -87,7 +87,7 @@ Mailbox* morse_client_get_mailboxes(MorseClient *client);
 /*
  * Selects a mailbox
  */
-ImapResponse* morse_client_select_box(MorseClient *client, char *box_name);
+ImapResponse* morse_client_select_box(MorseClient *client, const char *box_name);
 
 
 /*
