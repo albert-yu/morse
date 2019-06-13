@@ -40,7 +40,6 @@ char* quopri_decode(const char *input, int header) {
         free(decoded);
         return NULL;
     }
-    printf("input len: %zu\n", strlen(input));
     // we use this ptr for modification
     // of buffer
     char *decoded_ptr = decoded;
@@ -144,11 +143,9 @@ char* quopri_decode(const char *input, int header) {
         saveptr = strtok(NULL, "\n");
     }
 
-    printf("len: %zu\n", len);
     // add null-term
     decoded[len] = '\0';
 
-    printf("strlen decoded: %zu\n", strlen(decoded));
     if (cp_input) {
         free(cp_input);
         cp_input = NULL;
