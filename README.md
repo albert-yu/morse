@@ -54,6 +54,7 @@ The main API functions are declared `morse.h`. See [`main.c`](src/main.c) for ex
 - [x] Clean up API design
   - [x] User should get all top-level API functions just by reading `morse.h`.
 - [x] Get user email from token
+- [ ] Make method names more unique to avoid naming conflicts (prefix with `_`)
 
 ### IMAP
 
