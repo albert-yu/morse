@@ -58,25 +58,10 @@ char* quopri_decode(const char *input, int header) {
             break;
         }
 
-        int partial = 1;
         size_t i, n;
         i = 0;  // index
         n = strlen(line);  // length of line
 
-        // check if it's a partial line 
-        // NOTE: I think we can remove this 
-        // check, as it's specific to the 
-        // input.readline() in python, which should
-        // leave a newline char at the end
-        if (n > 0 && line[n - 1] == '\n') {
-            partial = 0;
-            n--;
-            // strip trailing whitespace
-            while (n > 0 && is_w_space(line[n - 1])) {
-                n--;
-            }
-        }
-        // else: partial = 1, which it is already
         char c;
         while (i < n) {
             // check if need to realloc
@@ -113,18 +98,14 @@ char* quopri_decode(const char *input, int header) {
                 *decoded_ptr = c;
                 i++;
             }
-            else if (((i + 1) == n) && !partial) {
-                partial = 1;
-                break;
-            }
-            else if (((i + 1) == n)) {
-                // soft line break
-                *decoded_ptr = '\n';
-                i++;
-            }
             else if ((i + 1 < n) && 
                      (line[i + 1] == ESCAPE_CHAR)) {
                 *decoded_ptr = ESCAPE_CHAR;
+                i += 2;
+            }
+            else if (i + 2 == n) {
+                // soft break
+                *decoded_ptr = '\n';
                 i += 2;
             }
             else if ((i + 2 < n) &&
@@ -159,13 +140,6 @@ char* quopri_decode(const char *input, int header) {
             len++;
         }
        
-        // // partial check
-        // if (!partial) {
-        //     *decoded_ptr = '\n';
-        //     decoded_ptr++;
-        //     len++;
-        // }
-        // add newline back (redundant) 
         free(line);
         saveptr = strtok(NULL, "\n");
     }
