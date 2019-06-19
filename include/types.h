@@ -20,3 +20,4 @@ typedef struct recipient_list_t {
 #endif
 
 #endif
+

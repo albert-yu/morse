@@ -26,3 +26,4 @@ typedef enum morse_status_code_t {
 } MorseStatusCode;
 
 #endif
+
