@@ -91,6 +91,16 @@ ImapResponse* morse_client_select_box(MorseClient *client, const char *box_name)
 
 
 /*
+ * Function prototype for a callback function
+ * when the IDLE connection returns data
+ */
+typedef int morse_callback_func(MorseClient *, 
+                                char *,
+                                size_t,
+                                void *);
+
+
+/*
  * Begins IDLE mode as documented in 
  * https://tools.ietf.org/html/rfc2177
  */
