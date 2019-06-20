@@ -54,7 +54,7 @@ void memstruct_free(MemoryStruct *mem_struct) {
  * I suppose this could be void, but I'm following
  * the same pattern given by the standard realloc.
  */
-MemoryStruct* memstruct_realloc_if_needed(MemoryStruct *memstruct, size_t newsize) {
+MemoryStruct* memstruct_realloc(MemoryStruct *memstruct, size_t newsize) {
     if (!memstruct) {
         return NULL;
     }
@@ -80,14 +80,14 @@ MemoryStruct* memstruct_realloc_if_needed(MemoryStruct *memstruct, size_t newsiz
 
 /*
  * Doubles the buffer size of the given memory struct
- * and returns the struct's address
+ * and returns the struct's address 
  */
-MemoryStruct* memstruct_double_size(MemoryStruct *memstruct) {
+MemoryStruct* memstruct_2x_size(MemoryStruct *memstruct) {
     if (!memstruct) {
         return NULL;
     }
     size_t newsize = memstruct->__bufsize * 2;
-    return memstruct_realloc_if_needed(memstruct, newsize);
+    return memstruct_realloc(memstruct, newsize);
 }
 
 
@@ -99,7 +99,6 @@ size_t curl_mem_callback(void *buffer, size_t size, size_t nmemb, void *userp) {
     size_t realsize = size * nmemb;
 
     MemoryStruct *mem = (MemoryStruct *)userp;
-
     char *ptr = realloc(mem->memory, mem->size + realsize + 1);
     if (ptr == NULL) {
         /* out of memory! */ 
@@ -111,7 +110,14 @@ size_t curl_mem_callback(void *buffer, size_t size, size_t nmemb, void *userp) {
     memcpy(&(mem->memory[mem->size]), buffer, realsize);
     mem->size += realsize;
     mem->memory[mem->size] = 0;
-
+    // realloc if needed
+    // while (size + realsize > mem->__bufsize) {
+    //     printf("%zu / %zu\n", size + realsize, mem->__bufsize);
+    //     mem = memstruct_2x_size(mem);
+    // }
+    // memcpy(&(mem->memory[mem->size]), buffer, realsize);
+    // mem->size += realsize;
+    // mem->memory[mem->size] = '\0';
     return realsize;
 }
 
