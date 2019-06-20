@@ -6,6 +6,7 @@
 #include "curl/curl.h"
 #include "imap_response.h"
 #include "mailbox.h"
+#include "receive.h"
 #include "send.h"
 
 #ifdef __cplusplus
@@ -91,10 +92,14 @@ ImapResponse* morse_client_select_box(MorseClient *client, const char *box_name)
 
 
 /*
- * Begins IDLE mode as documented in 
+ * Statefully turns the client into IDLE mode
  * https://tools.ietf.org/html/rfc2177
+ * @client - wrapper around CURL handle
+ * @idle_callback - callback function that fits the prototype
+ *   as defined in curl/curl.h. If NULL, then prints to stdout.
  */
-int morse_client_begin_idle(MorseClient *client);
+ImapResponse* morse_client_idle_on(MorseClient *client, 
+                                   curl_debug_callback idle_callback);
 
 
 #ifdef __cplusplus

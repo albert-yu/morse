@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include "authenticate.h"
 #include "curlyfries.h"
+#include "memstruct.h"
 #include "morse.h"
-#include "receive.h"
+#include "statuscodes.h"
 
 
 void config_client_gmail(MorseClient *client) {
@@ -141,11 +142,56 @@ ImapResponse* morse_client_select_box(MorseClient *client, const char *box_name)
 }
 
 
-int morse_client_begin_idle(MorseClient *client) {
-    int res = 0;
-    if (validate_client(client) == 0) {
-        res = begin_idle(client->curl_imap);
+/*
+ * Super ugly having the curl callback function exposed,
+ * but cannot think of an alternative right now.
+ */
+ImapResponse* morse_client_idle_on(MorseClient *client, 
+                                   curl_debug_callback idle_callback) {
+    ImapResponse *resp = NULL;
+    resp = imap_response_new();
+    if (!resp) {
+        fprintf(stderr, "Memory for ImapResponse"
+                        " could not be allocated.\n");
+        return NULL;
     }
-    return res;
+
+    MorseStatusCode res = MorseStatus_ErrUnknown;
+    CURL *curl = client->curl_imap;
+    if (!curl) {
+        fprintf(stderr, "CURL handle cannot be NULL.\n"); 
+        res = MorseStatus_InvalidArg;
+        resp->status = (int)res;
+        return resp;
+    }
+    char *command = "IDLE";
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, DEFAULT_IMAP_TIMEOUT);
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
+
+    // set standard callback
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_mem_callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)resp->data);
+
+    // IMPORTANT: the response needs to be written to the 
+    // ImapReponse struct
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    if (idle_callback) {
+        curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, &idle_callback);
+        curl_easy_setopt(curl, CURLOPT_DEBUGDATA, (void*)resp->v_data);
+    }
+    else {
+        // stdout otherwise
+        curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, NULL);
+        curl_easy_setopt(curl, CURLOPT_DEBUGDATA, NULL);
+    }
+    // curl_easy_setopt(curl, CURLOPT_DEBUGDATA, (void*)resp->v_data);
+    CURLcode curlres = curl_easy_perform(curl);
+    if (curlres != CURLE_OK) {
+        fprintf(stderr, "curl_easy_perform() failed: %s\n", 
+            curl_easy_strerror(curlres));
+        resp->status = (int)MorseStatus_CurlError;
+    }
+    return resp;
 }
+
 

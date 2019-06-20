@@ -17,6 +17,8 @@ typedef enum morse_status_code_t {
     MorseStatus_InvalidCreds,
    
     MorseStatus_InvalidArg, 
+
+    /* Out of memory! */
     MorseStatus_MemoryError,
     
     /* Error occurred executing CURL command */
