@@ -14,6 +14,7 @@
 extern "C" {
 #endif
 
+
 /*
  * Invokes the authentication process for the user to 
  * log into Gmail

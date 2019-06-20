@@ -6,6 +6,7 @@
 #include "curl/curl.h"
 #include "imap_response.h"
 #include "mailbox.h"
+#include "receive.h"
 #include "send.h"
 
 #ifdef __cplusplus
@@ -106,7 +107,7 @@ typedef int morse_callback_func(MorseClient *,
  */
 //int morse_client_idle_on(MorseClient *client, morse_callback_func callback);
 
-ImapResponse* morse_client_idle_on(MorseClient *client);
+ImapResponse* morse_client_idle_on(MorseClient *client, curl_debug_callback idle_callback);
 
 
 /*

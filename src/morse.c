@@ -4,7 +4,6 @@
 #include "curlyfries.h"
 #include "memstruct.h"
 #include "morse.h"
-#include "receive.h"
 #include "statuscodes.h"
 
 
@@ -142,52 +141,13 @@ ImapResponse* morse_client_select_box(MorseClient *client, const char *box_name)
     return resp;
 }
 
+
 /*
- * Callback function exclusively for IDLE
+ * Super ugly having the curl callback function exposed,
+ * but cannot think of an alternative right now.
  */
-int idle_callback(CURL *curl,
-                  curl_infotype type,
-                  char *data,
-                  size_t size,
-                  void *userptr) {
-    int retcode = 0;
-    MemoryStruct *mem = (MemoryStruct *)userptr;
-    // + 1 for the zero terminated
-    char *ptr = realloc(mem->memory, mem->size + size + 1);
-    if (!ptr) {
-        /* some way to handle the error */
-        fprintf(stderr, "Not enough memory (realloc returned NULL).\n");
-        return (int)MorseStatus_MemoryError;
-    }
-    
-    /* copy to memstruct */
-    // old mem->memory is invalid if realloc successful
-    mem->memory = ptr;     
-
-    // append the data to existing mem struct
-    memcpy(&(mem->memory[mem->size]), data, size);
-
-    // adjust size
-    mem->size += size;
-
-    // add null-term
-    mem->memory[mem->size] = '\0';
-    printf("size: %zu\n", mem->size);
-    // send "DONE"
-    const char *doneCmd = "DONE";
-    int verbose = 0;
-    ImapResponse *doneResp = NULL;
-    doneResp = morse_exec_imap_stateful(curl, doneCmd, verbose);
-
-    if (doneResp) {
-        retcode = doneResp->status;
-        imap_response_free(doneResp);
-    }
-    return retcode;
-}
-
-
-ImapResponse* morse_client_idle_on(MorseClient *client) {
+ImapResponse* morse_client_idle_on(MorseClient *client, 
+                                   curl_debug_callback idle_callback) {
     ImapResponse *resp = NULL;
     MorseStatusCode res = MorseStatus_ErrUnknown;
     resp = imap_response_new();
@@ -208,7 +168,7 @@ ImapResponse* morse_client_idle_on(MorseClient *client) {
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, DEFAULT_IMAP_TIMEOUT);
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
 
-    // set callback
+    // set standard callback
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_mem_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)resp->data);
 
