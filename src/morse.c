@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "authenticate.h"
 #include "curlyfries.h"
+#include "memstruct.h"
 #include "morse.h"
 #include "receive.h"
 
@@ -140,12 +141,97 @@ ImapResponse* morse_client_select_box(MorseClient *client, const char *box_name)
     return resp;
 }
 
-
-int morse_client_begin_idle(MorseClient *client) {
-    int res = 0;
-    if (validate_client(client) == 0) {
-        res = begin_idle(client->curl_imap);
+/*
+ * Callback function exclusively for IDLE
+ */
+int idle_callback(CURL *curl,
+                  curl_infotype type,
+                  char *data,
+                  size_t size,
+                  void *userptr) {
+    int retcode = 0;
+    MemoryStruct *mem = (MemoryStruct *)userptr;
+    // + 1 for the zero terminated
+    char *ptr = realloc(mem->memory, mem->size + size + 1);
+    if (!ptr) {
+        /* some way to handle the error */
+        fprintf(stderr, "Not enough memory (realloc returned NULL).\n");
+        return 0;
     }
-    return res;
+    
+    /* copy to memstruct */
+    // old mem->memory is invalid if realloc successful
+    mem->memory = ptr;     
+
+    // append the data to existing mem struct
+    memcpy(&(mem->memory[mem->size]), data, size);
+
+    // adjust size
+    mem->size += size;
+
+    // add null-term
+    mem->memory[mem->size] = '\0';
+
+    // send "DONE"
+    const char *doneCmd = "DONE";
+    int verbose = 0;
+    ImapResponse *doneResp = NULL;
+    doneResp = morse_exec_imap_stateful(curl, doneCmd, verbose);
+
+    if (doneResp) {
+        retcode = doneResp->status;
+        imap_response_free(doneResp);
+    }
+    return retcode;
 }
+
+
+ImapResponse* morse_client_idle_on(MorseClient *client) {
+    ImapResponse *resp = NULL;
+    MorseStatusCode res = MorseStatus_ErrUnknown;
+    resp = imap_response_new();
+    if (!resp) {
+        fprintf(stderr, "Memory for ImapResponse"
+                        " could not be allocated.\n");
+        return NULL;
+    }
+
+    CURL *curl = client->curl_imap;
+    if (!curl) {
+        fprintf(stderr, "CURL handle cannot be NULL.\n"); 
+        res = MorseStatus_InvalidArg;
+        resp->status = (int)res;
+        return resp;
+    }
+    char *command = "IDLE";
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, DEFAULT_IMAP_TIMEOUT);
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, command);
+
+    // set callback
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_mem_callback);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)resp->data);
+
+    // IMPORTANT: the response needs to be written to the 
+    // ImapReponse struct
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, &idle_callback);
+    curl_easy_setopt(curl, CURLOPT_DEBUGDATA, (void*)resp->v_data);
+
+    CURLcode curlres = curl_easy_perform(curl);
+    if (curlres != CURLE_OK) {
+        fprintf(stderr, "curl_easy_perform() failed: %s\n", 
+            curl_easy_strerror(curlres));
+        resp->status = (int)MorseStatus_CurlError;
+    }
+    return resp;
+}
+
+
+// int morse_client_begin_idle(MorseClient *client) {
+//     int res = 0;
+//     if (validate_client(client) == 0) {
+//         res = begin_idle(client->curl_imap);
+//     }
+//     return res;
+// }
 

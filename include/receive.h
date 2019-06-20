@@ -7,6 +7,8 @@
 #include "mailbox.h"
 #include "statuscodes.h"
 
+// 29 minutes
+#define DEFAULT_IMAP_TIMEOUT (60L * 29L)
 
 #ifdef __cplusplus
 extern "C" {
