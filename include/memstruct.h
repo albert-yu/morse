@@ -15,8 +15,14 @@ extern "C" {
  * Struct to hold the entire JSON
  */
 typedef struct memory_struct_t {
+    /* the buffer */
     char *memory;
+
+    /* the character count */
     size_t size;
+
+    /* PRIVATE: the buffer size */
+    size_t __bufsize;
 } MemoryStruct;
 
 

@@ -2,13 +2,16 @@
 #include "memstruct.h"
 
 
+#define MEMSTRUCT_INIT_BUFSIZE 1
+
 int memstruct_init(MemoryStruct *chunk) {
-    chunk->memory = malloc(1);  /* will be grown as needed by the realloc*/ 
+    chunk->memory = malloc(MEMSTRUCT_INIT_BUFSIZE);  /* will be grown as needed by the realloc*/ 
     if (chunk->memory == NULL) {
         fprintf(stderr, "Cannot allocate memory for MemoryStruct.\n");
         return ENOMEM;
     }
     chunk->size = 0;    /* no data at this point */ 
+    chunk->__bufsize = MEMSTRUCT_INIT_BUFSIZE;
     return 0;
 }
 
@@ -19,13 +22,14 @@ MemoryStruct* memstruct_new() {
         fprintf(stderr, "Cannot allocate memory for new MemoryStruct.\n");
         return NULL;
     }
-    new_mem->memory = malloc(1);
+    new_mem->memory = malloc(MEMSTRUCT_INIT_BUFSIZE);
     if ((new_mem->memory) == NULL) {
         fprintf(stderr, "Cannot allocate MemoryStruct->memory.\n");
         free(new_mem);
         return NULL;
     }
     new_mem->size = 0;
+    new_mem->__bufsize = MEMSTRUCT_INIT_BUFSIZE;
     return new_mem;
 }
 
