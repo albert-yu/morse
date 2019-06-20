@@ -149,7 +149,6 @@ ImapResponse* morse_client_select_box(MorseClient *client, const char *box_name)
 ImapResponse* morse_client_idle_on(MorseClient *client, 
                                    curl_debug_callback idle_callback) {
     ImapResponse *resp = NULL;
-    MorseStatusCode res = MorseStatus_ErrUnknown;
     resp = imap_response_new();
     if (!resp) {
         fprintf(stderr, "Memory for ImapResponse"
@@ -157,6 +156,7 @@ ImapResponse* morse_client_idle_on(MorseClient *client,
         return NULL;
     }
 
+    MorseStatusCode res = MorseStatus_ErrUnknown;
     CURL *curl = client->curl_imap;
     if (!curl) {
         fprintf(stderr, "CURL handle cannot be NULL.\n"); 
@@ -175,9 +175,16 @@ ImapResponse* morse_client_idle_on(MorseClient *client,
     // IMPORTANT: the response needs to be written to the 
     // ImapReponse struct
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-    curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, &idle_callback);
-    curl_easy_setopt(curl, CURLOPT_DEBUGDATA, (void*)resp->v_data);
-
+    if (idle_callback) {
+        curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, &idle_callback);
+        curl_easy_setopt(curl, CURLOPT_DEBUGDATA, (void*)resp->v_data);
+    }
+    else {
+        // stdout otherwise
+        curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, NULL);
+        curl_easy_setopt(curl, CURLOPT_DEBUGDATA, NULL);
+    }
+    // curl_easy_setopt(curl, CURLOPT_DEBUGDATA, (void*)resp->v_data);
     CURLcode curlres = curl_easy_perform(curl);
     if (curlres != CURLE_OK) {
         fprintf(stderr, "curl_easy_perform() failed: %s\n", 
@@ -187,12 +194,4 @@ ImapResponse* morse_client_idle_on(MorseClient *client,
     return resp;
 }
 
-
-// int morse_client_begin_idle(MorseClient *client) {
-//     int res = 0;
-//     if (validate_client(client) == 0) {
-//         res = begin_idle(client->curl_imap);
-//     }
-//     return res;
-// }
 

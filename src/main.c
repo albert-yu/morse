@@ -65,9 +65,9 @@ int main(int argc, char *argv[]) {
             
             // begin IDLE
             printf("Beginning IDLE...\n");
-            ImapResponse *idleResp = morse_client_idle_on(client);
+            ImapResponse *idleResp = morse_client_idle_on(client, NULL);
             if (idleResp) {
-                printf("%s\n", idleResp->v_data->memory);
+                // printf("%s\n", idleResp->v_data->memory);
                 imap_response_free(idleResp);
             }
             printf("Done.\n");

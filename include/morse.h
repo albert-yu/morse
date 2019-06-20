@@ -92,29 +92,11 @@ ImapResponse* morse_client_select_box(MorseClient *client, const char *box_name)
 
 
 /*
- * Function prototype for a callback function
- * when the IDLE connection returns data
- */
-typedef int morse_callback_func(MorseClient *, 
-                                char *,
-                                size_t,
-                                void *);
-
-
-/*
  * Statefully turns the client into IDLE mode
  * https://tools.ietf.org/html/rfc2177
  */
-//int morse_client_idle_on(MorseClient *client, morse_callback_func callback);
-
-ImapResponse* morse_client_idle_on(MorseClient *client, curl_debug_callback idle_callback);
-
-
-/*
- * Begins IDLE mode as documented in 
- * https://tools.ietf.org/html/rfc2177
- */
-// int morse_client_begin_idle(MorseClient *client);
+ImapResponse* morse_client_idle_on(MorseClient *client, 
+                                   curl_debug_callback idle_callback);
 
 
 #ifdef __cplusplus
