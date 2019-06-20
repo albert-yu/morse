@@ -5,6 +5,7 @@
 #include "memstruct.h"
 #include "morse.h"
 #include "receive.h"
+#include "statuscodes.h"
 
 
 void config_client_gmail(MorseClient *client) {
@@ -156,7 +157,7 @@ int idle_callback(CURL *curl,
     if (!ptr) {
         /* some way to handle the error */
         fprintf(stderr, "Not enough memory (realloc returned NULL).\n");
-        return 0;
+        return (int)MorseStatus_MemoryError;
     }
     
     /* copy to memstruct */
@@ -171,7 +172,7 @@ int idle_callback(CURL *curl,
 
     // add null-term
     mem->memory[mem->size] = '\0';
-
+    printf("size: %zu\n", mem->size);
     // send "DONE"
     const char *doneCmd = "DONE";
     int verbose = 0;
