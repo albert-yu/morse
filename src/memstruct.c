@@ -49,6 +49,49 @@ void memstruct_free(MemoryStruct *mem_struct) {
 
 
 /*
+ * Reallocates the given memstruct's char buffer 
+ * and returns its address. 
+ * I suppose this could be void, but I'm following
+ * the same pattern given by the standard realloc.
+ */
+MemoryStruct* memstruct_realloc_if_needed(MemoryStruct *memstruct, size_t newsize) {
+    if (!memstruct) {
+        return NULL;
+    }
+    if (newsize <= memstruct->__bufsize) {
+        // just return the original
+        return memstruct;
+    }
+    
+    char *ptr = realloc(memstruct->memory, newsize);
+    if (ptr == NULL) {
+        /* out of memory! */ 
+        fprintf(stderr, "Not enough memory (realloc returned NULL).\n");
+        return memstruct;
+    }
+
+    memstruct->memory = ptr;
+    memstruct->__bufsize = newsize;
+    // note: memstruct->size stays the same
+
+    return memstruct;
+}
+
+
+/*
+ * Doubles the buffer size of the given memory struct
+ * and returns the struct's address
+ */
+MemoryStruct* memstruct_double_size(MemoryStruct *memstruct) {
+    if (!memstruct) {
+        return NULL;
+    }
+    size_t newsize = memstruct->__bufsize * 2;
+    return memstruct_realloc_if_needed(memstruct, newsize);
+}
+
+
+/*
  * Callback function for handling server response.
  * signature: size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
  */
